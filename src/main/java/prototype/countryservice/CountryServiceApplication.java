@@ -1,6 +1,7 @@
 package prototype.countryservice;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import com.google.inject.name.Names;
 import com.hubspot.dropwizard.guice.GuiceBundle;
 import io.dropwizard.Application;
@@ -36,6 +37,24 @@ public class CountryServiceApplication extends Application<CountryServiceConfigu
                   bindConstant().annotatedWith(Names.named("cacheExpiryMinutes")).to(60);
                   bind(SpireGetCountriesClient.class);//.to(SpireGetCountriesClient.class);
               }
+
+              @Provides
+              @com.google.inject.name.Named("soapUrl")
+              String provideSoapUrl(CountryServiceConfiguration configuration) {
+                  return configuration.getSoapUrl();
+              }
+
+              @Provides
+              @com.google.inject.name.Named("soapNamespace")
+              String provideSoapNamespace(CountryServiceConfiguration configuration) {
+                  return configuration.getSoapNamespace();
+              }
+
+              @Provides
+              @com.google.inject.name.Named("soapAction")
+              String provideSoapAction(CountryServiceConfiguration configuration) {
+                  return configuration.getSoapAction();
+              }
           })
           .setConfigClass(CountryServiceConfiguration.class)
           .build();
@@ -45,7 +64,7 @@ public class CountryServiceApplication extends Application<CountryServiceConfigu
 
     @Override
     public void run(CountryServiceConfiguration configuration, Environment environment) throws JAXBException {
-        environment.jersey().register(CountriesResource.class);
+        environment.jersey().register(guiceBundle.getInjector().getInstance(CountriesResource.class));
     }
 
 }

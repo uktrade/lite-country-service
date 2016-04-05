@@ -1,9 +1,9 @@
 package prototype.countryservice.core.service;
 
 import com.google.inject.Inject;
+import com.google.inject.name.Named;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import prototype.countryservice.CountryServiceConfiguration;
 
 import javax.xml.soap.MessageFactory;
 import javax.xml.soap.MimeHeaders;
@@ -28,17 +28,12 @@ public class SpireGetCountriesClient {
     private final String soapNamespace;
     private final String soapAction;
 
-    public SpireGetCountriesClient(String soapUrl, String soapNamespace, String soapAction) {
+    @Inject
+    public SpireGetCountriesClient(@Named("soapUrl") String soapUrl, @Named("soapNamespace") String soapNamespace,
+                                   @Named("soapAction") String soapAction) {
         this.soapUrl = soapUrl;
         this.soapNamespace = soapNamespace;
         this.soapAction = soapAction;
-    }
-
-    @Inject
-    public SpireGetCountriesClient(CountryServiceConfiguration configuration) {
-        this.soapUrl = configuration.getSoapUrl();
-        this.soapNamespace = configuration.getSoapNamespace();
-        this.soapAction = configuration.getSoapAction();
     }
 
     public SOAPMessage executeRequest(String countrySetId) throws SOAPException, UnsupportedEncodingException {
