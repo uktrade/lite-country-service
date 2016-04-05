@@ -1,28 +1,34 @@
 package prototype.countryservice.api;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.xml.bind.annotation.XmlElement;
 
 public class Country {
 
-    private String countryRef;
-
-    private String countryName;
-
     @XmlElement(name = "COUNTRY_REF")
+    private final String countryRef;
+
+    @XmlElement(name = "COUNTRY_NAME")
+    private final String countryName;
+
     public String getCountryRef() {
         return countryRef;
     }
 
-    @XmlElement(name = "COUNTRY_NAME")
     public String getCountryName() {
         return countryName;
     }
 
-    public void setCountryRef(String countryRef) {
-        this.countryRef = countryRef;
+    /* Required by JAXB for unmarshalling */
+    private Country() {
+        this(null, null);
     }
 
-    public void setCountryName(String countryName) {
+    @JsonCreator
+    public Country(@JsonProperty("countryRef") String countryRef, @JsonProperty("countryName") String countryName) {
+        this.countryRef = countryRef;
         this.countryName = countryName;
     }
 

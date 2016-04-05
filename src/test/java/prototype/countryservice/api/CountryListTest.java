@@ -39,12 +39,8 @@ public class CountryListTest {
     }
 
     private List<Country> createCountryList(){
-        Country country = new Country();
-        country.setCountryRef("CTRY3");
-        country.setCountryName("Abu Dhabi");
-        Country country2 = new Country();
-        country2.setCountryRef("CTRY909");
-        country2.setCountryName("Barbados");
+        Country country = new Country("CTRY3", "Abu Dhabi");
+        Country country2 = new Country("CTRY909", "Barbados");
         return Arrays.asList(country, country2);
     }
 }

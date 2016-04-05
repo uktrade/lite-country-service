@@ -1,13 +1,13 @@
 package prototype.countryservice.resources;
 
-import prototype.countryservice.api.Country;
-import prototype.countryservice.core.service.GetCountriesService;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.ClassRule;
 import org.junit.Test;
+import prototype.countryservice.api.Country;
+import prototype.countryservice.core.service.GetCountriesService;
 
 import javax.ws.rs.core.GenericType;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,10 +28,8 @@ public class CountriesResourceTest {
     public void shouldGetCountriesResource() throws Exception {
 
         String countrySetName = "export-control";
-        Country country = new Country();
-        country.setCountryName("CTRY1434");
-        country.setCountryRef("France");
-        List<Country> countryList = Arrays.asList(country);
+        Country country = new Country("CTRY1434", "France");
+        List<Country> countryList = Collections.singletonList(country);
         when(getCountriesService.getCountryList(countrySetName)).thenReturn(countryList);
 
 

@@ -52,8 +52,6 @@ public class GetCountriesServiceTest {
     }
 
     private Country createCountry(String countryName) {
-        Country country = new Country();
-        country.setCountryName(countryName);
-        return country;
+        return new Country("", countryName);
     }
 }
