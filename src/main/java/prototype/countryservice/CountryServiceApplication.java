@@ -2,7 +2,7 @@ package prototype.countryservice;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.google.inject.name.Names;
+import com.google.inject.name.Named;
 import com.hubspot.dropwizard.guice.GuiceBundle;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
@@ -34,26 +34,32 @@ public class CountryServiceApplication extends Application<CountryServiceConfigu
               @Override
               protected void configure() {
                   //bindConstant().annotatedWith(Names.named("cacheExpiryMinutes")).to(configuration.getCacheExpiryMinutes());
-                  bindConstant().annotatedWith(Names.named("cacheExpiryMinutes")).to(60);
+                  //bindConstant().annotatedWith(Names.named("cacheExpiryMinutes")).to(60);
                   bind(SpireGetCountriesClient.class);//.to(SpireGetCountriesClient.class);
               }
 
               @Provides
-              @com.google.inject.name.Named("soapUrl")
+              @Named("soapUrl")
               String provideSoapUrl(CountryServiceConfiguration configuration) {
                   return configuration.getSoapUrl();
               }
 
               @Provides
-              @com.google.inject.name.Named("soapNamespace")
+              @Named("soapNamespace")
               String provideSoapNamespace(CountryServiceConfiguration configuration) {
                   return configuration.getSoapNamespace();
               }
 
               @Provides
-              @com.google.inject.name.Named("soapAction")
+              @Named("soapAction")
               String provideSoapAction(CountryServiceConfiguration configuration) {
                   return configuration.getSoapAction();
+              }
+
+              @Provides
+              @Named("cacheExpiryMinutes")
+              Integer provideCacheExpiryMinutes(CountryServiceConfiguration configuration) {
+                return configuration.getCacheExpiryMinutes();
               }
           })
           .setConfigClass(CountryServiceConfiguration.class)
