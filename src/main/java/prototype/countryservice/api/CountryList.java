@@ -7,15 +7,15 @@ import java.util.List;
 @XmlRootElement(name = "COUNTRY_LIST")
 public class CountryList {
 
-    private List<Country> countries;
-
     @XmlElement(name = "COUNTRY")
-    public List<Country> getCountries() {
-        return countries;
+    private final List<Country> countries;
+
+    private CountryList() {
+        this.countries = null;
     }
 
-    public void setCountries(List<Country> countries) {
-        this.countries = countries;
+    public List<Country> getCountries() {
+        return countries;
     }
 
     @Override
