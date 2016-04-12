@@ -15,7 +15,7 @@ public class CountryServiceConfiguration extends Configuration {
     @NotEmpty
     private String soapNamespace;
 
-    private Integer cacheExpiryMinutes;
+    private Integer cacheExpirySeconds;
 
     @JsonProperty
     public String getSoapUrl() {
@@ -48,12 +48,12 @@ public class CountryServiceConfiguration extends Configuration {
     }
 
     @JsonProperty
-    public Integer getCacheExpiryMinutes() {
-        return cacheExpiryMinutes;
+    public Integer getCacheExpirySeconds() {
+        return cacheExpirySeconds;
     }
 
     @JsonProperty
-    public void setCacheExpiryMinutes(Integer cacheExpiryMinutes) {
-        this.cacheExpiryMinutes = cacheExpiryMinutes;
+    public void setCacheExpirySeconds(Integer cacheExpirySeconds) {
+        this.cacheExpirySeconds = cacheExpirySeconds;
     }
 }

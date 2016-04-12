@@ -27,7 +27,7 @@ public class CountryServiceApplicationTest {
 
     @Before
     public void setup() throws Exception {
-        config.setCacheExpiryMinutes(10);
+        config.setCacheExpirySeconds(10);
         when(environment.jersey()).thenReturn(jersey);
     }
 

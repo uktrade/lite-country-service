@@ -34,7 +34,7 @@ public class CountryServiceApplication extends Application<CountryServiceConfigu
         Injector injector = Guice.createInjector(new AbstractModule() {
             @Override
             protected void configure() {
-                bindConstant().annotatedWith(Names.named("cacheExpiryMinutes")).to(configuration.getCacheExpiryMinutes());
+                bindConstant().annotatedWith(Names.named("cacheExpirySeconds")).to(configuration.getCacheExpirySeconds());
                 bind(SpireGetCountriesClient.class).toInstance(new SpireGetCountriesClient(configuration.getSoapUrl(),
                         configuration.getSoapNamespace(),
                         configuration.getSoapAction()));

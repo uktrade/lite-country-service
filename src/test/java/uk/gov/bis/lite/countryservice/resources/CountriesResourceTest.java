@@ -21,7 +21,7 @@ public class CountriesResourceTest {
 
     @ClassRule
     public static final ResourceTestRule resources = ResourceTestRule.builder()
-            .addResource(new CountriesResource(getCountriesService))
+            .addResource(new CountriesResource(getCountriesService, 1000))
             .build();
 
     @Test

@@ -4,7 +4,7 @@ soapAction: http://www.fivium.co.uk/fox/webservices/ispire/SPIRE_COUNTRIES/getCo
 
 soapNamespace: http://www.fivium.co.uk/fox/webservices/ispire/SPIRE_COUNTRIES/getCountries
 
-cacheExpiryMinutes: 1440
+cacheExpirySeconds: 1440
 
 logging:
   level: DEBUG
