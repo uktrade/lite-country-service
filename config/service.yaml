@@ -6,6 +6,15 @@ soapNamespace: http://www.fivium.co.uk/fox/webservices/ispire/SPIRE_COUNTRIES/ge
 
 cacheExpirySeconds: 86400
 
+sundial:
+  thread-pool-size: 10
+  shutdown-on-unload: true
+  wait-on-shutdown: false
+  start-delay-seconds: 0
+  start-scheduler-on-load: true
+  global-lock-on-load: false
+  annotated-jobs-package-name: uk.gov.bis.lite.countryservice.core.job
+
 logging:
 
   level: INFO
@@ -18,7 +27,7 @@ logging:
       # When the log file rotates, the archived log will be renamed to this and gzipped. The
       # %d is replaced with the previous day (yyyy-MM-dd). Custom rolling windows can be created
       # by passing a SimpleDateFormat-compatible format as an argument: "%d{yyyy-MM-dd-hh}".
-      archivedLogFilenamePattern: ./logs/example-%d.log.gz
+      archivedLogFilenamePattern: ./logs/country-service-%d.log.gz
 
       # The number of archived files to keep.
       archivedFileCount: 5

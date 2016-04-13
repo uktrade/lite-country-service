@@ -7,6 +7,10 @@ import com.google.inject.name.Names;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.knowm.dropwizard.sundial.SundialBundle;
+import org.knowm.dropwizard.sundial.SundialConfiguration;
+import uk.gov.bis.lite.countryservice.core.cache.CountryListCache;
+import uk.gov.bis.lite.countryservice.core.exception.CountryServiceException;
 import uk.gov.bis.lite.countryservice.core.service.SpireGetCountriesClient;
 import uk.gov.bis.lite.countryservice.resources.CountriesResource;
 
@@ -25,7 +29,13 @@ public class CountryServiceApplication extends Application<CountryServiceConfigu
 
     @Override
     public void initialize(Bootstrap<CountryServiceConfiguration> bootstrap) {
-        // nothing to do yet
+        bootstrap.addBundle(new SundialBundle<CountryServiceConfiguration>() {
+
+            @Override
+            public SundialConfiguration getSundialConfiguration(CountryServiceConfiguration configuration) {
+                return configuration.getSundialConfiguration();
+            }
+        });
     }
 
     @Override
@@ -40,6 +50,11 @@ public class CountryServiceApplication extends Application<CountryServiceConfigu
                         configuration.getSoapAction()));
             }
         });
+
+        CountryListCache countryListCache = injector.getInstance(CountryListCache.class);
+
+        environment.getApplicationContext().setAttribute("countryListCache", countryListCache);
+
         environment.jersey().register(injector.getInstance(CountriesResource.class));
     }
 

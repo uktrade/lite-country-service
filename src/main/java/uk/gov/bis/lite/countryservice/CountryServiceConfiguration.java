@@ -3,6 +3,10 @@ package uk.gov.bis.lite.countryservice;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.knowm.dropwizard.sundial.SundialConfiguration;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 public class CountryServiceConfiguration extends Configuration {
 
@@ -55,5 +59,14 @@ public class CountryServiceConfiguration extends Configuration {
     @JsonProperty
     public void setCacheExpirySeconds(Integer cacheExpirySeconds) {
         this.cacheExpirySeconds = cacheExpirySeconds;
+    }
+
+    @Valid
+    @NotNull
+    public SundialConfiguration sundialConfiguration = new SundialConfiguration();
+
+    @JsonProperty("sundial")
+    public SundialConfiguration getSundialConfiguration() {
+        return sundialConfiguration;
     }
 }

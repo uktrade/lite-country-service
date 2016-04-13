@@ -74,7 +74,7 @@ public class SpireGetCountriesClient {
         MimeHeaders headers = soapMessage.getMimeHeaders();
         headers.addHeader("SOAPAction", soapAction + "getCompanies");
 
-        String authorization = Base64.getEncoder().encodeToString("lu@gov.uk:dev".getBytes("utf-8"));
+        String authorization = Base64.getEncoder().encodeToString("bisdev.api@test.com:dev".getBytes("utf-8"));
         headers.addHeader("Authorization", "Basic " + authorization);
         soapMessage.saveChanges();
 
