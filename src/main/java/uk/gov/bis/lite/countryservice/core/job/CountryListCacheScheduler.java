@@ -6,6 +6,7 @@ import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
+import org.quartz.TriggerKey;
 import uk.gov.bis.lite.countryservice.CountryServiceConfiguration;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
@@ -31,7 +32,9 @@ public class CountryListCacheScheduler implements Managed {
                 .withIdentity(jobKey)
                 .build();
 
+        TriggerKey triggerKey = TriggerKey.triggerKey("countryListCacheJobTrigger");
         CronTrigger trigger = newTrigger()
+                .withIdentity(triggerKey)
                 .withSchedule(cronSchedule(config.getCountryListCacheJobCron()))
                 .build();
 

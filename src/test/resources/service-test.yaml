@@ -6,7 +6,7 @@ soapNamespace: http://www.fivium.co.uk/fox/webservices/ispire/SPIRE_COUNTRIES/ge
 
 cacheExpirySeconds: 1440
 
-countryListCacheJobCron: 0 0/2 * * * ?
+countryListCacheJobCron: 0 0/30 * * * ?
 
 logging:
   level: INFO

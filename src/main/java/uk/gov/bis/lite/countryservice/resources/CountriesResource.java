@@ -4,7 +4,6 @@ import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.hibernate.validator.constraints.NotEmpty;
-import uk.gov.bis.lite.countryservice.api.Country;
 import uk.gov.bis.lite.countryservice.core.cache.CountryListCacheEntry;
 import uk.gov.bis.lite.countryservice.core.exception.CountryServiceException;
 import uk.gov.bis.lite.countryservice.core.service.GetCountriesService;
@@ -16,9 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Path("/countries")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -51,7 +48,10 @@ public class CountriesResource {
 
     private CacheControl getCacheControl(long timestamp) {
         CacheControl cacheControl = new CacheControl();
-        cacheControl.setMaxAge((int)(timestamp /1000) + cacheExpirySeconds);
+        int elapsedTime = (int) ((System.currentTimeMillis() - timestamp) / 1000);
+
+        cacheControl.setMaxAge(cacheExpirySeconds - elapsedTime);
+
         return cacheControl;
     }
 
