@@ -7,10 +7,12 @@ import com.google.inject.name.Names;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
-import org.knowm.dropwizard.sundial.SundialBundle;
-import org.knowm.dropwizard.sundial.SundialConfiguration;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.impl.StdSchedulerFactory;
 import uk.gov.bis.lite.countryservice.core.cache.CountryListCache;
 import uk.gov.bis.lite.countryservice.core.exception.CountryServiceException;
+import uk.gov.bis.lite.countryservice.core.job.CountryListCacheScheduler;
 import uk.gov.bis.lite.countryservice.core.service.SpireGetCountriesClient;
 import uk.gov.bis.lite.countryservice.resources.CountriesResource;
 
@@ -29,17 +31,13 @@ public class CountryServiceApplication extends Application<CountryServiceConfigu
 
     @Override
     public void initialize(Bootstrap<CountryServiceConfiguration> bootstrap) {
-        bootstrap.addBundle(new SundialBundle<CountryServiceConfiguration>() {
 
-            @Override
-            public SundialConfiguration getSundialConfiguration(CountryServiceConfiguration configuration) {
-                return configuration.getSundialConfiguration();
-            }
-        });
     }
 
     @Override
-    public void run(CountryServiceConfiguration configuration, Environment environment) throws JAXBException {
+    public void run(CountryServiceConfiguration configuration, Environment environment) throws JAXBException,
+            CountryServiceException,
+            SchedulerException {
 
         Injector injector = Guice.createInjector(new AbstractModule() {
             @Override
@@ -53,7 +51,11 @@ public class CountryServiceApplication extends Application<CountryServiceConfigu
 
         CountryListCache countryListCache = injector.getInstance(CountryListCache.class);
 
-        environment.getApplicationContext().setAttribute("countryListCache", countryListCache);
+        // Store cache reference in scheduler context to be later retrieved from the job
+        Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+        scheduler.getContext().put("countryListCache", countryListCache);
+
+        environment.lifecycle().manage(new CountryListCacheScheduler(scheduler, configuration));
 
         environment.jersey().register(injector.getInstance(CountriesResource.class));
     }

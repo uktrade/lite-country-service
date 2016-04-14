@@ -6,17 +6,10 @@ soapNamespace: http://www.fivium.co.uk/fox/webservices/ispire/SPIRE_COUNTRIES/ge
 
 cacheExpirySeconds: 1440
 
-sundial:
-  thread-pool-size: 10
-  shutdown-on-unload: true
-  wait-on-shutdown: false
-  start-delay-seconds: 0
-  start-scheduler-on-load: true
-  global-lock-on-load: false
-  annotated-jobs-package-name: uk.gov.bis.lite.countryservice.core.job
+countryListCacheJobCron: 0 0/2 * * * ?
 
 logging:
-  level: DEBUG
+  level: INFO
   appenders:
     - type: file
       # The file to which current statements will be logged.

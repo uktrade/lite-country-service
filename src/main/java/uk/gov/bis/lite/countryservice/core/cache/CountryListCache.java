@@ -1,6 +1,7 @@
 package uk.gov.bis.lite.countryservice.core.cache;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.countryservice.api.Country;
@@ -12,13 +13,14 @@ import uk.gov.bis.lite.countryservice.core.service.SpireGetCountriesClient;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
+@Singleton
 public class CountryListCache {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CountryListCache.class);
@@ -27,32 +29,36 @@ public class CountryListCache {
 
     private final SpireGetCountriesClient spireGetCountriesClient;
     private final CountryListFactory countryListFactory;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
-
 
     @Inject
     public CountryListCache(SpireGetCountriesClient spireGetCountriesClient, CountryListFactory countryListFactory) throws CountryServiceException {
         this.spireGetCountriesClient = spireGetCountriesClient;
         this.countryListFactory = countryListFactory;
-        populateCache();
     }
 
     public void load() throws CountryServiceException {
-        populateCache();
-    }
-
-    private void populateCache() throws CountryServiceException {
         CountrySet[] countrySets = CountrySet.values();
         for (CountrySet countrySet : countrySets) {
             String countrySetName = countrySet.getName();
             List<Country> countries = loadCountries(countrySetName);
-            cache.put(countrySetName, countries);
+            if (countries != null) {
+                cache.put(countrySetName, countries);
+            }
         }
+    }
+
+    public List<Country> get(String key) {
+        List<Country> countries = new ArrayList<>();
+        if (cache.containsKey(key)) {
+            countries = cache.get(key);
+        }
+        return Collections.unmodifiableList(countries);
     }
 
     private List<Country> loadCountries(String countrySetName) throws CountryServiceException {
         List<Country> countryList = null;
         try {
+
             Optional<CountrySet> countrySet = CountrySet.getByName(countrySetName);
             if (!countrySet.isPresent()) {
                 LOGGER.warn("Invalid country set name - {}", countrySetName);

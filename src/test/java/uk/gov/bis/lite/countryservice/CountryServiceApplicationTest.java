@@ -1,5 +1,6 @@
 package uk.gov.bis.lite.countryservice;
 
+import io.dropwizard.lifecycle.setup.LifecycleEnvironment;
 import uk.gov.bis.lite.countryservice.resources.CountriesResource;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Environment;
@@ -22,6 +23,9 @@ public class CountryServiceApplicationTest {
     @Mock
     private JerseyEnvironment jersey;
 
+    @Mock
+    private LifecycleEnvironment lifecycleEnvironment;
+
     private final CountryServiceApplication application = new CountryServiceApplication();
     private final CountryServiceConfiguration config = new CountryServiceConfiguration();
 
@@ -29,6 +33,7 @@ public class CountryServiceApplicationTest {
     public void setup() throws Exception {
         config.setCacheExpirySeconds(10);
         when(environment.jersey()).thenReturn(jersey);
+        when(environment.lifecycle()).thenReturn(lifecycleEnvironment);
     }
 
     @Test
