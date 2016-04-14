@@ -16,9 +16,9 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -63,13 +63,14 @@ public class CountryListCacheTest {
 
         setupCache();
 
-        List<Country> result = countryListCache.get("export-control");
+        Optional<CountryListCacheEntry> result = countryListCache.get("export-control");
 
-        assertThat(result, is(notNullValue()));
-        assertThat(result.size(), is(3));
-        assertThat(result.get(0).getCountryName(), is("Albania"));
-        assertThat(result.get(1).getCountryName(), is("Brazil"));
-        assertThat(result.get(2).getCountryName(), is("Finland"));
+        assertThat(result.isPresent(), is(true));
+        List<Country> countryList = result.get().getCountryList();
+        assertThat(countryList.size(), is(3));
+        assertThat(countryList.get(0).getCountryName(), is("Albania"));
+        assertThat(countryList.get(1).getCountryName(), is("Brazil"));
+        assertThat(countryList.get(2).getCountryName(), is("Finland"));
     }
 
     @Test
@@ -77,10 +78,9 @@ public class CountryListCacheTest {
 
         setupCache();
 
-        List<Country> result = countryListCache.get("blah");
+        Optional<CountryListCacheEntry> result = countryListCache.get("blah");
 
-        assertThat(result, is(notNullValue()));
-        assertThat(result.size(), is(0));
+        assertThat(result.isPresent(), is(false));
     }
 
     private void setupCache() throws Exception {

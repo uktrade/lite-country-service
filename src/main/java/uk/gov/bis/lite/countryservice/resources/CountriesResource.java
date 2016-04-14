@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.hibernate.validator.constraints.NotEmpty;
 import uk.gov.bis.lite.countryservice.api.Country;
+import uk.gov.bis.lite.countryservice.core.cache.CountryListCacheEntry;
 import uk.gov.bis.lite.countryservice.core.exception.CountryServiceException;
 import uk.gov.bis.lite.countryservice.core.service.GetCountriesService;
 
@@ -16,6 +17,7 @@ import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Path("/countries")
@@ -35,17 +37,21 @@ public class CountriesResource {
     @Path("set/{countrySetName}")
     @Timed // measures the duration of requests to a resource
     public Response getCountryList(@PathParam("countrySetName") @NotEmpty String countrySetName) throws CountryServiceException {
-        List<Country> countryList = getCountriesService.getCountryList(countrySetName);
+        Optional<CountryListCacheEntry> countryList = getCountriesService.getCountryList(countrySetName);
+        if (!countryList.isPresent()) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
 
+        CountryListCacheEntry countryListCacheEntry = countryList.get();
         return Response.ok()
-                .entity(countryList)
-                .cacheControl(getCacheControl())
+                .entity(countryListCacheEntry.getCountryList())
+                .cacheControl(getCacheControl(countryListCacheEntry.getTimeStamp()))
                 .build();
     }
 
-    private CacheControl getCacheControl() {
+    private CacheControl getCacheControl(long timestamp) {
         CacheControl cacheControl = new CacheControl();
-        cacheControl.setMaxAge(cacheExpirySeconds);
+        cacheControl.setMaxAge((int)(timestamp /1000) + cacheExpirySeconds);
         return cacheControl;
     }
 

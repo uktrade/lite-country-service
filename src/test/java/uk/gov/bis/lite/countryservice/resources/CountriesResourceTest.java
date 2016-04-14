@@ -1,14 +1,16 @@
 package uk.gov.bis.lite.countryservice.resources;
 
-import uk.gov.bis.lite.countryservice.api.Country;
-import uk.gov.bis.lite.countryservice.core.service.GetCountriesService;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.ClassRule;
 import org.junit.Test;
+import uk.gov.bis.lite.countryservice.api.Country;
+import uk.gov.bis.lite.countryservice.core.cache.CountryListCacheEntry;
+import uk.gov.bis.lite.countryservice.core.service.GetCountriesService;
 
 import javax.ws.rs.core.GenericType;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -32,7 +34,7 @@ public class CountriesResourceTest {
         country.setCountryName("CTRY1434");
         country.setCountryRef("France");
         List<Country> countryList = Arrays.asList(country);
-        when(getCountriesService.getCountryList(countrySetName)).thenReturn(countryList);
+        when(getCountriesService.getCountryList(countrySetName)).thenReturn(Optional.of(new CountryListCacheEntry(countryList)));
 
 
         List<Country> result = resources.client()

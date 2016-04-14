@@ -25,7 +25,7 @@ public class CountryListCache {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CountryListCache.class);
 
-    private final ConcurrentMap<String, List<Country>> cache = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, CountryListCacheEntry> cache = new ConcurrentHashMap<>();
 
     private final SpireGetCountriesClient spireGetCountriesClient;
     private final CountryListFactory countryListFactory;
@@ -42,17 +42,16 @@ public class CountryListCache {
             String countrySetName = countrySet.getName();
             List<Country> countries = loadCountries(countrySetName);
             if (countries != null) {
-                cache.put(countrySetName, countries);
+                cache.put(countrySetName, new CountryListCacheEntry(countries));
             }
         }
     }
 
-    public List<Country> get(String key) {
-        List<Country> countries = new ArrayList<>();
+    public Optional<CountryListCacheEntry> get(String key) {
         if (cache.containsKey(key)) {
-            countries = cache.get(key);
+            return Optional.of(cache.get(key));
         }
-        return Collections.unmodifiableList(countries);
+        return Optional.empty();
     }
 
     private List<Country> loadCountries(String countrySetName) throws CountryServiceException {
