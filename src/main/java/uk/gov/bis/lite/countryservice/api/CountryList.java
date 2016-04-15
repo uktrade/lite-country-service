@@ -2,20 +2,26 @@ package uk.gov.bis.lite.countryservice.api;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collections;
 import java.util.List;
 
 @XmlRootElement(name = "COUNTRY_LIST")
 public class CountryList {
 
-    private List<Country> countries;
-
     @XmlElement(name = "COUNTRY")
-    public List<Country> getCountries() {
-        return countries;
+    private final List<Country> countries;
+
+    @SuppressWarnings("unused")
+    private CountryList() {
+        this(null);
     }
 
-    public void setCountries(List<Country> countries) {
+    public CountryList(List<Country> countries) {
         this.countries = countries;
+    }
+
+    public List<Country> getCountries() {
+        return countries;
     }
 
     @Override

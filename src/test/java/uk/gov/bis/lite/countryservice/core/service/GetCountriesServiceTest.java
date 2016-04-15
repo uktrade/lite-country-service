@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.bis.lite.countryservice.api.Country;
 import uk.gov.bis.lite.countryservice.core.cache.CountryListCache;
-import uk.gov.bis.lite.countryservice.core.cache.CountryListCacheEntry;
+import uk.gov.bis.lite.countryservice.core.cache.CountryListEntry;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +16,6 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -33,24 +32,16 @@ public class GetCountriesServiceTest {
     @Test
     public void shouldGetCountries() throws Exception {
 
-        List<Country> countryList = Arrays.asList(createCountry("Albania"), createCountry("Brazil"), createCountry("Finland"));
-        CountryListCacheEntry countryListCacheEntry = new CountryListCacheEntry(countryList);
-        when(countryListCache.get(COUNTRY_SET_NAME)).thenReturn(Optional.of(countryListCacheEntry));
+        List<Country> countryList = Arrays.asList(new Country("1", "Albania"), new Country("4", "Brazil"),
+                new Country("3", "Finland"));
 
-        Optional<CountryListCacheEntry> result = getCountriesService.getCountryList(COUNTRY_SET_NAME);
+        CountryListEntry countryListEntry = new CountryListEntry(countryList);
+        when(countryListCache.get(COUNTRY_SET_NAME)).thenReturn(Optional.of(countryListEntry));
+
+        Optional<CountryListEntry> result = getCountriesService.getCountryList(COUNTRY_SET_NAME);
 
         assertThat(result.isPresent(), is(true));
-        assertThat(result.get().getCountryList(), is(countryList));
-//        List<Country> countryList = result.get().getCountryList();
-//        assertThat(countryList, is(3));
-//        assertThat(countryList.get(0).getCountryName(), is("Albania"));
-//        assertThat(countryList.get(1).getCountryName(), is("Brazil"));
-//        assertThat(countryList.get(2).getCountryName(), is("Finland"));
+        assertThat(result.get().getList(), is(countryList));
     }
 
-    private Country createCountry(String countryName) {
-        Country country = new Country();
-        country.setCountryName(countryName);
-        return country;
-    }
 }

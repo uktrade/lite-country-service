@@ -13,8 +13,6 @@ import uk.gov.bis.lite.countryservice.core.service.SpireGetCountriesClient;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,7 +23,7 @@ public class CountryListCache {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CountryListCache.class);
 
-    private final ConcurrentMap<String, CountryListCacheEntry> cache = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, CountryListEntry> cache = new ConcurrentHashMap<>();
 
     private final SpireGetCountriesClient spireGetCountriesClient;
     private final CountryListFactory countryListFactory;
@@ -42,12 +40,12 @@ public class CountryListCache {
             String countrySetName = countrySet.getName();
             List<Country> countries = loadCountries(countrySetName);
             if (countries != null) {
-                cache.put(countrySetName, new CountryListCacheEntry(countries));
+                cache.put(countrySetName, new CountryListEntry(countries));
             }
         }
     }
 
-    public Optional<CountryListCacheEntry> get(String key) {
+    public Optional<CountryListEntry> get(String key) {
         if (cache.containsKey(key)) {
             return Optional.of(cache.get(key));
         }

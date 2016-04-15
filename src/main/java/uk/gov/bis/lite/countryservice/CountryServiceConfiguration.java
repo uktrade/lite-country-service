@@ -17,7 +17,11 @@ public class CountryServiceConfiguration extends Configuration {
 
     private Integer cacheExpirySeconds;
 
+    @NotEmpty
     private String countryListCacheJobCron;
+
+    @NotEmpty
+    private String countryListCacheRetryJobCron;
 
     @JsonProperty
     public String getSoapUrl() {
@@ -59,17 +63,11 @@ public class CountryServiceConfiguration extends Configuration {
         this.cacheExpirySeconds = cacheExpirySeconds;
     }
 
-//    @Valid
-//    @NotNull
-//    public SundialConfiguration sundialConfiguration = new SundialConfiguration();
-//
-//    @JsonProperty("sundial")
-//    public SundialConfiguration getSundialConfiguration() {
-//        return sundialConfiguration;
-//    }
-
-    @NotEmpty
     public String getCountryListCacheJobCron() {
         return countryListCacheJobCron;
+    }
+
+    public String getCountryListCacheRetryJobCron() {
+        return countryListCacheRetryJobCron;
     }
 }

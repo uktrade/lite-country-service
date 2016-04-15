@@ -12,7 +12,7 @@ import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
 import uk.gov.bis.lite.countryservice.core.cache.CountryListCache;
 import uk.gov.bis.lite.countryservice.core.exception.CountryServiceException;
-import uk.gov.bis.lite.countryservice.core.job.CountryListCacheScheduler;
+import uk.gov.bis.lite.countryservice.core.scheduler.CountryListCacheScheduler;
 import uk.gov.bis.lite.countryservice.core.service.SpireGetCountriesClient;
 import uk.gov.bis.lite.countryservice.resources.CountriesResource;
 

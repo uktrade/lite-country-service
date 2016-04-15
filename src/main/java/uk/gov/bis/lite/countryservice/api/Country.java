@@ -4,27 +4,31 @@ import javax.xml.bind.annotation.XmlElement;
 
 public class Country {
 
-    private String countryRef;
-
-    private String countryName;
-
     @XmlElement(name = "COUNTRY_REF")
+    private final String countryRef;
+
+    @XmlElement(name = "COUNTRY_NAME")
+    private final String countryName;
+
+    @SuppressWarnings("unused")
+    private Country() {
+        this(null, null);
+    }
+
+    public Country(String countryRef, String countryName) {
+        this.countryRef = countryRef;
+        this.countryName = countryName;
+    }
+
     public String getCountryRef() {
         return countryRef;
     }
 
-    @XmlElement(name = "COUNTRY_NAME")
+
     public String getCountryName() {
         return countryName;
     }
 
-    public void setCountryRef(String countryRef) {
-        this.countryRef = countryRef;
-    }
-
-    public void setCountryName(String countryName) {
-        this.countryName = countryName;
-    }
 
     @Override
     public String toString() {

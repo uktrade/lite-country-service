@@ -4,7 +4,7 @@ import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.ClassRule;
 import org.junit.Test;
 import uk.gov.bis.lite.countryservice.api.Country;
-import uk.gov.bis.lite.countryservice.core.cache.CountryListCacheEntry;
+import uk.gov.bis.lite.countryservice.core.cache.CountryListEntry;
 import uk.gov.bis.lite.countryservice.core.service.GetCountriesService;
 
 import javax.ws.rs.core.GenericType;
@@ -29,12 +29,8 @@ public class CountriesResourceTest {
     @Test
     public void shouldGetCountriesResource() throws Exception {
 
-        String countrySetName = "export-control";
-        Country country = new Country();
-        country.setCountryName("CTRY1434");
-        country.setCountryRef("France");
-        List<Country> countryList = Arrays.asList(country);
-        when(getCountriesService.getCountryList(countrySetName)).thenReturn(Optional.of(new CountryListCacheEntry(countryList)));
+        List<Country> countryList = Arrays.asList(new Country("1", "France"), new Country("2", "Spain"));
+        when(getCountriesService.getCountryList("export-control")).thenReturn(Optional.of(new CountryListEntry(countryList)));
 
 
         List<Country> result = resources.client()
@@ -44,4 +40,5 @@ public class CountriesResourceTest {
 
         assertThat(result, is(countryList));
     }
+
 }

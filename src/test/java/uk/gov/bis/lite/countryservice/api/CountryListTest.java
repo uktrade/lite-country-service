@@ -14,12 +14,13 @@ import static org.junit.Assert.assertThat;
 
 public class CountryListTest {
 
+    private static final String COUNTRY_LIST_JSON = "countrylist.json";
     private static final ObjectMapper MAPPER = Jackson.newObjectMapper();
 
     @Test
     public void serializesToJSON() throws Exception {
 
-        String countryListJSON = MAPPER.writeValueAsString(MAPPER.readValue(fixture("countrylist.json"),
+        String countryListJSON = MAPPER.writeValueAsString(MAPPER.readValue(fixture(COUNTRY_LIST_JSON),
                 new TypeReference<List<Country>>(){}));
 
         List<Country> countryList = createCountryList();
@@ -33,18 +34,14 @@ public class CountryListTest {
 
         List<Country> countryList = createCountryList();
 
-        List<Country> result = MAPPER.readValue(fixture("countrylist.json"), new TypeReference<List<Country>>(){});
+        List<Country> result = MAPPER.readValue(fixture(COUNTRY_LIST_JSON), new TypeReference<List<Country>>(){});
 
         assertThat(result, is(countryList));
     }
 
     private List<Country> createCountryList(){
-        Country country = new Country();
-        country.setCountryRef("CTRY3");
-        country.setCountryName("Abu Dhabi");
-        Country country2 = new Country();
-        country2.setCountryRef("CTRY909");
-        country2.setCountryName("Barbados");
+        Country country = new Country("CTRY3", "Abu Dhabi");
+        Country country2 = new Country("CTRY909", "Barbados");
         return Arrays.asList(country, country2);
     }
 }

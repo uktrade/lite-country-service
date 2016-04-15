@@ -4,7 +4,7 @@ import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.hibernate.validator.constraints.NotEmpty;
-import uk.gov.bis.lite.countryservice.core.cache.CountryListCacheEntry;
+import uk.gov.bis.lite.countryservice.core.cache.CountryListEntry;
 import uk.gov.bis.lite.countryservice.core.exception.CountryServiceException;
 import uk.gov.bis.lite.countryservice.core.service.GetCountriesService;
 
@@ -34,15 +34,15 @@ public class CountriesResource {
     @Path("set/{countrySetName}")
     @Timed // measures the duration of requests to a resource
     public Response getCountryList(@PathParam("countrySetName") @NotEmpty String countrySetName) throws CountryServiceException {
-        Optional<CountryListCacheEntry> countryList = getCountriesService.getCountryList(countrySetName);
-        if (!countryList.isPresent()) {
+        Optional<CountryListEntry> countryListEntryOptional = getCountriesService.getCountryList(countrySetName);
+        if (!countryListEntryOptional.isPresent()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
 
-        CountryListCacheEntry countryListCacheEntry = countryList.get();
+        CountryListEntry countryListEntry = countryListEntryOptional.get();
         return Response.ok()
-                .entity(countryListCacheEntry.getCountryList())
-                .cacheControl(getCacheControl(countryListCacheEntry.getTimeStamp()))
+                .entity(countryListEntry.getList())
+                .cacheControl(getCacheControl(countryListEntry.getTimeStamp()))
                 .build();
     }
 

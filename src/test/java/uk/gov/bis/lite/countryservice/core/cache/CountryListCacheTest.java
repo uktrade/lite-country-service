@@ -52,7 +52,8 @@ public class CountryListCacheTest {
 
         when(spireGetCountriesClient.executeRequest("EXPORT_CONTROL")).thenThrow(new SOAPException());
 
-        List<Country> countryList = Arrays.asList(createCountry("Finland"), createCountry("Brazil"), createCountry("Albania"));
+        List<Country> countryList = Arrays.asList(new Country("1", "Finland"), new Country("2", "Brazil"),
+                new Country("3", "Albania"));
         when(countryListFactory.create(soapMessage)).thenReturn(countryList);
 
         countryListCache.load();
@@ -63,10 +64,10 @@ public class CountryListCacheTest {
 
         setupCache();
 
-        Optional<CountryListCacheEntry> result = countryListCache.get("export-control");
+        Optional<CountryListEntry> result = countryListCache.get("export-control");
 
         assertThat(result.isPresent(), is(true));
-        List<Country> countryList = result.get().getCountryList();
+        List<Country> countryList = result.get().getList();
         assertThat(countryList.size(), is(3));
         assertThat(countryList.get(0).getCountryName(), is("Albania"));
         assertThat(countryList.get(1).getCountryName(), is("Brazil"));
@@ -78,7 +79,7 @@ public class CountryListCacheTest {
 
         setupCache();
 
-        Optional<CountryListCacheEntry> result = countryListCache.get("blah");
+        Optional<CountryListEntry> result = countryListCache.get("blah");
 
         assertThat(result.isPresent(), is(false));
     }
@@ -86,15 +87,10 @@ public class CountryListCacheTest {
     private void setupCache() throws Exception {
         when(spireGetCountriesClient.executeRequest("EXPORT_CONTROL")).thenReturn(soapMessage);
 
-        List<Country> countryList = Arrays.asList(createCountry("Finland"), createCountry("Brazil"), createCountry("Albania"));
+        List<Country> countryList = Arrays.asList(new Country("1", "Finland"), new Country("2", "Brazil"), new Country("3", "Albania"));
         when(countryListFactory.create(soapMessage)).thenReturn(countryList);
 
         countryListCache.load();
     }
 
-    private Country createCountry(String countryName) {
-        Country country = new Country();
-        country.setCountryName(countryName);
-        return country;
-    }
 }
