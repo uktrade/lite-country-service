@@ -47,7 +47,7 @@ public class CountryListCacheJob implements Job {
 
         } catch (SchedulerException | CountryServiceException e) {
             // if cache failed to load then try again sooner
-            LOGGER.error("Failed to load cache.", e);
+            LOGGER.error("Failed to load country list cache.", e);
 
             changeTriggerToRunSooner(scheduler, retryJobCron);
         }

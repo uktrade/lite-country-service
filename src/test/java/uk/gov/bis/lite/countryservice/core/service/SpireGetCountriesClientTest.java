@@ -16,12 +16,13 @@ public class SpireGetCountriesClientTest {
 
     private static final String SOAP_URL = "http://localhost:9000/spirefox4dev/fox/ispire/SPIRE_COUNTRIES";
     private static final String SOAP_URI = "http://www.fivium.co.uk/fox/webservices/ispire/SPIRE_COUNTRIES/getCountries";
+    private static final String SPIRE_CREDENTIALS = "test:user";
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(9000);
 
     private SpireGetCountriesClient spireGetCountriesClient = new SpireGetCountriesClient(SOAP_URL,
-            SOAP_URI, SOAP_URI);
+            SOAP_URI, SOAP_URI, SPIRE_CREDENTIALS);
 
     @Test
     public void shouldExecuteSoapRequest() throws Exception {

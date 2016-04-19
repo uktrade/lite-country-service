@@ -25,11 +25,13 @@ public class SpireGetCountriesClient {
     private final String soapUrl;
     private final String soapNamespace;
     private final String soapAction;
+    private final String spireCredentials;
 
-    public SpireGetCountriesClient(String soapUrl, String soapNamespace, String soapAction) {
+    public SpireGetCountriesClient(String soapUrl, String soapNamespace, String soapAction, String spireCredentials) {
         this.soapUrl = soapUrl;
         this.soapNamespace = soapNamespace;
         this.soapAction = soapAction;
+        this.spireCredentials = spireCredentials;
     }
 
     public SOAPMessage executeRequest(String countrySetId) throws SOAPException, UnsupportedEncodingException {
@@ -61,11 +63,9 @@ public class SpireGetCountriesClient {
         SOAPMessage soapMessage = messageFactory.createMessage();
         SOAPPart soapPart = soapMessage.getSOAPPart();
 
-        // SOAP Envelope
         SOAPEnvelope envelope = soapPart.getEnvelope();
         envelope.addNamespaceDeclaration("spire", soapNamespace);
 
-        // SOAP Body
         SOAPBody soapBody = envelope.getBody();
         SOAPElement soapBodyElem = soapBody.addChildElement("getCountries", "spire");
         SOAPElement soapBodyElem2 = soapBodyElem.addChildElement("countrySetId");
@@ -74,7 +74,7 @@ public class SpireGetCountriesClient {
         MimeHeaders headers = soapMessage.getMimeHeaders();
         headers.addHeader("SOAPAction", soapAction + "getCompanies");
 
-        String authorization = Base64.getEncoder().encodeToString("bisdev.api@test.com:dev".getBytes("utf-8"));
+        String authorization = Base64.getEncoder().encodeToString(spireCredentials.getBytes("utf-8"));
         headers.addHeader("Authorization", "Basic " + authorization);
         soapMessage.saveChanges();
 

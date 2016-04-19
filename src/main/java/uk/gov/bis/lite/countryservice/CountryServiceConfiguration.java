@@ -23,6 +23,9 @@ public class CountryServiceConfiguration extends Configuration {
     @NotEmpty
     private String countryListCacheRetryJobCron;
 
+    @NotEmpty
+    private String spireCredentials;
+
     @JsonProperty
     public String getSoapUrl() {
         return soapUrl;
@@ -63,11 +66,18 @@ public class CountryServiceConfiguration extends Configuration {
         this.cacheExpirySeconds = cacheExpirySeconds;
     }
 
+    @JsonProperty
     public String getCountryListCacheJobCron() {
         return countryListCacheJobCron;
     }
 
+    @JsonProperty
     public String getCountryListCacheRetryJobCron() {
         return countryListCacheRetryJobCron;
+    }
+
+    @JsonProperty
+    public String getSpireCredentials() {
+        return spireCredentials;
     }
 }
