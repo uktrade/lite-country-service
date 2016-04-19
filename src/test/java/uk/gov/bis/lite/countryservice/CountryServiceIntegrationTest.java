@@ -51,10 +51,9 @@ public class CountryServiceIntegrationTest {
     @Ignore
     public void shouldGetCountryList() throws Exception {
 
-
         Client client = new JerseyClientBuilder().build();
 
-        Response response = client.target("http://localhost:8080/countries/set/export-control")
+        Response response = client.target("http://localhost:8090/countries/set/export-control")
                 .request()
                 .get();
 
