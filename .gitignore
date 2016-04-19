@@ -1,7 +1,8 @@
 *.iml
 dependency-reduced-pom.xml
 .idea/
+.gradle/
 
 logs/
 
-target/
+build/
