@@ -5,7 +5,6 @@ import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.bis.lite.countryservice.api.Country;
@@ -48,7 +47,6 @@ public class CountryServiceIntegrationTest {
     }
 
     @Test
-    @Ignore
     public void shouldGetCountryList() throws Exception {
 
         Client client = new JerseyClientBuilder().build();
