@@ -40,8 +40,7 @@ public class CountryListTest {
     }
 
     private List<Country> createCountryList(){
-        Country country = new Country("CTRY3", "Abu Dhabi");
-        Country country2 = new Country("CTRY909", "Barbados");
-        return Arrays.asList(country, country2);
+        return Arrays.asList(new Country("CTRY3", "Abu Dhabi"), new Country("CTRY909", "Barbados"),
+                new Country("CTRY1030", "Colombia"), new Country("CTRY1771", "India"));
     }
 }
