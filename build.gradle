@@ -58,3 +58,7 @@ jar {
 build {
     dependsOn shadowJar
 }
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.12'
+}
