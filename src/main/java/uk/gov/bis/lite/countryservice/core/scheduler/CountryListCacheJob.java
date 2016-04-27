@@ -21,7 +21,7 @@ import static uk.gov.bis.lite.countryservice.core.scheduler.CountryListCacheSche
 public class CountryListCacheJob implements Job {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CountryListCacheJob.class);
-    private AtomicBoolean resetTriggerFlag = new AtomicBoolean();
+    private final AtomicBoolean resetTriggerFlag = new AtomicBoolean();
 
     static final String JOB_PARAM_NORMAL_CRON = "normalJobCron";
     static final String JOB_PARAM_RETRY_CRON = "retryJobCron";

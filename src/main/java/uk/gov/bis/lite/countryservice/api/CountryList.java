@@ -2,7 +2,6 @@ package uk.gov.bis.lite.countryservice.api;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collections;
 import java.util.List;
 
 @XmlRootElement(name = "COUNTRY_LIST")
