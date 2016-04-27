@@ -86,7 +86,7 @@ public class SpireGetCountriesClient {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             soapMessage.writeTo(outputStream);
-            return outputStream.toString();
+            return outputStream.toString("UTF-8");
         } catch(IOException | SOAPException e) {
             return null;
         }
