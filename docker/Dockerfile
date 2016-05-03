@@ -1,15 +1,18 @@
 FROM java:8
 
+ARG SERVICE_NAME
+ARG JAR_FILE
+ARG CONFIG_FILE
 ARG PORT
 
-COPY docker/lite-country-service-1.0-SNAPSHOT.jar /opt/lite-country-service/
+COPY docker/$JAR_FILE /opt/$SERVICE_NAME/
 
-COPY docker/service.yaml /opt/lite-country-service/
+COPY docker/CONFIG_FILE /opt/$SERVICE_NAME/
 
 EXPOSE $PORT
 
-WORKDIR /opt/lite-country-service
+WORKDIR /opt/$SERVICE_NAME
 
-CMD ["java", "-jar", "lite-country-service-1.0-SNAPSHOT.jar", "server", "service.yaml"]
+CMD ["java", "-jar", $JAR_FILE, "server", $CONFIG_FILE]
 
 
