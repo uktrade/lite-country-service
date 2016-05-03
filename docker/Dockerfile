@@ -13,6 +13,10 @@ EXPOSE $PORT
 
 WORKDIR /opt/$SERVICE_NAME
 
-CMD ["java", "-jar", $JAR_FILE, "server", $CONFIG_FILE]
+ENV JAR_FILE $JAR_FILE
+ENV CONFIG_FILE $CONFIG_FILE
+
+CMD java "-jar" $JAR_FILE "server" $CONFIG_FILE
+
 
 
