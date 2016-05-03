@@ -1,10 +1,12 @@
 FROM java:8
 
+ARG PORT
+
 COPY lite-country-service-1.0-SNAPSHOT.jar /opt/lite-country-service/
 
 COPY service.yaml /opt/lite-country-service/
 
-EXPOSE 8090
+EXPOSE $PORT
 
 WORKDIR /opt/lite-country-service
 
