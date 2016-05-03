@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.name.Names;
+import de.thomaskrille.dropwizard_template_config.TemplateConfigBundle;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -31,7 +32,7 @@ public class CountryServiceApplication extends Application<CountryServiceConfigu
 
     @Override
     public void initialize(Bootstrap<CountryServiceConfiguration> bootstrap) {
-
+        bootstrap.addBundle(new TemplateConfigBundle());
     }
 
     @Override
