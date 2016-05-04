@@ -8,6 +8,7 @@ node {
         sh 'cp config/$CONFIG_FILE docker'
         sh 'cp build/libs/$JAR_FILE docker'
     }
+    step([$class: 'JUnitResultArchiver', testResults: 'build/test-results/**/*.xml'])
 }
 
 stage 'dev-build-docker'
@@ -17,5 +18,6 @@ node {
         sh '/docker/docker push $IMAGE_NAME:$BUILD_NUMBER'
     }
 }
+
 
 
