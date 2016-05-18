@@ -1,0 +1,25 @@
+node {
+    withEnv(["SERVICE_NAME=${SERVICE_NAME}", "JAR_FILE=${JAR_FILE}", "CONFIG_FILE=${CONFIG_FILE}", "PORT=${PORT}", "FULL_IMAGE_NAME=registry.lite.bis.gov.uk/lite/${IMAGE_NAME}"]) {
+
+    step ([$class: 'CopyArtifact',
+          projectName: 'lite-country-service-pipeline',
+          filter: 'docker/Dockerfile',
+          selector: [$class: 'TriggeredBuildSelector', fallback: false],
+          target: 'docker']);
+
+    step ([$class: 'CopyArtifact',
+        projectName: 'lite-country-service-pipeline',
+        filter: 'docker/lite-country-service-1.0-SNAPSHOT.jar',
+        selector: [$class: 'TriggeredBuildSelector', fallback: false],
+        target: 'docker']);
+
+    step ([$class: 'CopyArtifact',
+        projectName: 'lite-country-service-pipeline',
+        selector: [$class: 'TriggeredBuildSelector', fallback: false],
+        filter: 'docker/service.yaml',
+        target: 'docker']);
+
+        sh '/docker/docker build --build-arg SERVICE_NAME=$SERVICE_NAME -f docker/Dockerfile --build-arg JAR_FILE=$JAR_FILE --build-arg CONFIG_FILE=$CONFIG_FILE --build-arg PORT=$PORT -t $FULL_IMAGE_NAME:$BUILD_NUMBER -t $FULL_IMAGE_NAME:latest .'
+        sh '/docker/docker push $FULL_IMAGE_NAME'
+    }
+}

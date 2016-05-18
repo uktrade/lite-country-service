@@ -1,0 +1,22 @@
+stage 'dev-service-build'
+
+def CONFIG_FILE = 'service.yaml'
+def JAR_FILE = 'lite-country-service-1.0-SNAPSHOT.jar'
+
+node {
+    withEnv(["CONFIG_FILE=${CONFIG_FILE}", "JAR_FILE=${JAR_FILE}"]) {
+        deleteDir()
+        git poll: true, changelog: true, credentialsId: '3173fde1-dcef-4a69-9838-36e7f1e7b8ff', url: 'https://github.com/BISDigital/lite-country-service.git'
+        sh 'chmod 777 gradlew'
+        sh './gradlew build'
+        sh 'cp config/$CONFIG_FILE docker'
+        sh 'cp build/libs/$JAR_FILE docker'
+        archive 'docker/**'
+    }
+
+    step([$class: 'JUnitResultArchiver', testResults: 'build/test-results/**/*.xml'])
+}
+
+stage 'dev-docker-build'
+build job: 'docker-build', parameters: [[$class: 'StringParameterValue', name: 'SERVICE_NAME', value: 'lite-country-service'], [$class: 'StringParameterValue', name: 'JAR_FILE', value: "${JAR_FILE}"], [$class: 'StringParameterValue', name: 'CONFIG_FILE', value: "${CONFIG_FILE}"], [$class: 'StringParameterValue', name: 'PORT', value: '8090'], [$class: 'StringParameterValue', name: 'IMAGE_NAME', value: 'country-service']]
+
