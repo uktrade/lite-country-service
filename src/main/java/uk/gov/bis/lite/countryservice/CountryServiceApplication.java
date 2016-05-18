@@ -45,7 +45,8 @@ public class CountryServiceApplication extends Application<CountryServiceConfigu
             protected void configure() {
                 bindConstant().annotatedWith(Names.named("cacheExpirySeconds")).to(configuration.getCacheExpirySeconds());
 
-                SpireGetCountriesClient spireGetCountriesClient = new SpireGetCountriesClient(configuration.getSoapUrl(),
+                SpireGetCountriesClient spireGetCountriesClient = new SpireGetCountriesClient(
+                        configuration.getSoapUrl(),
                         configuration.getSoapNamespace(),
                         configuration.getSoapAction(),
                         configuration.getSpireCredentials());
