@@ -1,0 +1,19 @@
+stage 'dev-service-build'
+
+node {
+    withEnv(["CONFIG_FILE=${CONFIG_FILE}", "JAR_FILE=${JAR_FILE}"]) {
+        deleteDir()
+        git poll: true, changelog: true, credentialsId: "${GIT_CREDENTIALS}", url: "${GIT_URL}"
+        sh 'chmod 777 gradlew'
+        sh './gradlew build'
+        sh 'cp config/$CONFIG_FILE docker'
+        sh 'cp build/libs/$JAR_FILE docker'
+        archive 'docker/**'
+    }
+
+    step([$class: 'JUnitResultArchiver', testResults: 'build/test-results/**/*.xml'])
+}
+
+stage 'dev-docker-build'
+build job: 'docker-build', parameters: [[$class: 'StringParameterValue', name: 'SERVICE_BUILD_JOB', value: "${env.JOB_NAME}"], [$class: 'StringParameterValue', name: 'SERVICE_NAME', value: "${SERVICE_NAME}"], [$class: 'StringParameterValue', name: 'JAR_FILE', value: "${JAR_FILE}"], [$class: 'StringParameterValue', name: 'CONFIG_FILE', value: "${CONFIG_FILE}"], [$class: 'StringParameterValue', name: 'PORT', value: "${PORT}"], [$class: 'StringParameterValue', name: 'IMAGE_NAME', value: "${IMAGE_NAME}"]]
+
