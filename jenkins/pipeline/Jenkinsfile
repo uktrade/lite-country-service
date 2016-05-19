@@ -1,5 +1,7 @@
-stage 'dev-service-build'
+def CONFIG_FILE = 'service.yaml'
+def JAR_FILE = 'lite-country-service-1.0-SNAPSHOT.jar'
 
+stage 'dev-service-build'
 node {
     withEnv(["CONFIG_FILE=${CONFIG_FILE}", "JAR_FILE=${JAR_FILE}"]) {
         deleteDir()
@@ -15,5 +17,11 @@ node {
 }
 
 stage 'dev-docker-build'
-build job: 'docker-build', parameters: [[$class: 'StringParameterValue', name: 'SERVICE_BUILD_JOB', value: "${env.JOB_NAME}"], [$class: 'StringParameterValue', name: 'SERVICE_NAME', value: "${SERVICE_NAME}"], [$class: 'StringParameterValue', name: 'JAR_FILE', value: "${JAR_FILE}"], [$class: 'StringParameterValue', name: 'CONFIG_FILE', value: "${CONFIG_FILE}"], [$class: 'StringParameterValue', name: 'PORT', value: "${PORT}"], [$class: 'StringParameterValue', name: 'IMAGE_NAME', value: "${IMAGE_NAME}"]]
+build job: 'docker-build', parameters: [
+    [$class: 'StringParameterValue', name: 'SERVICE_BUILD_JOB', value: "${env.JOB_NAME}"],
+    [$class: 'StringParameterValue', name: 'SERVICE_NAME', value: 'lite-country-service'],
+    [$class: 'StringParameterValue', name: 'JAR_FILE', value: "${JAR_FILE}"],
+    [$class: 'StringParameterValue', name: 'CONFIG_FILE', value: "${CONFIG_FILE}"],
+    [$class: 'StringParameterValue', name: 'IMAGE_NAME', value: 'country-service']
+]
 
