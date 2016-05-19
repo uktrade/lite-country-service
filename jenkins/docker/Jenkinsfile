@@ -1,10 +1,5 @@
 node {
-    withEnv([
-        "SERVICE_NAME=${SERVICE_NAME}",
-        "JAR_FILE=${JAR_FILE}",
-        "CONFIG_FILE=${CONFIG_FILE}",
-        "FULL_IMAGE_NAME=registry.lite.bis.gov.uk/lite/${IMAGE_NAME}"
-    ]) {
+    withEnv(["FULL_IMAGE_NAME=registry.lite.bis.gov.uk/lite/${IMAGE_NAME}"]) {
 
         deleteDir()
         step ([$class: 'CopyArtifact',
@@ -13,7 +8,7 @@ node {
             selector: [$class: 'TriggeredBuildSelector', fallback: false]
         ]);
 
-        sh '/docker/docker build --build-arg SERVICE_NAME=$SERVICE_NAME -f docker/Dockerfile --build-arg JAR_FILE=$JAR_FILE --build-arg CONFIG_FILE=$CONFIG_FILE -t $FULL_IMAGE_NAME:$BUILD_NUMBER -t $FULL_IMAGE_NAME:latest .'
+        sh '/docker/docker build -f docker/Dockerfile -t $FULL_IMAGE_NAME:$BUILD_NUMBER -t $FULL_IMAGE_NAME:latest .'
         sh '/docker/docker push $FULL_IMAGE_NAME'
     }
 }
