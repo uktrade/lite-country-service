@@ -1,6 +1,6 @@
 def CONFIG_FILE = 'service.yaml'
 def JAR_FILE = 'lite-country-service-1.0-SNAPSHOT.jar'
-def IMAGE_NAME = '$LITE_DOCKER_REGISTRY/lite/country-service'
+def IMAGE_NAME = '$LITE_DOCKER_REGISTRY/country-service'
 
 stage 'dev-service-build'
 node {
