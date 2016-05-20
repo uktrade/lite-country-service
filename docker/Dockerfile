@@ -3,11 +3,9 @@ FROM java:8
 ENV JAR_FILE lite-country-service-1.0-SNAPSHOT.jar
 ENV SERVICE_DIR /opt/lite-country-service
 
-COPY docker/$JAR_FILE $SERVICE_DIR
+COPY build/libs/$JAR_FILE $SERVICE_DIR
 
-COPY docker/service.yaml $SERVICE_DIR
-
-EXPOSE 8090
+COPY config/service.yaml $SERVICE_DIR
 
 WORKDIR $SERVICE_DIR
 
