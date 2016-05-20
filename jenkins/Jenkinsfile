@@ -1,15 +1,13 @@
 def CONFIG_FILE = 'service.yaml'
 def JAR_FILE = 'lite-country-service-1.0-SNAPSHOT.jar'
-def IMAGE_NAME = 'registry.lite.bis.gov.uk/lite/country-service'
+def IMAGE_NAME = '$LITE_DOCKER_REGISTRY/lite/country-service'
 
 stage 'dev-service-build'
 node {
-    withEnv(["CONFIG_FILE=${CONFIG_FILE}", "JAR_FILE=${JAR_FILE}"]) {
-        deleteDir()
-        git poll: true, changelog: true, credentialsId: "${GIT_CREDENTIALS}", url: "${GIT_URL}"
-        sh 'chmod 777 gradlew'
-        sh './gradlew build'
-    }
+    deleteDir()
+    git poll: true, changelog: true, credentialsId: "${GIT_CREDENTIALS}", url: "${GIT_URL}"
+    sh 'chmod 777 gradlew'
+    sh './gradlew build'
 
     step([$class: 'JUnitResultArchiver', testResults: 'build/test-results/**/*.xml'])
 }
@@ -21,3 +19,4 @@ node {
         sh '/docker/docker push $IMAGE_NAME'
     }
 }
+
