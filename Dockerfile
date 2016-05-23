@@ -5,11 +5,6 @@ ENV SERVICE_DIR /opt/lite-country-service
 
 COPY build/libs/$JAR_FILE $SERVICE_DIR
 
-COPY config/service.yaml $SERVICE_DIR
-
 WORKDIR $SERVICE_DIR
 
-CMD java "-jar" $JAR_FILE "server" service.yaml
-
-
-
+CMD java "-jar" $JAR_FILE "server" $CONFIG_FILE
