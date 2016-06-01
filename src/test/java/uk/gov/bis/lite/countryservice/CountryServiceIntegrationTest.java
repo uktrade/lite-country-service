@@ -7,7 +7,8 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import uk.gov.bis.lite.countryservice.api.Country;
+import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
+import uk.gov.bis.lite.countryservice.model.Country;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.GenericType;
@@ -28,37 +29,37 @@ import static org.junit.Assert.assertThat;
 
 public class CountryServiceIntegrationTest {
 
-    @ClassRule
-    public static final WireMockRule wireMockRule = new WireMockRule(9000);
+  @ClassRule
+  public static final WireMockRule wireMockRule = new WireMockRule(9000);
 
-    @Rule
-    public final DropwizardAppRule<CountryServiceConfiguration> RULE =
-            new DropwizardAppRule<>(CountryServiceApplication.class, resourceFilePath("service-test.yaml"));
+  @Rule
+  public final DropwizardAppRule<CountryApplicationConfiguration> RULE =
+      new DropwizardAppRule<>(CountryServiceApplication.class, resourceFilePath("service-test.yaml"));
 
-    @BeforeClass
-    public static void setUp() throws Exception {
+  @BeforeClass
+  public static void setUp() throws Exception {
 
-        stubFor(post(urlEqualTo("/spirefox4dev/fox/ispire/SPIRE_COUNTRIES"))
-                .willReturn(aResponse()
-                        .withStatus(200)
-                        .withHeader("Content-Type", "text/xml")
-                        .withBody(fixture("spire-getCountries.xml"))));
+    stubFor(post(urlEqualTo("/spirefox4dev/fox/ispire/SPIRE_COUNTRIES"))
+        .willReturn(aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", "text/xml")
+            .withBody(fixture("spire-getCountries.xml"))));
 
-    }
+  }
 
-    @Test
-    public void shouldGetCountryList() throws Exception {
+  @Test
+  public void shouldGetCountryList() throws Exception {
 
-        Client client = new JerseyClientBuilder().build();
+    Client client = new JerseyClientBuilder().build();
 
-        Response response = client.target("http://localhost:8090/countries/set/export-control")
-                .request()
-                .get();
+    Response response = client.target("http://localhost:8090/countries/set/export-control")
+        .request()
+        .get();
 
-        assertThat(response.getStatus(), is(200));
+    assertThat(response.getStatus(), is(200));
 
-        List<Country> countryList = response.readEntity(new GenericType<List<Country>>(){});
-        assertThat(countryList, is((notNullValue())));
-        assertThat(countryList, is(not(empty())));
-    }
+    List<Country> countryList = response.readEntity(new GenericType<List<Country>>() {});
+    assertThat(countryList, is((notNullValue())));
+    assertThat(countryList, is(not(empty())));
+  }
 }

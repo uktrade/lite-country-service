@@ -20,76 +20,75 @@ import java.util.Base64;
 
 public class SpireGetCountriesClient {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SpireGetCountriesClient.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SpireGetCountriesClient.class);
 
-    private final String soapUrl;
-    private final String soapNamespace;
-    private final String soapAction;
-    private final String spireCredentials;
+  private static final String SOAP_NAMESPACE = "http://www.fivium.co.uk/fox/webservices/ispire/SPIRE_COUNTRIES";
+  private static final String SOAP_PREFIX = "spire";
 
-    public SpireGetCountriesClient(String soapUrl, String soapNamespace, String soapAction, String spireCredentials) {
-        this.soapUrl = soapUrl;
-        this.soapNamespace = soapNamespace;
-        this.soapAction = soapAction;
-        this.spireCredentials = spireCredentials;
+  private final String soapUrl;
+  private final String spireCredentials;
+
+  public SpireGetCountriesClient(String soapUrl, String spireCredentials) {
+    this.soapUrl = soapUrl;
+    this.spireCredentials = spireCredentials;
+  }
+
+  public SOAPMessage executeRequest(String countrySetId) throws SOAPException, UnsupportedEncodingException {
+
+    SOAPConnection soapConnection = null;
+
+    try {
+      SOAPConnectionFactory soapConnectionFactory = SOAPConnectionFactory.newInstance();
+      soapConnection = soapConnectionFactory.createConnection();
+
+      SOAPMessage request = createRequest(countrySetId);
+      LOGGER.debug(messageAsString(request));
+
+      SOAPMessage response = soapConnection.call(request, soapUrl);
+      LOGGER.debug(messageAsString(response));
+
+      return response;
+
+    } finally {
+      if (soapConnection != null) {
+        soapConnection.close();
+      }
     }
+  }
 
-    public SOAPMessage executeRequest(String countrySetId) throws SOAPException, UnsupportedEncodingException {
+  private SOAPMessage createRequest(String countrySetId) throws SOAPException, UnsupportedEncodingException {
 
-        SOAPConnection soapConnection = null;
+    MessageFactory messageFactory = MessageFactory.newInstance();
+    SOAPMessage soapMessage = messageFactory.createMessage();
+    SOAPPart soapPart = soapMessage.getSOAPPart();
 
-        try {
-            SOAPConnectionFactory soapConnectionFactory = SOAPConnectionFactory.newInstance();
-            soapConnection = soapConnectionFactory.createConnection();
+    SOAPEnvelope envelope = soapPart.getEnvelope();
+    envelope.addNamespaceDeclaration(SOAP_PREFIX, SOAP_NAMESPACE);
 
-            SOAPMessage request = createRequest(countrySetId);
-            LOGGER.debug(messageAsString(request));
+    SOAPBody soapBody = envelope.getBody();
+    SOAPElement soapBodyElem = soapBody.addChildElement("getCountries", SOAP_PREFIX);
+    SOAPElement soapBodyElem2 = soapBodyElem.addChildElement("countrySetId");
+    soapBodyElem2.addTextNode(countrySetId);
 
-            SOAPMessage response = soapConnection.call(request, soapUrl);
-            LOGGER.debug(messageAsString(response));
+    MimeHeaders headers = soapMessage.getMimeHeaders();
+    headers.addHeader("SOAPAction", SOAP_NAMESPACE + "/getCountries");
 
-            return response;
+    String authorization = Base64.getEncoder().encodeToString(spireCredentials.getBytes("utf-8"));
+    headers.addHeader("Authorization", "Basic " + authorization);
+    soapMessage.saveChanges();
 
-        } finally {
-            if (soapConnection != null) {
-                soapConnection.close();
-            }
-        }
+    return soapMessage;
+  }
+
+
+  private static String messageAsString(SOAPMessage soapMessage) {
+    try {
+      ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+      soapMessage.writeTo(outputStream);
+      return outputStream.toString("UTF-8");
+    } catch (IOException | SOAPException e) {
+      return null;
     }
-
-    private SOAPMessage createRequest(String countrySetId) throws SOAPException, UnsupportedEncodingException {
-
-        MessageFactory messageFactory = MessageFactory.newInstance();
-        SOAPMessage soapMessage = messageFactory.createMessage();
-        SOAPPart soapPart = soapMessage.getSOAPPart();
-
-        SOAPEnvelope envelope = soapPart.getEnvelope();
-        envelope.addNamespaceDeclaration("spire", soapNamespace);
-
-        SOAPBody soapBody = envelope.getBody();
-        SOAPElement soapBodyElem = soapBody.addChildElement("getCountries", "spire");
-        SOAPElement soapBodyElem2 = soapBodyElem.addChildElement("countrySetId");
-        soapBodyElem2.addTextNode(countrySetId);
-
-        MimeHeaders headers = soapMessage.getMimeHeaders();
-        headers.addHeader("SOAPAction", soapAction + "getCompanies");
-
-        String authorization = Base64.getEncoder().encodeToString(spireCredentials.getBytes("utf-8"));
-        headers.addHeader("Authorization", "Basic " + authorization);
-        soapMessage.saveChanges();
-
-        return soapMessage;
-    }
-
-
-    private static String messageAsString(SOAPMessage soapMessage) {
-        try {
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            soapMessage.writeTo(outputStream);
-            return outputStream.toString("UTF-8");
-        } catch(IOException | SOAPException e) {
-            return null;
-        }
-    }
+  }
 
 }

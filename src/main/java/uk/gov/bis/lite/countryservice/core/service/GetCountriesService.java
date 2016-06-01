@@ -9,15 +9,15 @@ import java.util.Optional;
 
 public class GetCountriesService {
 
-    private final CountryListCache countryListCache;
+  private final CountryListCache countryListCache;
 
-    @Inject
-    public GetCountriesService(CountryListCache countryListCache) throws JAXBException {
-        this.countryListCache = countryListCache;
-    }
+  @Inject
+  public GetCountriesService(CountryListCache countryListCache) throws JAXBException {
+    this.countryListCache = countryListCache;
+  }
 
-    public Optional<CountryListEntry> getCountryList(String countrySetName) {
-        return countryListCache.get(countrySetName);
-    }
+  public Optional<CountryListEntry> getCountryList(String countrySetName) {
+    return countryListCache.get(countrySetName);
+  }
 
 }

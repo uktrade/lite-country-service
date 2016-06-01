@@ -8,7 +8,7 @@ import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.TriggerKey;
-import uk.gov.bis.lite.countryservice.CountryServiceConfiguration;
+import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
@@ -18,42 +18,42 @@ import static uk.gov.bis.lite.countryservice.core.scheduler.CountryListCacheJob.
 
 public class CountryListCacheScheduler implements Managed {
 
-    static final TriggerKey TRIGGER_KEY = TriggerKey.triggerKey("countryListCacheJobTrigger");
+  static final TriggerKey TRIGGER_KEY = TriggerKey.triggerKey("countryListCacheJobTrigger");
 
-    private final Scheduler scheduler;
-    private final CountryServiceConfiguration config;
+  private final Scheduler scheduler;
+  private final CountryApplicationConfiguration config;
 
-    @Inject
-    public CountryListCacheScheduler(Scheduler scheduler, CountryServiceConfiguration config) {
-        this.scheduler = scheduler;
-        this.config = config;
-    }
+  @Inject
+  public CountryListCacheScheduler(Scheduler scheduler, CountryApplicationConfiguration config) {
+    this.scheduler = scheduler;
+    this.config = config;
+  }
 
-    @Override
-    public void start() throws Exception {
+  @Override
+  public void start() throws Exception {
 
-        JobKey jobKey = JobKey.jobKey("countryListCacheJob");
-        JobDetail jobDetail = newJob(CountryListCacheJob.class)
-                .withIdentity(jobKey)
-                .build();
+    JobKey jobKey = JobKey.jobKey("countryListCacheJob");
+    JobDetail jobDetail = newJob(CountryListCacheJob.class)
+        .withIdentity(jobKey)
+        .build();
 
-        JobDataMap jobDataMap =  jobDetail.getJobDataMap();
-        jobDataMap.put(JOB_PARAM_NORMAL_CRON, config.getCountryListCacheJobCron());
-        jobDataMap.put(JOB_PARAM_RETRY_CRON, config.getCountryListCacheRetryJobCron());
+    JobDataMap jobDataMap = jobDetail.getJobDataMap();
+    jobDataMap.put(JOB_PARAM_NORMAL_CRON, config.getCountryListCacheJobCron());
+    jobDataMap.put(JOB_PARAM_RETRY_CRON, config.getCountryListCacheRetryJobCron());
 
-        CronTrigger trigger = newTrigger()
-                .withIdentity(TRIGGER_KEY)
-                .withSchedule(cronSchedule(config.getCountryListCacheJobCron()))
-                .build();
+    CronTrigger trigger = newTrigger()
+        .withIdentity(TRIGGER_KEY)
+        .withSchedule(cronSchedule(config.getCountryListCacheJobCron()))
+        .build();
 
-        scheduler.scheduleJob(jobDetail, trigger);
-        scheduler.start();
-        scheduler.triggerJob(jobKey);
-    }
+    scheduler.scheduleJob(jobDetail, trigger);
+    scheduler.start();
+    scheduler.triggerJob(jobKey);
+  }
 
-    @Override
-    public void stop() throws Exception {
-        scheduler.shutdown(true);
-    }
+  @Override
+  public void stop() throws Exception {
+    scheduler.shutdown(true);
+  }
 
 }

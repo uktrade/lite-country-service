@@ -1,69 +1,57 @@
 package uk.gov.bis.lite.countryservice;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.name.Names;
-import de.thomaskrille.dropwizard_template_config.TemplateConfigBundle;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
 import org.quartz.impl.StdSchedulerFactory;
+import ru.vyarus.dropwizard.guice.GuiceBundle;
+import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstaller;
+import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
+import uk.gov.bis.lite.countryservice.config.GuiceModule;
 import uk.gov.bis.lite.countryservice.core.cache.CountryListCache;
-import uk.gov.bis.lite.countryservice.core.exception.CountryServiceException;
 import uk.gov.bis.lite.countryservice.core.scheduler.CountryListCacheScheduler;
-import uk.gov.bis.lite.countryservice.core.service.SpireGetCountriesClient;
-import uk.gov.bis.lite.countryservice.resources.CountriesResource;
+import uk.gov.bis.lite.countryservice.resource.CountriesResource;
 
-import javax.xml.bind.JAXBException;
+public class CountryServiceApplication extends Application<CountryApplicationConfiguration> {
 
-public class CountryServiceApplication extends Application<CountryServiceConfiguration> {
+  private GuiceBundle<CountryApplicationConfiguration> guiceBundle;
 
-    public static void main(String[] args) throws Exception {
-        new CountryServiceApplication().run(args);
-    }
+  @Override
+  public String getName() {
+    return "country-service";
+  }
 
-    @Override
-    public String getName() {
-        return "country-service";
-    }
+  @Override
+  public void initialize(Bootstrap<CountryApplicationConfiguration> bootstrap) {
 
-    @Override
-    public void initialize(Bootstrap<CountryServiceConfiguration> bootstrap) {
-        bootstrap.addBundle(new TemplateConfigBundle());
-    }
+    guiceBundle = new GuiceBundle.Builder<CountryApplicationConfiguration>()
+        .modules(new GuiceModule())
+        .installers(ResourceInstaller.class)
+        .extensions(CountriesResource.class)
+        .build();
 
-    @Override
-    public void run(CountryServiceConfiguration configuration, Environment environment) throws JAXBException,
-            CountryServiceException,
-            SchedulerException {
+    bootstrap.addBundle(guiceBundle);
+  }
 
-        Injector injector = Guice.createInjector(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bindConstant().annotatedWith(Names.named("cacheExpirySeconds")).to(configuration.getCacheExpirySeconds());
+  @Override
+  public void run(CountryApplicationConfiguration configuration, Environment environment) throws Exception {
+    Injector injector = guiceBundle.getInjector();
 
-                SpireGetCountriesClient spireGetCountriesClient = new SpireGetCountriesClient(
-                        configuration.getSoapUrl(),
-                        configuration.getSoapNamespace(),
-                        configuration.getSoapAction(),
-                        configuration.getSpireCredentials());
+    CountryListCache countryListCache = injector.getInstance(CountryListCache.class);
 
-                bind(SpireGetCountriesClient.class).toInstance(spireGetCountriesClient);
-            }
-        });
+    // Store cache reference in scheduler context to be later retrieved from the job
+    Scheduler scheduler = new StdSchedulerFactory().getScheduler();
+    scheduler.getContext().put("countryListCache", countryListCache);
 
-        CountryListCache countryListCache = injector.getInstance(CountryListCache.class);
+    environment.lifecycle().manage(new CountryListCacheScheduler(scheduler, configuration));
 
-        // Store cache reference in scheduler context to be later retrieved from the job
-        Scheduler scheduler = new StdSchedulerFactory().getScheduler();
-        scheduler.getContext().put("countryListCache", countryListCache);
+    environment.jersey().register(injector.getInstance(CountriesResource.class));
+  }
 
-        environment.lifecycle().manage(new CountryListCacheScheduler(scheduler, configuration));
-
-        environment.jersey().register(injector.getInstance(CountriesResource.class));
-    }
+  public static void main(String[] args) throws Exception {
+    new CountryServiceApplication().run(args);
+  }
 
 }
