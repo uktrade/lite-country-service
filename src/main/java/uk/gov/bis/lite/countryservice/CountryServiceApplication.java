@@ -8,9 +8,9 @@ import org.quartz.Scheduler;
 import org.quartz.impl.StdSchedulerFactory;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
 import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstaller;
+import uk.gov.bis.lite.countryservice.cache.CountryListCache;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import uk.gov.bis.lite.countryservice.config.GuiceModule;
-import uk.gov.bis.lite.countryservice.core.cache.CountryListCache;
 import uk.gov.bis.lite.countryservice.core.scheduler.CountryListCacheScheduler;
 import uk.gov.bis.lite.countryservice.resource.CountriesResource;
 

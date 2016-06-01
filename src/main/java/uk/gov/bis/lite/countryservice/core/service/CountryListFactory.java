@@ -3,7 +3,7 @@ package uk.gov.bis.lite.countryservice.core.service;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import uk.gov.bis.lite.countryservice.core.exception.CountryServiceException;
+import uk.gov.bis.lite.countryservice.exception.CountryServiceException;
 import uk.gov.bis.lite.countryservice.model.Country;
 import uk.gov.bis.lite.countryservice.model.CountryList;
 

@@ -3,7 +3,7 @@ package uk.gov.bis.lite.countryservice.resource;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.ClassRule;
 import org.junit.Test;
-import uk.gov.bis.lite.countryservice.core.cache.CountryListEntry;
+import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
 import uk.gov.bis.lite.countryservice.core.service.GetCountriesService;
 import uk.gov.bis.lite.countryservice.model.Country;
 

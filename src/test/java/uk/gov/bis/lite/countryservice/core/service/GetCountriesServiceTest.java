@@ -5,8 +5,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.gov.bis.lite.countryservice.core.cache.CountryListCache;
-import uk.gov.bis.lite.countryservice.core.cache.CountryListEntry;
+import uk.gov.bis.lite.countryservice.cache.CountryListCache;
+import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
 import uk.gov.bis.lite.countryservice.model.Country;
 
 import java.util.Arrays;

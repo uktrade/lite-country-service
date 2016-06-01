@@ -1,13 +1,13 @@
-package uk.gov.bis.lite.countryservice.core.cache;
+package uk.gov.bis.lite.countryservice.cache;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.bis.lite.countryservice.core.exception.CountryServiceException;
 import uk.gov.bis.lite.countryservice.core.service.CountryListFactory;
 import uk.gov.bis.lite.countryservice.core.service.CountrySet;
 import uk.gov.bis.lite.countryservice.core.service.SpireGetCountriesClient;
+import uk.gov.bis.lite.countryservice.exception.CountryServiceException;
 import uk.gov.bis.lite.countryservice.model.Country;
 
 import javax.xml.soap.SOAPException;

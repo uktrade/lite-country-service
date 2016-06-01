@@ -1,8 +1,8 @@
 package uk.gov.bis.lite.countryservice.core.service;
 
 import com.google.inject.Inject;
-import uk.gov.bis.lite.countryservice.core.cache.CountryListCache;
-import uk.gov.bis.lite.countryservice.core.cache.CountryListEntry;
+import uk.gov.bis.lite.countryservice.cache.CountryListCache;
+import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
 
 import javax.xml.bind.JAXBException;
 import java.util.Optional;

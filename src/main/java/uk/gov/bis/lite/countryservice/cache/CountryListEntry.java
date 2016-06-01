@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.countryservice.core.cache;
+package uk.gov.bis.lite.countryservice.cache;
 
 import uk.gov.bis.lite.countryservice.model.Country;
 

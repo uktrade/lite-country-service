@@ -9,8 +9,8 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.bis.lite.countryservice.core.cache.CountryListCache;
-import uk.gov.bis.lite.countryservice.core.exception.CountryServiceException;
+import uk.gov.bis.lite.countryservice.cache.CountryListCache;
+import uk.gov.bis.lite.countryservice.exception.CountryServiceException;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
