@@ -5,8 +5,8 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.hibernate.validator.constraints.NotEmpty;
 import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
-import uk.gov.bis.lite.countryservice.core.service.GetCountriesService;
 import uk.gov.bis.lite.countryservice.exception.CountryServiceException;
+import uk.gov.bis.lite.countryservice.service.GetCountriesService;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

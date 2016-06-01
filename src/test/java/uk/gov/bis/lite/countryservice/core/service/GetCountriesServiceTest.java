@@ -8,6 +8,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.bis.lite.countryservice.cache.CountryListCache;
 import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
 import uk.gov.bis.lite.countryservice.model.Country;
+import uk.gov.bis.lite.countryservice.service.GetCountriesService;
 
 import java.util.Arrays;
 import java.util.List;

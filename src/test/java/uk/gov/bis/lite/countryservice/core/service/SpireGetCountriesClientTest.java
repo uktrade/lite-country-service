@@ -3,6 +3,7 @@ package uk.gov.bis.lite.countryservice.core.service;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.junit.Rule;
 import org.junit.Test;
+import uk.gov.bis.lite.countryservice.spire.SpireGetCountriesClient;
 
 import javax.xml.soap.SOAPMessage;
 

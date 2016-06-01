@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.countryservice.core.service;
+package uk.gov.bis.lite.countryservice.service;
 
 import com.google.inject.Inject;
 import uk.gov.bis.lite.countryservice.cache.CountryListCache;

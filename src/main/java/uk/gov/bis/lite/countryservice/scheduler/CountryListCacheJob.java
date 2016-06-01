@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.countryservice.core.scheduler;
+package uk.gov.bis.lite.countryservice.scheduler;
 
 import org.quartz.CronTrigger;
 import org.quartz.Job;
@@ -16,7 +16,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
-import static uk.gov.bis.lite.countryservice.core.scheduler.CountryListCacheScheduler.TRIGGER_KEY;
+import static uk.gov.bis.lite.countryservice.scheduler.CountryListCacheScheduler.TRIGGER_KEY;
 
 public class CountryListCacheJob implements Job {
 

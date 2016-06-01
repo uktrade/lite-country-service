@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.countryservice.core.scheduler;
+package uk.gov.bis.lite.countryservice.scheduler;
 
 import com.google.inject.Inject;
 import io.dropwizard.lifecycle.Managed;
@@ -13,8 +13,8 @@ import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
-import static uk.gov.bis.lite.countryservice.core.scheduler.CountryListCacheJob.JOB_PARAM_NORMAL_CRON;
-import static uk.gov.bis.lite.countryservice.core.scheduler.CountryListCacheJob.JOB_PARAM_RETRY_CRON;
+import static uk.gov.bis.lite.countryservice.scheduler.CountryListCacheJob.JOB_PARAM_NORMAL_CRON;
+import static uk.gov.bis.lite.countryservice.scheduler.CountryListCacheJob.JOB_PARAM_RETRY_CRON;
 
 public class CountryListCacheScheduler implements Managed {
 

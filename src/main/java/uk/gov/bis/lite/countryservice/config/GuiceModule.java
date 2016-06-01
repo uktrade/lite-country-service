@@ -4,7 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Names;
 import ru.vyarus.dropwizard.guice.module.support.ConfigurationAwareModule;
-import uk.gov.bis.lite.countryservice.core.service.SpireGetCountriesClient;
+import uk.gov.bis.lite.countryservice.spire.SpireGetCountriesClient;
 
 public class GuiceModule  extends AbstractModule implements ConfigurationAwareModule<CountryApplicationConfiguration> {
 

@@ -11,8 +11,8 @@ import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstal
 import uk.gov.bis.lite.countryservice.cache.CountryListCache;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import uk.gov.bis.lite.countryservice.config.GuiceModule;
-import uk.gov.bis.lite.countryservice.core.scheduler.CountryListCacheScheduler;
 import uk.gov.bis.lite.countryservice.resource.CountriesResource;
+import uk.gov.bis.lite.countryservice.scheduler.CountryListCacheScheduler;
 
 public class CountryServiceApplication extends Application<CountryApplicationConfiguration> {
 

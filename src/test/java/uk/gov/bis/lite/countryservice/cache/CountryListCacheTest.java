@@ -7,10 +7,9 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.gov.bis.lite.countryservice.core.service.CountryListFactory;
-import uk.gov.bis.lite.countryservice.core.service.SpireGetCountriesClient;
 import uk.gov.bis.lite.countryservice.exception.CountryServiceException;
 import uk.gov.bis.lite.countryservice.model.Country;
+import uk.gov.bis.lite.countryservice.spire.SpireGetCountriesClient;
 
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
@@ -34,10 +33,10 @@ public class CountryListCacheTest {
   @Mock
   private CountryListFactory countryListFactory;
 
-  private CountryListCache countryListCache;
-
   @Mock
   private SOAPMessage soapMessage;
+
+  private CountryListCache countryListCache;
 
   @Before
   public void setUp() throws Exception {
