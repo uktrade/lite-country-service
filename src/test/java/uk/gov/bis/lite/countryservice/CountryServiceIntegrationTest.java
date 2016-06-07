@@ -21,11 +21,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CountryServiceIntegrationTest {
 
@@ -44,7 +40,6 @@ public class CountryServiceIntegrationTest {
             .withStatus(200)
             .withHeader("Content-Type", "text/xml")
             .withBody(fixture("spire-getCountries.xml"))));
-
   }
 
   @Test
@@ -56,10 +51,26 @@ public class CountryServiceIntegrationTest {
         .request()
         .get();
 
-    assertThat(response.getStatus(), is(200));
+    assertThat(response.getStatus()).isEqualTo(200);
 
     List<Country> countryList = response.readEntity(new GenericType<List<Country>>() {});
-    assertThat(countryList, is((notNullValue())));
-    assertThat(countryList, is(not(empty())));
+    assertThat(countryList).isNotNull();
+    assertThat(countryList).isNotEmpty();
   }
+
+  @Test
+  public void shouldReturn404StatusIfCountrySetNamesDoesNotExist() throws Exception {
+
+    Client client = new JerseyClientBuilder().build();
+
+    Response response = client.target("http://localhost:8090/countries/set/blah")
+        .request()
+        .get();
+
+    assertThat(response.getStatus()).isEqualTo(404);
+
+    assertThat(response.readEntity(String.class))
+        .isEqualTo("The following country set name does not exist - blah");
+  }
+
 }

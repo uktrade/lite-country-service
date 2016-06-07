@@ -1,33 +1,37 @@
-package uk.gov.bis.lite.countryservice.core.service;
+package uk.gov.bis.lite.countryservice.service;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.bis.lite.countryservice.cache.CountryListCache;
 import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
+import uk.gov.bis.lite.countryservice.exception.CountrySetNotFoundException;
 import uk.gov.bis.lite.countryservice.model.Country;
-import uk.gov.bis.lite.countryservice.service.GetCountriesService;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetCountriesServiceTest {
+public class CountriesServiceTest {
 
   private static final String COUNTRY_SET_NAME = "export-control";
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
   @Mock
   private CountryListCache countryListCache;
 
   @InjectMocks
-  private GetCountriesService getCountriesService;
+  private CountriesService countriesService;
 
   @Test
   public void shouldGetCountries() throws Exception {
@@ -38,10 +42,21 @@ public class GetCountriesServiceTest {
     CountryListEntry countryListEntry = new CountryListEntry(countryList);
     when(countryListCache.get(COUNTRY_SET_NAME)).thenReturn(Optional.of(countryListEntry));
 
-    Optional<CountryListEntry> result = getCountriesService.getCountryList(COUNTRY_SET_NAME);
+    CountryListEntry result = countriesService.getCountryList(COUNTRY_SET_NAME);
 
-    assertThat(result.isPresent(), is(true));
-    assertThat(result.get().getList(), is(countryList));
+    assertThat(result.getList()).isEqualTo(countryList);
+  }
+
+  @Test
+  public void shouldThrowExceptionIfCountrySetDoesNotExist() throws Exception {
+
+    expectedException.expect(CountrySetNotFoundException.class);
+    expectedException.expectMessage("not found error");
+
+    when(countryListCache.get("blah")).thenThrow(new CountrySetNotFoundException("not found error"));
+
+    countriesService.getCountryList("blah");
+
   }
 
 }

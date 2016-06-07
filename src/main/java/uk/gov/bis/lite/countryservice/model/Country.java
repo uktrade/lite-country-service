@@ -24,36 +24,8 @@ public class Country {
     return countryRef;
   }
 
-
   public String getCountryName() {
     return countryName;
   }
 
-
-  @Override
-  public String toString() {
-    return "Country{" +
-        "countryRef='" + countryRef + '\'' +
-        ", countryName='" + countryName + '\'' +
-        '}';
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-
-    Country country = (Country) o;
-
-    if (countryRef != null ? !countryRef.equals(country.countryRef) : country.countryRef != null) return false;
-    return countryName != null ? countryName.equals(country.countryName) : country.countryName == null;
-
-  }
-
-  @Override
-  public int hashCode() {
-    int result = countryRef != null ? countryRef.hashCode() : 0;
-    result = 31 * result + (countryName != null ? countryName.hashCode() : 0);
-    return result;
-  }
 }

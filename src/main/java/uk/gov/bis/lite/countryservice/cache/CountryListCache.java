@@ -2,8 +2,7 @@ package uk.gov.bis.lite.countryservice.cache;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import uk.gov.bis.lite.countryservice.exception.CacheLoadingException;
 import uk.gov.bis.lite.countryservice.exception.CountryServiceException;
 import uk.gov.bis.lite.countryservice.model.Country;
 import uk.gov.bis.lite.countryservice.spire.SpireGetCountriesClient;
@@ -19,8 +18,6 @@ import java.util.concurrent.ConcurrentMap;
 @Singleton
 public class CountryListCache {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(CountryListCache.class);
-
   private final ConcurrentMap<String, CountryListEntry> cache = new ConcurrentHashMap<>();
 
   private final SpireGetCountriesClient spireGetCountriesClient;
@@ -32,7 +29,7 @@ public class CountryListCache {
     this.countryListFactory = countryListFactory;
   }
 
-  public void load() throws CountryServiceException {
+  public void load() throws CacheLoadingException {
     CountrySet[] countrySets = CountrySet.values();
     for (CountrySet countrySet : countrySets) {
       String countrySetName = countrySet.getName();
@@ -44,28 +41,30 @@ public class CountryListCache {
   }
 
   public Optional<CountryListEntry> get(String key) {
-    if (cache.containsKey(key)) {
-      return Optional.of(cache.get(key));
+    if (!cache.containsKey(key)) {
+      return Optional.empty();
+
     }
-    return Optional.empty();
+    return Optional.of(cache.get(key));
   }
 
-  private List<Country> loadCountries(String countrySetName) throws CountryServiceException {
-    List<Country> countryList = null;
+  private List<Country> loadCountries(String countrySetName) throws CacheLoadingException {
     try {
 
       Optional<CountrySet> countrySet = CountrySet.getByName(countrySetName);
       if (!countrySet.isPresent()) {
-        LOGGER.warn("Invalid country set name - {}", countrySetName);
+        throw new CacheLoadingException("Invalid country set name - " + countrySetName);
       } else {
         SOAPMessage soapResponse = spireGetCountriesClient.executeRequest(countrySet.get().getSpireCountrySetId());
-        countryList = countryListFactory.create(soapResponse);
+        List<Country> countryList = countryListFactory.create(soapResponse);
         countryList.sort((a, b) -> a.getCountryName().compareTo(b.getCountryName()));
+        return countryList;
       }
 
     } catch (SOAPException | UnsupportedEncodingException e) {
-      throw new CountryServiceException("Failed to retrieve country list from SPIRE.", e);
+      throw new CacheLoadingException("Failed to retrieve country list from SPIRE.", e);
     }
-    return countryList;
+
   }
+
 }

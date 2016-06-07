@@ -10,7 +10,7 @@ import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.countryservice.cache.CountryListCache;
-import uk.gov.bis.lite.countryservice.exception.CountryServiceException;
+import uk.gov.bis.lite.countryservice.exception.CacheLoadingException;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -45,7 +45,7 @@ public class CountryListCacheJob implements Job {
         resetTriggerFlag.set(false);
       }
 
-    } catch (SchedulerException | CountryServiceException e) {
+    } catch (SchedulerException | CacheLoadingException e) {
       // if cache failed to load then try again sooner
       LOGGER.error("Failed to load country list cache.", e);
 

@@ -2,7 +2,4 @@
 dependency-reduced-pom.xml
 .idea/
 .gradle/
-
-logs/
-
 build/

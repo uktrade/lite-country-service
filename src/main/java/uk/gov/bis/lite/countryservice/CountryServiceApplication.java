@@ -11,6 +11,8 @@ import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstal
 import uk.gov.bis.lite.countryservice.cache.CountryListCache;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import uk.gov.bis.lite.countryservice.config.GuiceModule;
+import uk.gov.bis.lite.countryservice.exception.CountryServiceException.ServiceExceptionMapper;
+import uk.gov.bis.lite.countryservice.exception.CountrySetNotFoundException.NotFoundExceptionMapper;
 import uk.gov.bis.lite.countryservice.resource.CountriesResource;
 import uk.gov.bis.lite.countryservice.scheduler.CountryListCacheScheduler;
 
@@ -47,7 +49,8 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
 
     environment.lifecycle().manage(new CountryListCacheScheduler(scheduler, configuration));
 
-    environment.jersey().register(injector.getInstance(CountriesResource.class));
+    environment.jersey().register(NotFoundExceptionMapper.class);
+    environment.jersey().register(ServiceExceptionMapper.class);
   }
 
   public static void main(String[] args) throws Exception {
