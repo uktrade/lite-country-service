@@ -23,7 +23,7 @@ public class CountryListFactory {
     this.jaxbContext = JAXBContext.newInstance(CountryList.class);
   }
 
-  public List<Country> create(SOAPMessage soapResponse) throws CountryServiceException {
+  public List<Country> create(SOAPMessage soapResponse) {
 
     try {
       Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();

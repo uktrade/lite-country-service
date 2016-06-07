@@ -1,9 +1,8 @@
-package uk.gov.bis.lite.countryservice.core.service;
+package uk.gov.bis.lite.countryservice.spire;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.junit.Rule;
 import org.junit.Test;
-import uk.gov.bis.lite.countryservice.spire.SpireGetCountriesClient;
 
 import javax.xml.soap.SOAPMessage;
 
@@ -12,6 +11,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static io.dropwizard.testing.FixtureHelpers.fixture;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SpireGetCountriesClientTest {
 
@@ -32,8 +32,9 @@ public class SpireGetCountriesClientTest {
             .withHeader("Content-Type", "text/xml")
             .withBody(fixture("spire-getCountries.xml"))));
 
-    SOAPMessage soapMessage = spireGetCountriesClient.executeRequest("EXPORT_CONTROL");
+    SOAPMessage response = spireGetCountriesClient.executeRequest("EXPORT_CONTROL");
 
-    soapMessage.writeTo(System.out);
+    assertThat(response).isNotNull();
   }
+
 }

@@ -7,7 +7,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.gov.bis.lite.countryservice.exception.CountryServiceException;
+import uk.gov.bis.lite.countryservice.exception.CacheLoadingException;
 import uk.gov.bis.lite.countryservice.model.Country;
 import uk.gov.bis.lite.countryservice.spire.SpireGetCountriesClient;
 
@@ -17,8 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -46,14 +45,10 @@ public class CountryListCacheTest {
   @Test
   public void shouldThrowExceptionForSOAPFailure() throws Exception {
 
-    expectedException.expect(CountryServiceException.class);
+    expectedException.expect(CacheLoadingException.class);
     expectedException.expectMessage("Failed to retrieve country list from SPIRE.");
 
     when(spireGetCountriesClient.executeRequest("EXPORT_CONTROL")).thenThrow(new SOAPException());
-
-    List<Country> countryList = Arrays.asList(new Country("1", "Finland"), new Country("2", "Brazil"),
-        new Country("3", "Albania"));
-    when(countryListFactory.create(soapMessage)).thenReturn(countryList);
 
     countryListCache.load();
   }
@@ -63,24 +58,23 @@ public class CountryListCacheTest {
 
     setupCache();
 
-    Optional<CountryListEntry> result = countryListCache.get("export-control");
+    Optional<CountryListEntry> countryListEntry = countryListCache.get("export-control");
 
-    assertThat(result.isPresent(), is(true));
-    List<Country> countryList = result.get().getList();
-    assertThat(countryList.size(), is(3));
-    assertThat(countryList.get(0).getCountryName(), is("Albania"));
-    assertThat(countryList.get(1).getCountryName(), is("Brazil"));
-    assertThat(countryList.get(2).getCountryName(), is("Finland"));
+    assertThat(countryListEntry.isPresent()).isTrue();
+
+    List<Country> countryList = countryListEntry.get().getList();
+    assertThat(countryList.size()).isEqualTo(3);
+    assertThat(countryList.get(0).getCountryName()).isEqualTo("Albania");
+    assertThat(countryList.get(1).getCountryName()).isEqualTo("Brazil");
+    assertThat(countryList.get(2).getCountryName()).isEqualTo("Finland");
   }
 
   @Test
   public void shouldGetEmptyListFromCacheWhenKeyNotFound() throws Exception {
 
-    setupCache();
+    Optional<CountryListEntry> countryListEntry = countryListCache.get("blah");
 
-    Optional<CountryListEntry> result = countryListCache.get("blah");
-
-    assertThat(result.isPresent(), is(false));
+    assertThat(countryListEntry.isPresent()).isFalse();
   }
 
   private void setupCache() throws Exception {
