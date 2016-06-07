@@ -22,11 +22,4 @@ public class CountryList {
   public List<Country> getCountries() {
     return countries;
   }
-
-  @Override
-  public String toString() {
-    return "CountryList{" +
-        "countries=" + countries +
-        '}';
-  }
 }

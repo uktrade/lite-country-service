@@ -11,16 +11,14 @@ import uk.gov.bis.lite.countryservice.exception.CountrySetNotFoundException.NotF
 import uk.gov.bis.lite.countryservice.model.Country;
 import uk.gov.bis.lite.countryservice.service.CountriesService;
 
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 public class CountriesResourceTest {
 
@@ -39,12 +37,17 @@ public class CountriesResourceTest {
     List<Country> countryList = Arrays.asList(new Country("1", "France"), new Country("2", "Spain"));
     when(countriesService.getCountryList("export-control")).thenReturn(new CountryListEntry(countryList));
 
-    List<Country> result = resources.client()
+    Response result = resources.client()
         .target("/countries/set/export-control")
         .request()
-        .get(new GenericType<List<Country>>() {});
+        .get();
 
-    assertThat(result, is(countryList));
+    assertThat(result.getStatus()).isEqualTo(200);
+
+    String expectedJson = "[{\"countryRef\":\"1\",\"countryName\":\"France\"}," +
+        "{\"countryRef\":\"2\",\"countryName\":\"Spain\"}]";
+    assertEquals(expectedJson,
+        result.readEntity(String.class), false);
   }
 
   @Test

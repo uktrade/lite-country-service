@@ -28,6 +28,7 @@ dependencies {
     testCompile ('com.github.tomakehurst:wiremock:1.58') {
         exclude group: 'org.mortbay.jetty', module: 'servlet-api'
     }
+    testCompile 'org.skyscreamer:jsonassert:1.3.0'
 }
 
 shadowJar {
