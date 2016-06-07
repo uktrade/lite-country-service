@@ -22,7 +22,7 @@ public class CountriesService {
 
     Optional<CountryListEntry> cacheEntry = countryListCache.get(countrySetName);
     if (!cacheEntry.isPresent()) {
-      throw new CountrySetNotFoundException("The following country set name does not exist in the cache - " + countrySetName);
+      throw new CountrySetNotFoundException("The following country set name does not exist - " + countrySetName);
     }
     return cacheEntry.get();
 

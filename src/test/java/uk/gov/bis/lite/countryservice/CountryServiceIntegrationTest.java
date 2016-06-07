@@ -70,7 +70,7 @@ public class CountryServiceIntegrationTest {
     assertThat(response.getStatus()).isEqualTo(404);
 
     assertThat(response.readEntity(String.class))
-        .isEqualTo("The following country set name does not exist in the cache - blah");
+        .isEqualTo("The following country set name does not exist - blah");
   }
 
 }
