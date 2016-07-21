@@ -9,6 +9,4 @@ COPY build/libs/$JAR_FILE $SERVICE_DIR
 
 WORKDIR $SERVICE_DIR
 
-USER 1000
-
 CMD java "-jar" $JAR_FILE "server" $CONFIG_FILE
