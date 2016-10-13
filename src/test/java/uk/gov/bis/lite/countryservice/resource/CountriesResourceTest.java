@@ -1,5 +1,10 @@
 package uk.gov.bis.lite.countryservice.resource;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -11,14 +16,10 @@ import uk.gov.bis.lite.countryservice.exception.CountrySetNotFoundException.NotF
 import uk.gov.bis.lite.countryservice.model.Country;
 import uk.gov.bis.lite.countryservice.service.CountriesService;
 
-import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import javax.ws.rs.core.Response;
 
 public class CountriesResourceTest {
 
@@ -34,7 +35,7 @@ public class CountriesResourceTest {
   @Test
   public void shouldGetCountriesResource() throws Exception {
 
-    List<Country> countryList = Arrays.asList(new Country("1", "France"), new Country("2", "Spain"));
+    List<Country> countryList = Arrays.asList(new Country("CTRY1", "France"), new Country("CTRY2", "Spain"));
     when(countriesService.getCountryList("export-control")).thenReturn(new CountryListEntry(countryList));
 
     Response result = resources.client()
@@ -44,8 +45,8 @@ public class CountriesResourceTest {
 
     assertThat(result.getStatus()).isEqualTo(200);
 
-    String expectedJson = "[{\"countryRef\":\"1\",\"countryName\":\"France\"}," +
-        "{\"countryRef\":\"2\",\"countryName\":\"Spain\"}]";
+    String expectedJson = "[{\"countryRef\":\"CTRY1\",\"countryName\":\"France\"}," +
+        "{\"countryRef\":\"CTRY2\",\"countryName\":\"Spain\"}]";
     assertEquals(expectedJson,
         result.readEntity(String.class), false);
   }
@@ -78,6 +79,25 @@ public class CountriesResourceTest {
     assertThat(result.getStatus()).isEqualTo(500);
 
     assertThat(result.readEntity(String.class)).isEqualTo("service error");
+  }
+
+  @Test
+  public void shouldFilterCountriesWithNegativeId() throws Exception {
+
+    List<Country> countryList = Arrays.asList(new Country("CTRY1", "France"), new Country("CTRY2", "Spain"),
+        new Country(CountriesResource.NEGATIVE_COUNTRY_ID_PREFIX + "1", "Negative"));
+    when(countriesService.getCountryList("export-control")).thenReturn(new CountryListEntry(countryList));
+
+    Response result = resources.client()
+        .target("/countries/set/export-control")
+        .request()
+        .get();
+
+    assertThat(result.getStatus()).isEqualTo(200);
+
+    String expectedJson = "[{\"countryRef\":\"CTRY1\",\"countryName\":\"France\"}," +
+        "{\"countryRef\":\"CTRY2\",\"countryName\":\"Spain\"}]";
+    assertEquals(expectedJson, result.readEntity(String.class), false);
   }
 
 }
