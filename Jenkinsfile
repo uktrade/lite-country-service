@@ -4,9 +4,9 @@ def IMAGE_NAME = '$LITE_DOCKER_REGISTRY/country-service'
 
 node('jdk8') {
     
-  sh "oc login ${OC_URL} ${OC_CREDS} --insecure-skip-tls-verify=true"
+  sh "oc login ${OC_CREDS} --insecure-skip-tls-verify=true"
   
-  sh "oc project ${OC_PROJECT}"
+  sh "oc project lite"
   
   stage 'Clean workspace'
   
