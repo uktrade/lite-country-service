@@ -3,7 +3,6 @@ package uk.gov.bis.lite.countryservice.scheduler;
 import com.google.inject.Inject;
 import io.dropwizard.lifecycle.Managed;
 import org.quartz.CronTrigger;
-import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -13,12 +12,8 @@ import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
-import static uk.gov.bis.lite.countryservice.scheduler.CountryListCacheJob.JOB_PARAM_NORMAL_CRON;
-import static uk.gov.bis.lite.countryservice.scheduler.CountryListCacheJob.JOB_PARAM_RETRY_CRON;
 
 public class CountryListCacheScheduler implements Managed {
-
-  static final TriggerKey TRIGGER_KEY = TriggerKey.triggerKey("countryListCacheJobTrigger");
 
   private final Scheduler scheduler;
   private final CountryApplicationConfiguration config;
@@ -37,9 +32,7 @@ public class CountryListCacheScheduler implements Managed {
         .withIdentity(jobKey)
         .build();
 
-    JobDataMap jobDataMap = jobDetail.getJobDataMap();
-    jobDataMap.put(JOB_PARAM_NORMAL_CRON, config.getCountryListCacheJobCron());
-    jobDataMap.put(JOB_PARAM_RETRY_CRON, config.getCountryListCacheRetryJobCron());
+    TriggerKey TRIGGER_KEY = TriggerKey.triggerKey("countryListCacheJobTrigger");
 
     CronTrigger trigger = newTrigger()
         .withIdentity(TRIGGER_KEY)

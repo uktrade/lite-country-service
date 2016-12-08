@@ -1,6 +1,5 @@
 cacheExpirySeconds: 86400
 countryListCacheJobCron: 0 0 0 * * ? # run at midnight everyday
-countryListCacheRetryJobCron: 0 0/15 * * * ? # retry every 15 mins
 soapUrl: https://spiredevalpha.fivium.co.uk/spirefox4dev/fox/ispire/SPIRE_COUNTRIES
 spireCredentials: ${env.SPIRE_CREDENTIALS}
 
