@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -32,9 +33,6 @@ public class CountryListCacheTest {
   @Mock
   private CountryListFactory countryListFactory;
 
-  @Mock
-  private SOAPMessage soapMessage;
-
   private CountryListCache countryListCache;
 
   @Before
@@ -43,22 +41,22 @@ public class CountryListCacheTest {
   }
 
   @Test
-  public void shouldThrowExceptionForSOAPFailure() throws Exception {
+  public void shouldThrowCacheLoadingExceptionForCountriesByCountrySetError() throws Exception {
 
     expectedException.expect(CacheLoadingException.class);
-    expectedException.expectMessage("Failed to retrieve country list from SPIRE.");
+    expectedException.expectMessage("Failed to retrieve country list from SPIRE {countrySetName=export-control}");
 
-    when(spireGetCountriesClient.executeRequest("EXPORT_CONTROL")).thenThrow(new SOAPException());
+    when(spireGetCountriesClient.countriesByCountrySetId("EXPORT_CONTROL")).thenThrow(new SOAPException());
 
     countryListCache.load();
   }
 
   @Test
-  public void shouldGetCountryListFromCache() throws Exception {
+  public void shouldGetCountrySetFromCache() throws Exception {
 
     setupCache();
 
-    Optional<CountryListEntry> countryListEntry = countryListCache.get("export-control");
+    Optional<CountryListEntry> countryListEntry = countryListCache.getCountriesBySetName("export-control");
 
     assertThat(countryListEntry.isPresent()).isTrue();
 
@@ -70,18 +68,60 @@ public class CountryListCacheTest {
   }
 
   @Test
-  public void shouldGetEmptyListFromCacheWhenKeyNotFound() throws Exception {
+  public void shouldGetEmptyListWhenCountrySetNotFoundInCache() throws Exception {
 
-    Optional<CountryListEntry> countryListEntry = countryListCache.get("blah");
+    Optional<CountryListEntry> countryListEntry = countryListCache.getCountriesBySetName("blah");
+
+    assertThat(countryListEntry.isPresent()).isFalse();
+  }
+
+  @Test
+  public void shouldThrowCacheLoadingExceptionForCountriesByCountryGroupIdError() throws Exception {
+
+    expectedException.expect(CacheLoadingException.class);
+    expectedException.expectMessage("Failed to retrieve country list from SPIRE {countryGroupName=eu}");
+
+    when(spireGetCountriesClient.countriesByCountryGroupId("EU")).thenThrow(new SOAPException());
+
+    countryListCache.load();
+  }
+
+  @Test
+  public void shouldGetCountryGroupFromCache() throws Exception {
+
+    setupCache();
+
+    Optional<CountryListEntry> countryListEntry = countryListCache.getCountriesByGroupName("eu");
+
+    assertThat(countryListEntry.isPresent()).isTrue();
+
+    List<Country> countryList = countryListEntry.get().getList();
+    assertThat(countryList.size()).isEqualTo(3);
+    assertThat(countryList.get(0).getCountryName()).isEqualTo("France");
+    assertThat(countryList.get(1).getCountryName()).isEqualTo("Germany");
+    assertThat(countryList.get(2).getCountryName()).isEqualTo("Sweden");
+  }
+
+  @Test
+  public void shouldGetEmptyListWhenCountryGroupNotFoundInCache() throws Exception {
+
+    Optional<CountryListEntry> countryListEntry = countryListCache.getCountriesByGroupName("blah");
 
     assertThat(countryListEntry.isPresent()).isFalse();
   }
 
   private void setupCache() throws Exception {
-    when(spireGetCountriesClient.executeRequest("EXPORT_CONTROL")).thenReturn(soapMessage);
+    SOAPMessage countrySetSoapMessage = mock(SOAPMessage.class);
+    SOAPMessage countryGroupSoapMessage = mock(SOAPMessage.class);
 
-    List<Country> countryList = Arrays.asList(new Country("1", "Finland"), new Country("2", "Brazil"), new Country("3", "Albania"));
-    when(countryListFactory.create(soapMessage)).thenReturn(countryList);
+    when(spireGetCountriesClient.countriesByCountrySetId("EXPORT_CONTROL")).thenReturn(countrySetSoapMessage);
+    when(spireGetCountriesClient.countriesByCountryGroupId("EU")).thenReturn(countryGroupSoapMessage);
+
+    when(countryListFactory.create(countrySetSoapMessage))
+      .thenReturn(Arrays.asList(new Country("1", "Finland"), new Country("2", "Brazil"), new Country("3", "Albania")));
+
+    when(countryListFactory.create(countryGroupSoapMessage))
+      .thenReturn(Arrays.asList(new Country("1", "Sweden"), new Country("2", "France"), new Country("3", "Germany")));
 
     countryListCache.load();
   }

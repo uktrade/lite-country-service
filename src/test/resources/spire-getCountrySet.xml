@@ -1,0 +1,64 @@
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://www.fivium.co.uk/fox/webservices/ispire/SPIRE_COUNTRIES">
+    <soap:Header/>
+    <soap:Body>
+        <ns:getCountriesResponse>
+            <COUNTRY_LIST>
+                <COUNTRY>
+                    <COUNTRY_REF>CTRY3</COUNTRY_REF>
+                    <COUNTRY_NAME>Abu Dhabi</COUNTRY_NAME>
+                    <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
+                </COUNTRY>
+                <COUNTRY>
+                    <COUNTRY_REF>CTRY4</COUNTRY_REF>
+                    <COUNTRY_NAME>Afghanistan</COUNTRY_NAME>
+                    <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
+                </COUNTRY>
+                <COUNTRY>
+                    <COUNTRY_REF>CTRY5</COUNTRY_REF>
+                    <COUNTRY_NAME>Ajman</COUNTRY_NAME>
+                    <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
+                </COUNTRY>
+                <COUNTRY>
+                    <COUNTRY_REF>CTRY6</COUNTRY_REF>
+                    <COUNTRY_NAME>Aland Islands</COUNTRY_NAME>
+                    <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
+                </COUNTRY>
+                <COUNTRY>
+                    <COUNTRY_REF>CTRY292</COUNTRY_REF>
+                    <COUNTRY_NAME>Albania</COUNTRY_NAME>
+                    <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
+                </COUNTRY>
+                <COUNTRY>
+                    <COUNTRY_REF>CTRY2313</COUNTRY_REF>
+                    <COUNTRY_NAME>Alderney</COUNTRY_NAME>
+                    <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
+                </COUNTRY>
+                <COUNTRY>
+                    <COUNTRY_REF>CTRY293</COUNTRY_REF>
+                    <COUNTRY_NAME>Algeria</COUNTRY_NAME>
+                    <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
+                </COUNTRY>
+                <COUNTRY>
+                    <COUNTRY_REF>CTRY-2</COUNTRY_REF>
+                    <COUNTRY_NAME>All Countries</COUNTRY_NAME>
+                    <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
+                </COUNTRY>
+                <COUNTRY>
+                    <COUNTRY_REF>CTRY11</COUNTRY_REF>
+                    <COUNTRY_NAME>American Samoa</COUNTRY_NAME>
+                    <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
+                </COUNTRY>
+                <COUNTRY>
+                    <COUNTRY_REF>CTRY12</COUNTRY_REF>
+                    <COUNTRY_NAME>Andorra</COUNTRY_NAME>
+                    <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
+                </COUNTRY>
+                <COUNTRY>
+                    <COUNTRY_REF>CTRY477</COUNTRY_REF>
+                    <COUNTRY_NAME>Angola</COUNTRY_NAME>
+                    <COUNTRY_SET_ID>EXPORT_CONTROL</COUNTRY_SET_ID>
+                </COUNTRY>
+            </COUNTRY_LIST>
+        </ns:getCountriesResponse>
+    </soap:Body>
+</soap:Envelope>

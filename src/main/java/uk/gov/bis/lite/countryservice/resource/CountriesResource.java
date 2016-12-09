@@ -37,18 +37,31 @@ public class CountriesResource {
   @Path("set/{countrySetName}")
   @Timed // measures the duration of requests to a resource
   public Response getCountryList(@PathParam("countrySetName") @NotEmpty String countrySetName) {
-    CountryListEntry countryListEntry = countriesService.getCountryList(countrySetName);
+    CountryListEntry countryListEntry = countriesService.getCountrySet(countrySetName);
 
+    return buildResponse(countryListEntry);
+  }
+
+  @GET
+  @Path("group/{groupName}")
+  @Timed // measures the duration of requests to a resource
+  public Response getCountryGroups(@PathParam("groupName") @NotEmpty String groupName) {
+    CountryListEntry countryListEntry = countriesService.getCountryGroup(groupName);
+
+    return buildResponse(countryListEntry);
+  }
+
+  private Response buildResponse(CountryListEntry countryListEntry) {
     //Filter "negative" country IDs
     List<Country> countryList = countryListEntry.getList()
-        .stream()
-        .filter(e -> !e.getCountryRef().startsWith(NEGATIVE_COUNTRY_ID_PREFIX))
-        .collect(Collectors.toList());
+      .stream()
+      .filter(e -> !e.getCountryRef().startsWith(NEGATIVE_COUNTRY_ID_PREFIX))
+      .collect(Collectors.toList());
 
     return Response.ok()
-        .entity(countryList)
-        .cacheControl(getCacheControl(countryListEntry.getTimeStamp()))
-        .build();
+      .entity(countryList)
+      .cacheControl(getCacheControl(countryListEntry.getTimeStamp()))
+      .build();
   }
 
   private CacheControl getCacheControl(long timestamp) {

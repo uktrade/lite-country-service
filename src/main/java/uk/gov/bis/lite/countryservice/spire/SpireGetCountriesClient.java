@@ -33,7 +33,16 @@ public class SpireGetCountriesClient {
     this.spireCredentials = spireCredentials;
   }
 
-  public SOAPMessage executeRequest(String countrySetId) throws SOAPException, UnsupportedEncodingException {
+  public SOAPMessage countriesByCountrySetId(String countrySetId) throws UnsupportedEncodingException, SOAPException {
+    return executeRequest("getCountries", "countrySetId", countrySetId);
+  }
+
+  public SOAPMessage countriesByCountryGroupId(String countryGroupId) throws UnsupportedEncodingException, SOAPException {
+    return executeRequest("getCountries", "countryGroupId", countryGroupId);
+  }
+
+  private SOAPMessage executeRequest(String requestName, String elementName, String elementValue)
+    throws SOAPException, UnsupportedEncodingException {
 
     SOAPConnection soapConnection = null;
 
@@ -41,7 +50,7 @@ public class SpireGetCountriesClient {
       SOAPConnectionFactory soapConnectionFactory = SOAPConnectionFactory.newInstance();
       soapConnection = soapConnectionFactory.createConnection();
 
-      SOAPMessage request = createRequest(countrySetId);
+      SOAPMessage request = createRequest(requestName, elementName, elementValue);
       LOGGER.debug(messageAsString(request));
 
       SOAPMessage response = soapConnection.call(request, soapUrl);
@@ -56,7 +65,8 @@ public class SpireGetCountriesClient {
     }
   }
 
-  private SOAPMessage createRequest(String countrySetId) throws SOAPException, UnsupportedEncodingException {
+  private SOAPMessage createRequest(String requestName, String elementName, String elementValue)
+    throws SOAPException, UnsupportedEncodingException {
 
     MessageFactory messageFactory = MessageFactory.newInstance();
     SOAPMessage soapMessage = messageFactory.createMessage();
@@ -66,12 +76,12 @@ public class SpireGetCountriesClient {
     envelope.addNamespaceDeclaration(SOAP_PREFIX, SOAP_NAMESPACE);
 
     SOAPBody soapBody = envelope.getBody();
-    SOAPElement soapBodyElem = soapBody.addChildElement("getCountries", SOAP_PREFIX);
-    SOAPElement soapBodyElem2 = soapBodyElem.addChildElement("countrySetId");
-    soapBodyElem2.addTextNode(countrySetId);
+    SOAPElement soapBodyElem = soapBody.addChildElement(requestName, SOAP_PREFIX);
+    SOAPElement soapBodyElem2 = soapBodyElem.addChildElement(elementName);
+    soapBodyElem2.addTextNode(elementValue);
 
     MimeHeaders headers = soapMessage.getMimeHeaders();
-    headers.addHeader("SOAPAction", SOAP_NAMESPACE + "/getCountries");
+    headers.addHeader("SOAPAction", SOAP_NAMESPACE + "/" + requestName);
 
     String authorization = Base64.getEncoder().encodeToString(spireCredentials.getBytes("utf-8"));
     headers.addHeader("Authorization", "Basic " + authorization);
@@ -79,7 +89,6 @@ public class SpireGetCountriesClient {
 
     return soapMessage;
   }
-
 
   private static String messageAsString(SOAPMessage soapMessage) {
     try {

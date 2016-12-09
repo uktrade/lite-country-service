@@ -12,7 +12,7 @@ import uk.gov.bis.lite.countryservice.cache.CountryListCache;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import uk.gov.bis.lite.countryservice.config.GuiceModule;
 import uk.gov.bis.lite.countryservice.exception.CountryServiceException.ServiceExceptionMapper;
-import uk.gov.bis.lite.countryservice.exception.CountrySetNotFoundException.NotFoundExceptionMapper;
+import uk.gov.bis.lite.countryservice.exception.CountriesNotFoundException.NotFoundExceptionMapper;
 import uk.gov.bis.lite.countryservice.resource.CountriesResource;
 import uk.gov.bis.lite.countryservice.scheduler.CountryListCacheScheduler;
 

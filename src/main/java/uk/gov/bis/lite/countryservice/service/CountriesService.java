@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import uk.gov.bis.lite.countryservice.cache.CountryListCache;
 import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
-import uk.gov.bis.lite.countryservice.exception.CountrySetNotFoundException;
+import uk.gov.bis.lite.countryservice.exception.CountriesNotFoundException;
 
 import java.util.Optional;
 
@@ -18,14 +18,22 @@ public class CountriesService {
     this.countryListCache = countryListCache;
   }
 
-  public CountryListEntry getCountryList(String countrySetName) {
+  public CountryListEntry getCountrySet(String countrySetName) {
 
-    Optional<CountryListEntry> cacheEntry = countryListCache.get(countrySetName);
+    Optional<CountryListEntry> cacheEntry = countryListCache.getCountriesBySetName(countrySetName);
     if (!cacheEntry.isPresent()) {
-      throw new CountrySetNotFoundException("The following country set name does not exist - " + countrySetName);
+      throw new CountriesNotFoundException("The following country set does not exist in the cache - " + countrySetName);
     }
     return cacheEntry.get();
 
+  }
+
+  public CountryListEntry getCountryGroup(String groupName) {
+    Optional<CountryListEntry> cacheEntry = countryListCache.getCountriesByGroupName(groupName);
+    if (!cacheEntry.isPresent()) {
+      throw new CountriesNotFoundException("The following country group does not exist in the cache - " + groupName);
+    }
+    return cacheEntry.get();
   }
 
 }

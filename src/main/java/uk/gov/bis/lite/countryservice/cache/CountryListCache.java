@@ -18,6 +18,9 @@ import java.util.concurrent.ConcurrentMap;
 @Singleton
 public class CountryListCache {
 
+  private static final String COUNTRY_GROUP_CACHE_KEY = "countryGroup";
+  private static final String COUNTRY_SET_CACHE_KEY = "countrySet";
+
   private final ConcurrentMap<String, CountryListEntry> cache = new ConcurrentHashMap<>();
 
   private final SpireGetCountriesClient spireGetCountriesClient;
@@ -30,17 +33,39 @@ public class CountryListCache {
   }
 
   public void load() throws CacheLoadingException {
+
+    // Load country sets
     CountrySet[] countrySets = CountrySet.values();
     for (CountrySet countrySet : countrySets) {
       String countrySetName = countrySet.getName();
-      List<Country> countries = loadCountries(countrySetName);
+      List<Country> countries = loadCountriesByCountrySetName(countrySetName);
       if (countries != null) {
-        cache.put(countrySetName, new CountryListEntry(countries));
+        cache.put(getCountrySetCacheKey(countrySetName), new CountryListEntry(countries));
+      }
+    }
+
+    // Load country groups
+    CountryGroup[] countryGroups = CountryGroup.values();
+    for (CountryGroup countryGroup : countryGroups) {
+      String countryGroupName = countryGroup.getName();
+      List<Country> countries = loadCountriesByCountryGroupName(countryGroupName);
+      if (countries != null) {
+        cache.put(getCountryGroupCacheKey(countryGroupName), new CountryListEntry(countries));
       }
     }
   }
 
-  public Optional<CountryListEntry> get(String key) {
+  public Optional<CountryListEntry> getCountriesBySetName(String key) {
+    String cacheKey = getCountrySetCacheKey(key);
+    return getCountries(cacheKey);
+  }
+
+  public Optional<CountryListEntry> getCountriesByGroupName(String key) {
+    String cacheKey = getCountryGroupCacheKey(key);
+    return getCountries(cacheKey);
+  }
+
+  private Optional<CountryListEntry> getCountries(String key) {
     if (!cache.containsKey(key)) {
       return Optional.empty();
 
@@ -48,23 +73,51 @@ public class CountryListCache {
     return Optional.of(cache.get(key));
   }
 
-  private List<Country> loadCountries(String countrySetName) throws CacheLoadingException {
+  private List<Country> loadCountriesByCountrySetName(String countrySetName) throws CacheLoadingException {
     try {
-
       Optional<CountrySet> countrySet = CountrySet.getByName(countrySetName);
       if (!countrySet.isPresent()) {
         throw new CacheLoadingException("Invalid country set name - " + countrySetName);
       } else {
-        SOAPMessage soapResponse = spireGetCountriesClient.executeRequest(countrySet.get().getSpireCountrySetId());
-        List<Country> countryList = countryListFactory.create(soapResponse);
-        countryList.sort((a, b) -> a.getCountryName().compareTo(b.getCountryName()));
-        return countryList;
+        SOAPMessage soapResponse = spireGetCountriesClient.countriesByCountrySetId(countrySet.get().getSpireCountrySetId());
+        return getCountries(soapResponse);
       }
 
     } catch (SOAPException | UnsupportedEncodingException e) {
-      throw new CacheLoadingException("Failed to retrieve country list from SPIRE.", e);
+      throw new CacheLoadingException("Failed to retrieve country list from SPIRE {countrySetName=" + countrySetName + "}", e);
     }
 
+  }
+
+  private List<Country> loadCountriesByCountryGroupName(String countryGroupName) throws CacheLoadingException {
+    try {
+      Optional<CountryGroup> countryGroup = CountryGroup.getByName(countryGroupName);
+      if (!countryGroup.isPresent()) {
+        throw new CacheLoadingException("Invalid country group name - " + countryGroupName);
+      } else {
+        SOAPMessage soapResponse = spireGetCountriesClient.countriesByCountryGroupId(countryGroup.get().getSpireCountryGroupId());
+        return getCountries(soapResponse);
+      }
+
+    } catch (SOAPException | UnsupportedEncodingException e) {
+      throw new CacheLoadingException("Failed to retrieve country list from SPIRE {countryGroupName=" + countryGroupName + "}", e);
+    }
+  }
+
+  private List<Country> getCountries(SOAPMessage soapResponse) {
+    List<Country> countryList = countryListFactory.create(soapResponse);
+    if (!countryList.isEmpty()) {
+      countryList.sort((a, b) -> a.getCountryName().compareTo(b.getCountryName()));
+    }
+    return countryList;
+  }
+
+  private String getCountryGroupCacheKey(String key) {
+    return COUNTRY_GROUP_CACHE_KEY + "." + key;
+  }
+
+  private String getCountrySetCacheKey(String key) {
+    return COUNTRY_SET_CACHE_KEY + "." + key;
   }
 
 }

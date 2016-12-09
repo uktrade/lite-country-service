@@ -11,8 +11,8 @@ import org.junit.Test;
 import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
 import uk.gov.bis.lite.countryservice.exception.CountryServiceException;
 import uk.gov.bis.lite.countryservice.exception.CountryServiceException.ServiceExceptionMapper;
-import uk.gov.bis.lite.countryservice.exception.CountrySetNotFoundException;
-import uk.gov.bis.lite.countryservice.exception.CountrySetNotFoundException.NotFoundExceptionMapper;
+import uk.gov.bis.lite.countryservice.exception.CountriesNotFoundException;
+import uk.gov.bis.lite.countryservice.exception.CountriesNotFoundException.NotFoundExceptionMapper;
 import uk.gov.bis.lite.countryservice.model.Country;
 import uk.gov.bis.lite.countryservice.service.CountriesService;
 
@@ -33,10 +33,10 @@ public class CountriesResourceTest {
       .build();
 
   @Test
-  public void shouldGetCountriesResource() throws Exception {
+  public void shouldGetCountrySetResource() throws Exception {
 
     List<Country> countryList = Arrays.asList(new Country("CTRY1", "France"), new Country("CTRY2", "Spain"));
-    when(countriesService.getCountryList("export-control")).thenReturn(new CountryListEntry(countryList));
+    when(countriesService.getCountrySet("export-control")).thenReturn(new CountryListEntry(countryList));
 
     Response result = resources.client()
         .target("/countries/set/export-control")
@@ -52,9 +52,28 @@ public class CountriesResourceTest {
   }
 
   @Test
+  public void shouldGetCountryGroupResource() throws Exception {
+
+    List<Country> countryList = Arrays.asList(new Country("CTRY1", "France"), new Country("CTRY2", "Spain"));
+    when(countriesService.getCountryGroup("eu")).thenReturn(new CountryListEntry(countryList));
+
+    Response result = resources.client()
+      .target("/countries/group/eu")
+      .request()
+      .get();
+
+    assertThat(result.getStatus()).isEqualTo(200);
+
+    String expectedJson = "[{\"countryRef\":\"CTRY1\",\"countryName\":\"France\"}," +
+      "{\"countryRef\":\"CTRY2\",\"countryName\":\"Spain\"}]";
+    assertEquals(expectedJson,
+      result.readEntity(String.class), false);
+  }
+
+  @Test
   public void shouldReturn404StatusCodeWhenControlCodeNotFound() throws Exception {
 
-    when(countriesService.getCountryList("blah")).thenThrow(new CountrySetNotFoundException("not found error"));
+    when(countriesService.getCountrySet("blah")).thenThrow(new CountriesNotFoundException("not found error"));
 
     Response result = resources.client()
         .target("/countries/set/blah")
@@ -69,7 +88,7 @@ public class CountriesResourceTest {
   @Test
   public void shouldReturn500StatusCodeForServiceException() throws Exception {
 
-    when(countriesService.getCountryList("blah")).thenThrow(new CountryServiceException("service error", null));
+    when(countriesService.getCountrySet("blah")).thenThrow(new CountryServiceException("service error", null));
 
     Response result = resources.client()
         .target("/countries/set/blah")
@@ -86,7 +105,7 @@ public class CountriesResourceTest {
 
     List<Country> countryList = Arrays.asList(new Country("CTRY1", "France"), new Country("CTRY2", "Spain"),
         new Country(CountriesResource.NEGATIVE_COUNTRY_ID_PREFIX + "1", "Negative"));
-    when(countriesService.getCountryList("export-control")).thenReturn(new CountryListEntry(countryList));
+    when(countriesService.getCountrySet("export-control")).thenReturn(new CountryListEntry(countryList));
 
     Response result = resources.client()
         .target("/countries/set/export-control")
