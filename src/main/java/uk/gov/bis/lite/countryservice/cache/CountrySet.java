@@ -24,8 +24,4 @@ public enum CountrySet {
     return spireCountrySetId;
   }
 
-  public static Optional<CountrySet> getByName(String name) {
-    return Arrays.stream(CountrySet.values()).filter(c -> c.getName().equals(name)).findFirst();
-  }
-
 }

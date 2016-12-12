@@ -31,9 +31,6 @@ public class CountryListCacheTest {
   @Mock
   private SpireRequest spireRequest;
 
-  @Mock
-  private CountryListFactory countryListFactory;
-
   private CountryListCache countryListCache;
 
   @Before

@@ -5,7 +5,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import uk.gov.bis.lite.common.spire.client.SpireRequest;
 import uk.gov.bis.lite.countryservice.api.CountryView;
-import uk.gov.bis.lite.countryservice.exception.CacheLoadingException;
 import uk.gov.bis.lite.countryservice.exception.CountryServiceException;
 import uk.gov.bis.lite.countryservice.spire.SpireCountriesClient;
 import uk.gov.bis.lite.countryservice.spire.model.SpireCountry;
@@ -31,7 +30,7 @@ public class CountryListCache {
     this.spireCountriesClient = spireCountriesClient;
   }
 
-  public void load() throws CacheLoadingException {
+  public void load() {
     // Load country sets
     CountrySet[] countrySets = CountrySet.values();
     for (CountrySet countrySet : countrySets) {
@@ -71,14 +70,14 @@ public class CountryListCache {
     return Optional.of(cache.get(key));
   }
 
-  private List<CountryView> loadCountriesByCountrySetId(String countrySetId) throws CacheLoadingException {
+  private List<CountryView> loadCountriesByCountrySetId(String countrySetId) {
 
     SpireRequest request = spireCountriesClient.createRequest();
     request.addChild("countrySetId", countrySetId);
     return getCountriesFromSpire(request);
   }
 
-  private List<CountryView> loadCountriesByCountryGroupId(String countryGroupId) throws CacheLoadingException {
+  private List<CountryView> loadCountriesByCountryGroupId(String countryGroupId) {
 
 
     SpireRequest request = spireCountriesClient.createRequest();

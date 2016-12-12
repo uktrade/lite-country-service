@@ -36,7 +36,6 @@ public class CountryApplicationConfiguration extends Configuration {
     return countryListCacheJobCron;
   }
 
-
   public String getSpireClientUserName() {
     return spireClientUserName;
   }
