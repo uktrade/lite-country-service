@@ -8,10 +8,6 @@ import javax.validation.constraints.NotNull;
 
 public class CountryApplicationConfiguration extends Configuration {
 
-  @NotEmpty
-  @JsonProperty
-  private String soapUrl;
-
   @NotNull
   @JsonProperty
   private Integer cacheExpirySeconds;
@@ -22,11 +18,15 @@ public class CountryApplicationConfiguration extends Configuration {
 
   @NotEmpty
   @JsonProperty
-  private String spireCredentials;
+  private String spireClientUserName;
 
-  public String getSoapUrl() {
-    return soapUrl;
-  }
+  @NotEmpty
+  @JsonProperty
+  private String spireClientPassword;
+
+  @NotEmpty
+  @JsonProperty
+  private String spireClientUrl;
 
   public Integer getCacheExpirySeconds() {
     return cacheExpirySeconds;
@@ -36,7 +36,16 @@ public class CountryApplicationConfiguration extends Configuration {
     return countryListCacheJobCron;
   }
 
-  public String getSpireCredentials() {
-    return spireCredentials;
+
+  public String getSpireClientUserName() {
+    return spireClientUserName;
+  }
+
+  public String getSpireClientPassword() {
+    return spireClientPassword;
+  }
+
+  public String getSpireClientUrl() {
+    return spireClientUrl;
   }
 }

@@ -1,19 +1,20 @@
 package uk.gov.bis.lite.countryservice.cache;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import uk.gov.bis.lite.common.spire.client.SpireRequest;
+import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.countryservice.exception.CacheLoadingException;
 import uk.gov.bis.lite.countryservice.exception.CountryServiceException;
-import uk.gov.bis.lite.countryservice.model.Country;
-import uk.gov.bis.lite.countryservice.spire.SpireGetCountriesClient;
+import uk.gov.bis.lite.countryservice.spire.model.SpireCountry;
+import uk.gov.bis.lite.countryservice.spire.SpireCountriesClient;
 
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
 
 @Singleton
 public class CountryListCache {
@@ -23,22 +24,19 @@ public class CountryListCache {
 
   private final ConcurrentMap<String, CountryListEntry> cache = new ConcurrentHashMap<>();
 
-  private final SpireGetCountriesClient spireGetCountriesClient;
-  private final CountryListFactory countryListFactory;
+  private final SpireCountriesClient spireCountriesClient;
 
   @Inject
-  public CountryListCache(SpireGetCountriesClient spireGetCountriesClient, CountryListFactory countryListFactory) throws CountryServiceException {
-    this.spireGetCountriesClient = spireGetCountriesClient;
-    this.countryListFactory = countryListFactory;
+  public CountryListCache(SpireCountriesClient spireCountriesClient) throws CountryServiceException {
+    this.spireCountriesClient = spireCountriesClient;
   }
 
   public void load() throws CacheLoadingException {
-
     // Load country sets
     CountrySet[] countrySets = CountrySet.values();
     for (CountrySet countrySet : countrySets) {
       String countrySetName = countrySet.getName();
-      List<Country> countries = loadCountriesByCountrySetName(countrySetName);
+      List<CountryView> countries = loadCountriesByCountrySetName(countrySetName);
       if (countries != null) {
         cache.put(getCountrySetCacheKey(countrySetName), new CountryListEntry(countries));
       }
@@ -48,7 +46,7 @@ public class CountryListCache {
     CountryGroup[] countryGroups = CountryGroup.values();
     for (CountryGroup countryGroup : countryGroups) {
       String countryGroupName = countryGroup.getName();
-      List<Country> countries = loadCountriesByCountryGroupName(countryGroupName);
+      List<CountryView> countries = loadCountriesByCountryGroupName(countryGroupName);
       if (countries != null) {
         cache.put(getCountryGroupCacheKey(countryGroupName), new CountryListEntry(countries));
       }
@@ -57,15 +55,15 @@ public class CountryListCache {
 
   public Optional<CountryListEntry> getCountriesBySetName(String key) {
     String cacheKey = getCountrySetCacheKey(key);
-    return getCountries(cacheKey);
+    return getCountriesFromCache(cacheKey);
   }
 
   public Optional<CountryListEntry> getCountriesByGroupName(String key) {
     String cacheKey = getCountryGroupCacheKey(key);
-    return getCountries(cacheKey);
+    return getCountriesFromCache(cacheKey);
   }
 
-  private Optional<CountryListEntry> getCountries(String key) {
+  private Optional<CountryListEntry> getCountriesFromCache(String key) {
     if (!cache.containsKey(key)) {
       return Optional.empty();
 
@@ -73,43 +71,38 @@ public class CountryListCache {
     return Optional.of(cache.get(key));
   }
 
-  private List<Country> loadCountriesByCountrySetName(String countrySetName) throws CacheLoadingException {
-    try {
-      Optional<CountrySet> countrySet = CountrySet.getByName(countrySetName);
-      if (!countrySet.isPresent()) {
-        throw new CacheLoadingException("Invalid country set name - " + countrySetName);
-      } else {
-        SOAPMessage soapResponse = spireGetCountriesClient.countriesByCountrySetId(countrySet.get().getSpireCountrySetId());
-        return getCountries(soapResponse);
-      }
+  private List<CountryView> loadCountriesByCountrySetName(String countrySetName) throws CacheLoadingException {
 
-    } catch (SOAPException | UnsupportedEncodingException e) {
-      throw new CacheLoadingException("Failed to retrieve country list from SPIRE {countrySetName=" + countrySetName + "}", e);
+    Optional<CountrySet> countrySet = CountrySet.getByName(countrySetName);
+    if (!countrySet.isPresent()) {
+      throw new CacheLoadingException("Invalid country set name - " + countrySetName);
+    } else {
+      SpireRequest request = spireCountriesClient.createRequest();
+      request.addChild("countrySetId", countrySet.get().getSpireCountrySetId());
+      return getCountriesFromSpire(request);
     }
 
   }
 
-  private List<Country> loadCountriesByCountryGroupName(String countryGroupName) throws CacheLoadingException {
-    try {
-      Optional<CountryGroup> countryGroup = CountryGroup.getByName(countryGroupName);
-      if (!countryGroup.isPresent()) {
-        throw new CacheLoadingException("Invalid country group name - " + countryGroupName);
-      } else {
-        SOAPMessage soapResponse = spireGetCountriesClient.countriesByCountryGroupId(countryGroup.get().getSpireCountryGroupId());
-        return getCountries(soapResponse);
-      }
+  private List<CountryView> loadCountriesByCountryGroupName(String countryGroupName) throws CacheLoadingException {
 
-    } catch (SOAPException | UnsupportedEncodingException e) {
-      throw new CacheLoadingException("Failed to retrieve country list from SPIRE {countryGroupName=" + countryGroupName + "}", e);
+    Optional<CountryGroup> countryGroup = CountryGroup.getByName(countryGroupName);
+    if (!countryGroup.isPresent()) {
+      throw new CacheLoadingException("Invalid country group name - " + countryGroupName);
+    } else {
+      SpireRequest request = spireCountriesClient.createRequest();
+      request.addChild("countryGroupId", countryGroup.get().getSpireCountryGroupId());
+      return getCountriesFromSpire(request);
     }
+
   }
 
-  private List<Country> getCountries(SOAPMessage soapResponse) {
-    List<Country> countryList = countryListFactory.create(soapResponse);
-    if (!countryList.isEmpty()) {
-      countryList.sort((a, b) -> a.getCountryName().compareTo(b.getCountryName()));
+  private List<CountryView> getCountriesFromSpire(SpireRequest request) {
+    List<CountryView> countries = spireCountriesClient.sendRequest(request).stream().map(this::getCountryView).collect(Collectors.toList());
+    if (!countries.isEmpty()) {
+      countries.sort((a, b) -> a.getCountryName().compareTo(b.getCountryName()));
     }
-    return countryList;
+    return countries;
   }
 
   private String getCountryGroupCacheKey(String key) {
@@ -120,4 +113,12 @@ public class CountryListCache {
     return COUNTRY_SET_CACHE_KEY + "." + key;
   }
 
+  private CountryView getCountryView(SpireCountry spireCountry) {
+    return new CountryView(spireCountry.getCountryRef(), spireCountry.getCountryName());
+  }
+
+  @VisibleForTesting
+  ConcurrentMap<String, CountryListEntry> getCache() {
+    return cache;
+  }
 }

@@ -1,8 +1,8 @@
-package uk.gov.bis.lite.countryservice.model;
+package uk.gov.bis.lite.countryservice.spire.model;
 
 import javax.xml.bind.annotation.XmlElement;
 
-public class Country {
+public class SpireCountry {
 
   @XmlElement(name = "COUNTRY_REF")
   private final String countryRef;
@@ -11,11 +11,11 @@ public class Country {
   private final String countryName;
 
   @SuppressWarnings("unused")
-  private Country() {
+  private SpireCountry() {
     this(null, null);
   }
 
-  public Country(String countryRef, String countryName) {
+  public SpireCountry(String countryRef, String countryName) {
     this.countryRef = countryRef;
     this.countryName = countryName;
   }

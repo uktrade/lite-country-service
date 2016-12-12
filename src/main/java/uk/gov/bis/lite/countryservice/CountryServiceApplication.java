@@ -51,6 +51,7 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
 
     environment.jersey().register(NotFoundExceptionMapper.class);
     environment.jersey().register(ServiceExceptionMapper.class);
+
   }
 
   public static void main(String[] args) throws Exception {

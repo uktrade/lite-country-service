@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.countryservice.model;
+package uk.gov.bis.lite.countryservice.spire.model;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -8,18 +8,18 @@ import java.util.List;
 public class CountryList {
 
   @XmlElement(name = "COUNTRY")
-  private final List<Country> countries;
+  private final List<SpireCountry> countries;
 
   @SuppressWarnings("unused")
   private CountryList() {
     this(null);
   }
 
-  public CountryList(List<Country> countries) {
+  public CountryList(List<SpireCountry> countries) {
     this.countries = countries;
   }
 
-  public List<Country> getCountries() {
+  public List<SpireCountry> getCountries() {
     return countries;
   }
 }
