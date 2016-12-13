@@ -7,10 +7,11 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.countryservice.cache.CountryListCache;
 import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
 import uk.gov.bis.lite.countryservice.exception.CountriesNotFoundException;
-import uk.gov.bis.lite.countryservice.model.Country;
+import uk.gov.bis.lite.countryservice.spire.model.SpireCountry;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,15 +38,15 @@ public class CountriesServiceTest {
   @Test
   public void shouldGetCountrySet() throws Exception {
 
-    List<Country> countryList = Arrays.asList(new Country("1", "Albania"), new Country("4", "Brazil"),
-        new Country("3", "Finland"));
+    List<CountryView> countries = Arrays.asList(new CountryView("1", "Albania"), new CountryView("4", "Brazil"),
+        new CountryView("3", "Finland"));
 
-    CountryListEntry countryListEntry = new CountryListEntry(countryList);
+    CountryListEntry countryListEntry = new CountryListEntry(countries);
     when(countryListCache.getCountriesBySetName(COUNTRY_SET_NAME)).thenReturn(Optional.of(countryListEntry));
 
     CountryListEntry result = countriesService.getCountrySet(COUNTRY_SET_NAME);
 
-    assertThat(result.getList()).isEqualTo(countryList);
+    assertThat(result.getList()).isEqualTo(countries);
   }
 
   @Test
@@ -63,15 +64,15 @@ public class CountriesServiceTest {
   @Test
   public void shouldGetCountryGroup() throws Exception {
 
-    List<Country> countryList = Arrays.asList(new Country("1", "Sweden"), new Country("4", "France"),
-      new Country("3", "Germany"));
+    List<CountryView> countries = Arrays.asList(new CountryView("1", "Sweden"), new CountryView("4", "France"),
+      new CountryView("3", "Germany"));
 
-    CountryListEntry countryListEntry = new CountryListEntry(countryList);
+    CountryListEntry countryListEntry = new CountryListEntry(countries);
     when(countryListCache.getCountriesByGroupName(COUNTRY_GROUP_NAME)).thenReturn(Optional.of(countryListEntry));
 
     CountryListEntry result = countriesService.getCountryGroup(COUNTRY_GROUP_NAME);
 
-    assertThat(result.getList()).isEqualTo(countryList);
+    assertThat(result.getList()).isEqualTo(countries);
   }
 
   @Test

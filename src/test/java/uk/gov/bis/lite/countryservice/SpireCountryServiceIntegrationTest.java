@@ -9,7 +9,7 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
-import uk.gov.bis.lite.countryservice.model.Country;
+import uk.gov.bis.lite.countryservice.spire.model.SpireCountry;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.core.GenericType;
@@ -24,7 +24,7 @@ import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class CountryServiceIntegrationTest {
+public class SpireCountryServiceIntegrationTest {
 
   @ClassRule
   public static final WireMockRule wireMockRule = new WireMockRule(9000);
@@ -55,9 +55,9 @@ public class CountryServiceIntegrationTest {
 
     assertThat(response.getStatus()).isEqualTo(200);
 
-    List<Country> countryList = response.readEntity(new GenericType<List<Country>>() {});
-    assertThat(countryList).isNotNull();
-    assertThat(countryList).isNotEmpty();
+    List<SpireCountry> spireCountryList = response.readEntity(new GenericType<List<SpireCountry>>() {});
+    assertThat(spireCountryList).isNotNull();
+    assertThat(spireCountryList).isNotEmpty();
   }
 
   @Test

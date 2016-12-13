@@ -7,18 +7,16 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.gov.bis.lite.countryservice.exception.CacheLoadingException;
-import uk.gov.bis.lite.countryservice.model.Country;
-import uk.gov.bis.lite.countryservice.spire.SpireGetCountriesClient;
+import uk.gov.bis.lite.common.spire.client.SpireRequest;
+import uk.gov.bis.lite.countryservice.api.CountryView;
+import uk.gov.bis.lite.countryservice.spire.SpireCountriesClient;
+import uk.gov.bis.lite.countryservice.spire.model.SpireCountry;
 
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -28,27 +26,17 @@ public class CountryListCacheTest {
   public ExpectedException expectedException = ExpectedException.none();
 
   @Mock
-  private SpireGetCountriesClient spireGetCountriesClient;
+  private SpireCountriesClient spireCountriesClient;
 
   @Mock
-  private CountryListFactory countryListFactory;
+  private SpireRequest spireRequest;
 
   private CountryListCache countryListCache;
 
   @Before
   public void setUp() throws Exception {
-    countryListCache = new CountryListCache(spireGetCountriesClient, countryListFactory);
-  }
-
-  @Test
-  public void shouldThrowCacheLoadingExceptionForCountriesByCountrySetError() throws Exception {
-
-    expectedException.expect(CacheLoadingException.class);
-    expectedException.expectMessage("Failed to retrieve country list from SPIRE {countrySetName=export-control}");
-
-    when(spireGetCountriesClient.countriesByCountrySetId("EXPORT_CONTROL")).thenThrow(new SOAPException());
-
-    countryListCache.load();
+    countryListCache = new CountryListCache(spireCountriesClient);
+    when(spireCountriesClient.createRequest()).thenReturn(spireRequest);
   }
 
   @Test
@@ -60,11 +48,11 @@ public class CountryListCacheTest {
 
     assertThat(countryListEntry.isPresent()).isTrue();
 
-    List<Country> countryList = countryListEntry.get().getList();
-    assertThat(countryList.size()).isEqualTo(3);
-    assertThat(countryList.get(0).getCountryName()).isEqualTo("Albania");
-    assertThat(countryList.get(1).getCountryName()).isEqualTo("Brazil");
-    assertThat(countryList.get(2).getCountryName()).isEqualTo("Finland");
+    List<CountryView> countries = countryListEntry.get().getList();
+    assertThat(countries.size()).isEqualTo(3);
+    assertThat(countries.get(0).getCountryName()).isEqualTo("Albania");
+    assertThat(countries.get(1).getCountryName()).isEqualTo("Brazil");
+    assertThat(countries.get(2).getCountryName()).isEqualTo("Finland");
   }
 
   @Test
@@ -76,17 +64,6 @@ public class CountryListCacheTest {
   }
 
   @Test
-  public void shouldThrowCacheLoadingExceptionForCountriesByCountryGroupIdError() throws Exception {
-
-    expectedException.expect(CacheLoadingException.class);
-    expectedException.expectMessage("Failed to retrieve country list from SPIRE {countryGroupName=eu}");
-
-    when(spireGetCountriesClient.countriesByCountryGroupId("EU")).thenThrow(new SOAPException());
-
-    countryListCache.load();
-  }
-
-  @Test
   public void shouldGetCountryGroupFromCache() throws Exception {
 
     setupCache();
@@ -95,11 +72,11 @@ public class CountryListCacheTest {
 
     assertThat(countryListEntry.isPresent()).isTrue();
 
-    List<Country> countryList = countryListEntry.get().getList();
-    assertThat(countryList.size()).isEqualTo(3);
-    assertThat(countryList.get(0).getCountryName()).isEqualTo("France");
-    assertThat(countryList.get(1).getCountryName()).isEqualTo("Germany");
-    assertThat(countryList.get(2).getCountryName()).isEqualTo("Sweden");
+    List<CountryView> countries = countryListEntry.get().getList();
+    assertThat(countries.size()).isEqualTo(3);
+    assertThat(countries.get(0).getCountryName()).isEqualTo("France");
+    assertThat(countries.get(1).getCountryName()).isEqualTo("Germany");
+    assertThat(countries.get(2).getCountryName()).isEqualTo("Sweden");
   }
 
   @Test
@@ -111,17 +88,13 @@ public class CountryListCacheTest {
   }
 
   private void setupCache() throws Exception {
-    SOAPMessage countrySetSoapMessage = mock(SOAPMessage.class);
-    SOAPMessage countryGroupSoapMessage = mock(SOAPMessage.class);
 
-    when(spireGetCountriesClient.countriesByCountrySetId("EXPORT_CONTROL")).thenReturn(countrySetSoapMessage);
-    when(spireGetCountriesClient.countriesByCountryGroupId("EU")).thenReturn(countryGroupSoapMessage);
+    List<SpireCountry> countrySet = Arrays.asList(new SpireCountry("1", "Finland"), new SpireCountry("2", "Brazil"), new SpireCountry("3", "Albania"));
+    List<SpireCountry> countryGroup = Arrays.asList(new SpireCountry("1", "Sweden"), new SpireCountry("2", "France"), new SpireCountry("3", "Germany"));
 
-    when(countryListFactory.create(countrySetSoapMessage))
-      .thenReturn(Arrays.asList(new Country("1", "Finland"), new Country("2", "Brazil"), new Country("3", "Albania")));
-
-    when(countryListFactory.create(countryGroupSoapMessage))
-      .thenReturn(Arrays.asList(new Country("1", "Sweden"), new Country("2", "France"), new Country("3", "Germany")));
+    when(spireCountriesClient.sendRequest(spireRequest))
+      .thenReturn(countrySet)
+      .thenReturn(countryGroup);
 
     countryListCache.load();
   }
