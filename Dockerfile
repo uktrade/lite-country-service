@@ -2,7 +2,7 @@ FROM java:8
 
 RUN mkdir -p /opt/lite-country-service
 
-ENV JAR_FILE lite-country-service-1.0-SNAPSHOT.jar
+ENV JAR_FILE lite-country-service-1.1.jar
 ENV SERVICE_DIR /opt/lite-country-service
 ENV CONFIG_FILE /conf/country-service-config.yaml
 
