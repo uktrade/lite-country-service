@@ -36,9 +36,7 @@ public class CountryListCache {
     for (CountrySet countrySet : countrySets) {
       String countrySetName = countrySet.getName();
       List<CountryView> countries = loadCountriesByCountrySetId(countrySet.getSpireCountrySetId());
-      if (countries != null) {
-        cache.put(getCountrySetCacheKey(countrySetName), new CountryListEntry(countries));
-      }
+      cache.put(getCountrySetCacheKey(countrySetName), new CountryListEntry(countries));
     }
 
     // Load country groups
@@ -46,9 +44,7 @@ public class CountryListCache {
     for (CountryGroup countryGroup : countryGroups) {
       String countryGroupName = countryGroup.getName();
       List<CountryView> countries = loadCountriesByCountryGroupId(countryGroup.getSpireCountryGroupId());
-      if (countries != null) {
-        cache.put(getCountryGroupCacheKey(countryGroupName), new CountryListEntry(countries));
-      }
+      cache.put(getCountryGroupCacheKey(countryGroupName), new CountryListEntry(countries));
     }
   }
 

@@ -6,12 +6,11 @@ import uk.gov.bis.lite.common.spire.client.SpireRequestConfig;
 import uk.gov.bis.lite.common.spire.client.parser.SpireParser;
 import uk.gov.bis.lite.countryservice.spire.model.SpireCountry;
 
-import javax.xml.bind.JAXBException;
 import java.util.List;
 
 public class SpireCountriesClient extends SpireClient<List<SpireCountry>> {
 
-  public SpireCountriesClient(SpireParser<List<SpireCountry>> parser, SpireClientConfig clientConfig, SpireRequestConfig requestConfig) throws JAXBException {
+  public SpireCountriesClient(SpireParser<List<SpireCountry>> parser, SpireClientConfig clientConfig, SpireRequestConfig requestConfig) {
     super(parser, clientConfig, requestConfig);
   }
 
