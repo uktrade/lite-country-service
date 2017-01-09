@@ -1,17 +1,19 @@
 cacheExpirySeconds: 86400
 countryListCacheJobCron: 0 0 0 * * ? # run at midnight everyday
-soapUrl: https://spiredevalpha.fivium.co.uk/spirefox4dev/fox/ispire/SPIRE_COUNTRIES
-spireCredentials: ${env.SPIRE_CREDENTIALS}
+
+spireClientUserName: bisuat.api@test.com
+spireClientPassword: sp1reUAT
+spireClientUrl: https://www.spiretest.trade.gov.uk/spireuat/fox/ispire/
 
 server:
   type: default
   applicationConnectors:
     - type: http
-      port: ${env.PORT}
+      port: 8060
 
 logging:
-
   level: INFO
-
   appenders:
     - type: console
+      includeCallerData : true
+      logFormat: "[%mdc{corrID}] %d [%p] %marker %logger %m%n"

@@ -8,11 +8,12 @@ import org.quartz.Scheduler;
 import org.quartz.impl.StdSchedulerFactory;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
 import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstaller;
+import uk.gov.bis.lite.common.jersey.filter.ContainerCorrelationIdFilter;
 import uk.gov.bis.lite.countryservice.cache.CountryListCache;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import uk.gov.bis.lite.countryservice.config.GuiceModule;
-import uk.gov.bis.lite.countryservice.exception.CountryServiceException.ServiceExceptionMapper;
 import uk.gov.bis.lite.countryservice.exception.CountriesNotFoundException.NotFoundExceptionMapper;
+import uk.gov.bis.lite.countryservice.exception.CountryServiceException.ServiceExceptionMapper;
 import uk.gov.bis.lite.countryservice.resource.CountriesResource;
 import uk.gov.bis.lite.countryservice.scheduler.CountryListCacheScheduler;
 
@@ -51,6 +52,7 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
 
     environment.jersey().register(NotFoundExceptionMapper.class);
     environment.jersey().register(ServiceExceptionMapper.class);
+    environment.jersey().register(ContainerCorrelationIdFilter.class);
 
   }
 
