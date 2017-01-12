@@ -25,7 +25,7 @@ node('jdk8') {
     
   step([$class: 'hudson.plugins.jira.JiraIssueUpdater', 
        issueSelector: [$class: 'hudson.plugins.jira.selector.DefaultIssueSelector'], 
-       scm: gitScm])
+       scm: scm])
   
   stage 'OpenShift build'
   
