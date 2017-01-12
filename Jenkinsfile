@@ -23,7 +23,7 @@ node('jdk8') {
   
   step([$class: 'JUnitResultArchiver', testResults: 'build/test-results/**/*.xml'])
     
-  step([$class: 'hudson.plugins.jira.JiraIssueUpdater', 
+  step([$class: 'hudson.plugins.jira.JiraIssueUpdater',
        issueSelector: [$class: 'hudson.plugins.jira.selector.DefaultIssueSelector'], 
        scm: scm])
   
