@@ -1,33 +1,26 @@
-def CONFIG_FILE = '/conf/lite-country-service.yaml'
-def JAR_FILE = 'lite-country-service-1.0-SNAPSHOT.jar'
-def IMAGE_NAME = '$LITE_DOCKER_REGISTRY/country-service'
-
 node('jdk8') {
-    
-  sh "oc login ${OC_CREDS} --insecure-skip-tls-verify=true"
-  
-  sh "oc project lite"
-  
-  stage 'Clean workspace'
-  
-  deleteDir()
-  
-  stage 'Checkout files'
-  
-  checkout scm
-  
-  stage 'Gradle build'
-  
-  sh 'chmod 777 gradlew'
-  sh './gradlew build'
-  
-  step([$class: 'JUnitResultArchiver', testResults: 'build/test-results/**/*.xml'])
-    
-  step([$class: 'hudson.plugins.jira.JiraIssueUpdater',
-       issueSelector: [$class: 'hudson.plugins.jira.selector.DefaultIssueSelector'], 
-       scm: scm])
-  
-  stage 'OpenShift build'
-  
-  sh "oc start-build country-service --from-dir=."
+  currentBuild.displayName = "#${env.BUILD_NUMBER} - ${params.BUILD_VERSION}"
+
+  def serviceName = 'country-service'
+  def gitURL = "github.com/BISDigital/lite-${serviceName}"
+
+  stage('Clean workspace'){
+    deleteDir()
+  }
+  stage('Checkout files'){
+    checkout scm
+  }
+  stage('Gradle publish'){
+    sh 'chmod 777 gradlew'
+    sh "./gradlew -PprojVersion=${params.BUILD_VERSION} :publishServicePublicationToLite-buildsRepository"
+  }
+  stage('Tag build'){
+    withCredentials([usernamePassword(credentialsId: '47ab58d4-2db9-4f6f-910d-badc2ee1cfc8', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+      sh("git -c 'user.name=Jenkins' -c 'user.email=jenkins@digital' tag  -a ${params.BUILD_VERSION} -m 'Jenkins'")
+      sh("git push https://${env.GIT_USERNAME}:${env.GIT_PASSWORD}@${gitURL} --tags")
+    }
+  }
+  stage('build'){
+    build job: 'new-docker-build', parameters: [[$class: 'StringParameterValue', name: 'SERVICE_NAME', value: serviceName], [$class: 'StringParameterValue', name: 'BUILD_VERSION', value: params.BUILD_VERSION], [$class: 'StringParameterValue', name: 'DOCKERFILE_PATH', value: '.']]
+  }
 }

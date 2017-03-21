@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat
+
 plugins {
     id 'application'
     id 'java'
@@ -16,8 +18,15 @@ idea {
     }
 }
 
-group = 'uk.gov.bis.lite'
-version = '1.1'
+group 'uk.gov.bis.lite'
+
+if (project.hasProperty('projVersion')) {
+    project.version = project.projVersion
+} else {
+    SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd.HHmmss")
+    sdf.setTimeZone(new SimpleTimeZone(SimpleTimeZone.UTC_TIME, "UTC"))
+    project.version = sdf.format(new Date()) + "-SNAPSHOT"
+}
 
 mainClassName = "uk.gov.bis.lite.countryservice.CountryServiceApplication"
 
@@ -52,6 +61,41 @@ dependencies {
     testCompile 'org.skyscreamer:jsonassert:1.3.0'
 }
 
+shadowJar {
+    classifier = ''
+    mergeServiceFiles()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+}
+
+build {
+    dependsOn shadowJar
+}
+
+
+run { args 'server', 'src/main/resources/config.yaml' }
+
+publishing {
+    repositories {
+        maven {
+            name "snapshots"
+            url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-snapshots/"
+        }
+        maven {
+            name "releases"
+            url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
+        }
+        maven {
+            name "lite-builds"
+            url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/lite-builds/"
+        }
+    }
+}
+
 task apiJar(type: Jar, dependsOn: compileJava) {
     from sourceSets.main.output.classesDir
     include 'uk/gov/bis/lite/countryservice/api/**/*'
@@ -72,36 +116,9 @@ publishing {
                 classifier "sources"
             }
         }
-    }
-}
-
-publishing {
-    repositories {
-        maven {
-            name "snapshots"
-            url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-snapshots/"
-        }
-        maven {
-            name "releases"
-            url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
+        service(MavenPublication) {
+            artifactId 'country-service'
+            from components.shadow
         }
     }
 }
-
-shadowJar {
-    classifier = ''
-    mergeServiceFiles()
-}
-
-jar {
-    manifest {
-        attributes 'Main-Class': mainClassName
-    }
-}
-
-build {
-    dependsOn shadowJar
-}
-
-
-run { args 'server', 'src/main/resources/config.yaml' }
