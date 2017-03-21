@@ -101,18 +101,18 @@ task apiJar(type: Jar, dependsOn: compileJava) {
     include 'uk/gov/bis/lite/countryservice/api/**/*'
 }
 
-task jarWithSources(type: Jar) {
+task apiJarWithSources(type: Jar) {
     from sourceSets.main.allJava
     include 'uk/gov/bis/lite/countryservice/api/**/*'
 }
 
 publishing {
     publications {
-
-        mavenJava(MavenPublication) {
+        api(MavenPublication) {
             artifactId 'lite-country-service-api'
+            version '1.1'
             artifact apiJar
-            artifact jarWithSources {
+            artifact apiJarWithSources {
                 classifier "sources"
             }
         }
