@@ -8,6 +8,8 @@ import io.dropwizard.setup.Environment;
 import ru.vyarus.dropwizard.guice.module.support.ConfigurationAwareModule;
 import uk.gov.bis.lite.common.spire.client.SpireClientConfig;
 import uk.gov.bis.lite.common.spire.client.SpireRequestConfig;
+import uk.gov.bis.lite.countryservice.service.CountriesService;
+import uk.gov.bis.lite.countryservice.service.CountriesServiceImpl;
 import uk.gov.bis.lite.countryservice.spire.CountryParser;
 import uk.gov.bis.lite.countryservice.spire.SpireCountriesClient;
 
@@ -20,6 +22,7 @@ public class GuiceModule  extends AbstractModule implements ConfigurationAwareMo
   @Override
   protected void configure() {
     bindConstant().annotatedWith(Names.named("cacheExpirySeconds")).to(configuration.getCacheExpirySeconds());
+    bind(CountriesService.class).to(CountriesServiceImpl.class);
   }
 
   @Override

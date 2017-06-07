@@ -1,5 +1,8 @@
 package uk.gov.bis.lite.countryservice.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -11,14 +14,10 @@ import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.countryservice.cache.CountryListCache;
 import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
 import uk.gov.bis.lite.countryservice.exception.CountriesNotFoundException;
-import uk.gov.bis.lite.countryservice.spire.model.SpireCountry;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CountriesServiceTest {
@@ -33,7 +32,7 @@ public class CountriesServiceTest {
   private CountryListCache countryListCache;
 
   @InjectMocks
-  private CountriesService countriesService;
+  private CountriesServiceImpl countriesService;
 
   @Test
   public void shouldGetCountrySet() throws Exception {
