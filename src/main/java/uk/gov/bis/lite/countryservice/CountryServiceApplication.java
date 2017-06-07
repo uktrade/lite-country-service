@@ -1,6 +1,7 @@
 package uk.gov.bis.lite.countryservice;
 
 import com.google.inject.Injector;
+import com.google.inject.Module;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -21,6 +22,13 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
 
   private GuiceBundle<CountryApplicationConfiguration> guiceBundle;
 
+  private final Module module;
+
+  public CountryServiceApplication(Module module) {
+    super();
+    this.module = module;
+  }
+
   @Override
   public String getName() {
     return "country-service";
@@ -30,7 +38,7 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
   public void initialize(Bootstrap<CountryApplicationConfiguration> bootstrap) {
 
     guiceBundle = new GuiceBundle.Builder<CountryApplicationConfiguration>()
-        .modules(new GuiceModule())
+        .modules(module)
         .installers(ResourceInstaller.class)
         .extensions(CountriesResource.class)
         .build();
@@ -57,7 +65,11 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
   }
 
   public static void main(String[] args) throws Exception {
-    new CountryServiceApplication().run(args);
+    new CountryServiceApplication(new GuiceModule()).run(args);
+  }
+
+  public GuiceBundle<CountryApplicationConfiguration> getGuiceBundle() {
+    return guiceBundle;
   }
 
 }
