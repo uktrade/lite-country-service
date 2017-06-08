@@ -2,8 +2,10 @@ package uk.gov.bis.lite.countryservice.service;
 
 import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
 
-public interface CountriesService {
-  CountryListEntry getCountrySet(String countrySetName);
+import java.util.Optional;
 
-  CountryListEntry getCountryGroup(String groupName);
+public interface CountriesService {
+  Optional<CountryListEntry> getCountrySet(String countrySetName);
+
+  Optional<CountryListEntry> getCountryGroup(String groupName);
 }

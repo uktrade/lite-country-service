@@ -6,7 +6,12 @@ import com.google.inject.name.Named;
 import org.hibernate.validator.constraints.NotEmpty;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
+import uk.gov.bis.lite.countryservice.exception.ErrorResponse;
 import uk.gov.bis.lite.countryservice.service.CountriesService;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -15,8 +20,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Path("/countries")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -36,18 +39,24 @@ public class CountriesResource {
   @Path("set/{countrySetName}")
   @Timed // measures the duration of requests to a resource
   public Response getCountryList(@PathParam("countrySetName") @NotEmpty String countrySetName) {
-    CountryListEntry countryListEntry = countriesService.getCountrySet(countrySetName);
-
-    return buildResponse(countryListEntry);
+    Optional<CountryListEntry> countryListEntry = countriesService.getCountrySet(countrySetName);
+    if (countryListEntry.isPresent()) {
+      return buildResponse(countryListEntry.get());
+    } else {
+      return ErrorResponse.buildResponse("Country set does not exist - " + countrySetName, 404);
+    }
   }
 
   @GET
   @Path("group/{groupName}")
   @Timed // measures the duration of requests to a resource
   public Response getCountryGroups(@PathParam("groupName") @NotEmpty String groupName) {
-    CountryListEntry countryListEntry = countriesService.getCountryGroup(groupName);
-
-    return buildResponse(countryListEntry);
+    Optional<CountryListEntry> countryListEntry = countriesService.getCountryGroup(groupName);
+    if (countryListEntry.isPresent()) {
+      return buildResponse(countryListEntry.get());
+    } else {
+      return ErrorResponse.buildResponse("Country group does not exist - " + groupName, 404);
+    }
   }
 
   private Response buildResponse(CountryListEntry countryListEntry) {

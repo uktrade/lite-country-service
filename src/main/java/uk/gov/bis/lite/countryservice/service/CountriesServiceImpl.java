@@ -2,14 +2,17 @@ package uk.gov.bis.lite.countryservice.service;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.countryservice.cache.CountryListCache;
 import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
-import uk.gov.bis.lite.countryservice.exception.CountriesNotFoundException;
 
 import java.util.Optional;
 
 @Singleton
 public class CountriesServiceImpl implements CountriesService {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(CountriesServiceImpl.class);
 
   private final CountryListCache countryListCache;
 
@@ -19,23 +22,21 @@ public class CountriesServiceImpl implements CountriesService {
   }
 
   @Override
-  public CountryListEntry getCountrySet(String countrySetName) {
-
+  public Optional<CountryListEntry> getCountrySet(String countrySetName) {
     Optional<CountryListEntry> cacheEntry = countryListCache.getCountriesBySetName(countrySetName);
     if (!cacheEntry.isPresent()) {
-      throw new CountriesNotFoundException("The following country set does not exist in the cache - " + countrySetName);
+      LOGGER.error("Country set not found in cache - " + countrySetName);
     }
-    return cacheEntry.get();
-
+    return cacheEntry;
   }
 
   @Override
-  public CountryListEntry getCountryGroup(String groupName) {
+  public Optional<CountryListEntry> getCountryGroup(String groupName) {
     Optional<CountryListEntry> cacheEntry = countryListCache.getCountriesByGroupName(groupName);
     if (!cacheEntry.isPresent()) {
-      throw new CountriesNotFoundException("The following country group does not exist in the cache - " + groupName);
+      LOGGER.error("Country group not found in cache - " + groupName);
     }
-    return cacheEntry.get();
+    return cacheEntry;
   }
 
 }

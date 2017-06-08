@@ -13,9 +13,7 @@ public class CountryServiceException extends RuntimeException {
 
     @Override
     public Response toResponse(CountryServiceException exception) {
-      return Response.status(500)
-          .entity(exception.getMessage())
-          .build();
+      return ErrorResponse.buildResponse(exception.getMessage(), 500);
     }
 
   }
