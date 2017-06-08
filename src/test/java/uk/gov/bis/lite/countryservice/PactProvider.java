@@ -28,22 +28,22 @@ public class PactProvider {
   @TestTarget
   public final Target target = new HttpTarget(RULE.getLocalPort());
 
-  @State("export countries exist")
+  @State("provided country group exists")
   public void exportCountriesExist() {
     InjectorLookup.getInjector(RULE.getApplication()).get().getInstance(CountriesServiceMock.class).setCountriesExist(true);
   }
 
-  @State("export countries do not exist")
+  @State("provided country group does not exist")
   public void exportCountriesDoNotExist() {
     InjectorLookup.getInjector(RULE.getApplication()).get().getInstance(CountriesServiceMock.class).setCountriesExist(false);
   }
 
-  @State("EU countries exist")
+  @State("provided country set exists")
   public void EUCountriesExist() {
     InjectorLookup.getInjector(RULE.getApplication()).get().getInstance(CountriesServiceMock.class).setCountriesExist(true);
   }
 
-  @State("EU countries do not exist")
+  @State("provided country set does not exist")
   public void EUCountriesDoNotExist() {
     InjectorLookup.getInjector(RULE.getApplication()).get().getInstance(CountriesServiceMock.class).setCountriesExist(false);
   }
