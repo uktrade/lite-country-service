@@ -16,8 +16,10 @@ import uk.gov.bis.lite.countryservice.service.CountriesService;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 public class CountriesResourceTest {
@@ -78,8 +80,9 @@ public class CountriesResourceTest {
         .request()
         .get();
 
-    assertThat(result.getStatus()).isEqualTo(404);
-    assertThat(result.readEntity(String.class)).isEqualTo("{\"code\":404,\"message\":\"Country set does not exist - blah\"}");
+    Map<String, Object> map = result.readEntity(new GenericType<Map<String, Object>>(){});
+    assertThat((int) map.get("code")).isEqualTo(404);
+    assertThat((String) map.get("message")).isEqualTo("Country set does not exist - blah");
   }
 
   @Test
@@ -92,8 +95,9 @@ public class CountriesResourceTest {
         .request()
         .get();
 
-    assertThat(result.getStatus()).isEqualTo(404);
-    assertThat(result.readEntity(String.class)).isEqualTo("{\"code\":404,\"message\":\"Country group does not exist - blah\"}");
+    Map<String, Object> map = result.readEntity(new GenericType<Map<String, Object>>(){});
+    assertThat((int) map.get("code")).isEqualTo(404);
+    assertThat((String) map.get("message")).isEqualTo("Country group does not exist - blah");
   }
 
   @Test
@@ -106,9 +110,9 @@ public class CountriesResourceTest {
         .request()
         .get();
 
-    assertThat(result.getStatus()).isEqualTo(500);
-
-    assertThat(result.readEntity(String.class)).isEqualTo("{\"code\":500,\"message\":\"service error\"}");
+    Map<String, Object> map = result.readEntity(new GenericType<Map<String, Object>>(){});
+    assertThat((int) map.get("code")).isEqualTo(500);
+    assertThat((String) map.get("message")).isEqualTo("service error");
   }
 
   @Test

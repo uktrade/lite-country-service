@@ -22,7 +22,7 @@ public class CountriesServiceMock implements CountriesService {
   }
 
   @Override
-  public Optional<CountryListEntry>getCountrySet(String countrySetName) {
+  public Optional<CountryListEntry> getCountrySet(String countrySetName) {
     if (countriesExist) {
       return Optional.of(countryListEntry);
     } else {
