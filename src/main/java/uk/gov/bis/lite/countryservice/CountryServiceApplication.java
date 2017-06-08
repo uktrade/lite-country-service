@@ -1,6 +1,7 @@
 package uk.gov.bis.lite.countryservice;
 
 import com.google.inject.Injector;
+import com.google.inject.Module;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -12,7 +13,6 @@ import uk.gov.bis.lite.common.jersey.filter.ContainerCorrelationIdFilter;
 import uk.gov.bis.lite.countryservice.cache.CountryListCache;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import uk.gov.bis.lite.countryservice.config.GuiceModule;
-import uk.gov.bis.lite.countryservice.exception.CountriesNotFoundException.NotFoundExceptionMapper;
 import uk.gov.bis.lite.countryservice.exception.CountryServiceException.ServiceExceptionMapper;
 import uk.gov.bis.lite.countryservice.resource.CountriesResource;
 import uk.gov.bis.lite.countryservice.scheduler.CountryListCacheScheduler;
@@ -20,6 +20,13 @@ import uk.gov.bis.lite.countryservice.scheduler.CountryListCacheScheduler;
 public class CountryServiceApplication extends Application<CountryApplicationConfiguration> {
 
   private GuiceBundle<CountryApplicationConfiguration> guiceBundle;
+
+  private final Module module;
+
+  public CountryServiceApplication(Module module) {
+    super();
+    this.module = module;
+  }
 
   @Override
   public String getName() {
@@ -30,7 +37,7 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
   public void initialize(Bootstrap<CountryApplicationConfiguration> bootstrap) {
 
     guiceBundle = new GuiceBundle.Builder<CountryApplicationConfiguration>()
-        .modules(new GuiceModule())
+        .modules(module)
         .installers(ResourceInstaller.class)
         .extensions(CountriesResource.class)
         .build();
@@ -50,14 +57,17 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
 
     environment.lifecycle().manage(new CountryListCacheScheduler(scheduler, configuration));
 
-    environment.jersey().register(NotFoundExceptionMapper.class);
     environment.jersey().register(ServiceExceptionMapper.class);
     environment.jersey().register(ContainerCorrelationIdFilter.class);
 
   }
 
   public static void main(String[] args) throws Exception {
-    new CountryServiceApplication().run(args);
+    new CountryServiceApplication(new GuiceModule()).run(args);
+  }
+
+  public GuiceBundle<CountryApplicationConfiguration> getGuiceBundle() {
+    return guiceBundle;
   }
 
 }

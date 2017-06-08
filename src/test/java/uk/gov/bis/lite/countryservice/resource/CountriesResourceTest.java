@@ -1,24 +1,26 @@
 package uk.gov.bis.lite.countryservice.resource;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.Rule;
 import org.junit.Test;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
-import uk.gov.bis.lite.countryservice.exception.CountriesNotFoundException;
-import uk.gov.bis.lite.countryservice.exception.CountriesNotFoundException.NotFoundExceptionMapper;
 import uk.gov.bis.lite.countryservice.exception.CountryServiceException;
 import uk.gov.bis.lite.countryservice.exception.CountryServiceException.ServiceExceptionMapper;
 import uk.gov.bis.lite.countryservice.service.CountriesService;
 
-import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.Response;
 
 public class CountriesResourceTest {
 
@@ -27,7 +29,6 @@ public class CountriesResourceTest {
   @Rule
   public final ResourceTestRule resources = ResourceTestRule.builder()
       .addResource(new CountriesResource(countriesService, 1000))
-      .addProvider(NotFoundExceptionMapper.class)
       .addProvider(ServiceExceptionMapper.class)
       .build();
 
@@ -35,7 +36,7 @@ public class CountriesResourceTest {
   public void shouldGetCountrySetResource() throws Exception {
 
     List<CountryView> countries = Arrays.asList(new CountryView("CTRY1", "France"), new CountryView("CTRY2", "Spain"));
-    when(countriesService.getCountrySet("export-control")).thenReturn(new CountryListEntry(countries));
+    when(countriesService.getCountrySet("export-control")).thenReturn(Optional.of(new CountryListEntry(countries)));
 
     Response result = resources.client()
         .target("/countries/set/export-control")
@@ -54,7 +55,7 @@ public class CountriesResourceTest {
   public void shouldGetCountryGroupResource() throws Exception {
 
     List<CountryView> countries = Arrays.asList(new CountryView("CTRY1", "France"), new CountryView("CTRY2", "Spain"));
-    when(countriesService.getCountryGroup("eu")).thenReturn(new CountryListEntry(countries));
+    when(countriesService.getCountryGroup("eu")).thenReturn(Optional.of(new CountryListEntry(countries)));
 
     Response result = resources.client()
       .target("/countries/group/eu")
@@ -70,18 +71,33 @@ public class CountriesResourceTest {
   }
 
   @Test
-  public void shouldReturn404StatusCodeWhenControlCodeNotFound() throws Exception {
+  public void shouldReturn404StatusCodeWhenCountrySetNotFound() throws Exception {
 
-    when(countriesService.getCountrySet("blah")).thenThrow(new CountriesNotFoundException("not found error"));
+    when(countriesService.getCountrySet("blah")).thenReturn(Optional.empty());
 
     Response result = resources.client()
         .target("/countries/set/blah")
         .request()
         .get();
 
-    assertThat(result.getStatus()).isEqualTo(404);
+    Map<String, Object> map = result.readEntity(new GenericType<Map<String, Object>>(){});
+    assertThat((int) map.get("code")).isEqualTo(404);
+    assertThat((String) map.get("message")).isEqualTo("Country set does not exist - blah");
+  }
 
-    assertThat(result.readEntity(String.class)).isEqualTo("not found error");
+  @Test
+  public void shouldReturn404StatusCodeWhenCountryGroupNotFound() throws Exception {
+
+    when(countriesService.getCountryGroup("blah")).thenReturn(Optional.empty());
+
+    Response result = resources.client()
+        .target("/countries/group/blah")
+        .request()
+        .get();
+
+    Map<String, Object> map = result.readEntity(new GenericType<Map<String, Object>>(){});
+    assertThat((int) map.get("code")).isEqualTo(404);
+    assertThat((String) map.get("message")).isEqualTo("Country group does not exist - blah");
   }
 
   @Test
@@ -94,9 +110,9 @@ public class CountriesResourceTest {
         .request()
         .get();
 
-    assertThat(result.getStatus()).isEqualTo(500);
-
-    assertThat(result.readEntity(String.class)).isEqualTo("service error");
+    Map<String, Object> map = result.readEntity(new GenericType<Map<String, Object>>(){});
+    assertThat((int) map.get("code")).isEqualTo(500);
+    assertThat((String) map.get("message")).isEqualTo("service error");
   }
 
   @Test
@@ -104,7 +120,7 @@ public class CountriesResourceTest {
 
     List<CountryView> countries = Arrays.asList(new CountryView("CTRY1", "France"), new CountryView("CTRY2", "Spain"),
         new CountryView(CountriesResource.NEGATIVE_COUNTRY_ID_PREFIX + "1", "Negative"));
-    when(countriesService.getCountrySet("export-control")).thenReturn(new CountryListEntry(countries));
+    when(countriesService.getCountrySet("export-control")).thenReturn(Optional.of(new CountryListEntry(countries)));
 
     Response result = resources.client()
         .target("/countries/set/export-control")
