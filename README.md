@@ -1,2 +1,28 @@
-# lite-country-service
-Manages SPIRE country lists
+# Country service
+
+Retrieves country data from SPIRE and presents it to LITE applications, effectively acting as a proxy and cache for SPIRE data.
+
+## Running locally
+
+* `git clone git@github.com:uktrade/lite-country-service.git`
+* `cd lite-country-service` 
+* `cp src/main/resources/sample-config.yaml src/main/resources/config.yaml`
+* `./gradlew run`
+
+## Endpoint summary
+
+`/countries`
+
+Retrieves country set or group information, e.g.
+
+* `/countries/set/export-control` - all countries in the "export control" set
+* `/countries/group/eu` - all countries in the "EU" group
+
+Known sets and groups are enumerated in `CountrySet` and `CountryGroup` respectively.
+
+A `CountryView` is currently very simple and consists only of a reference and country name.
+
+## SPIRE integration
+
+The `SpireCountriesClient` is used to retrieve the country list and group data from a SOAP endpoint. This is populated into 
+the `CountryListCache`, and refreshed by a daily job (`CountryListCacheJob`).

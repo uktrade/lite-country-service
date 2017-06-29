@@ -1,15 +1,15 @@
 cacheExpirySeconds: 86400
 countryListCacheJobCron: 0 0 0 * * ? # run at midnight everyday
 
-spireClientUserName: bisuat.api@test.com
-spireClientPassword: sp1reUAT
-spireClientUrl: https://www.spiretest.trade.gov.uk/spireuat/fox/ispire/
+spireClientUserName: spire_username
+spireClientPassword: spire_password
+spireClientUrl: http://service-mocking.svc.dev.licensing.service.trade.gov.uk.test/spire/fox/ispire/
 
 server:
   type: default
   applicationConnectors:
     - type: http
-      port: 8060
+      port: 8080
 
 logging:
   level: INFO
