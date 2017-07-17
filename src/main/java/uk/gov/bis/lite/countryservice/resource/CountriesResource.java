@@ -62,14 +62,14 @@ public class CountriesResource {
   private Response buildResponse(CountryListEntry countryListEntry) {
     //Filter "negative" country IDs
     List<CountryView> spireCountryList = countryListEntry.getList()
-      .stream()
-      .filter(e -> !e.getCountryRef().startsWith(NEGATIVE_COUNTRY_ID_PREFIX))
-      .collect(Collectors.toList());
+        .stream()
+        .filter(e -> !e.getCountryRef().startsWith(NEGATIVE_COUNTRY_ID_PREFIX))
+        .collect(Collectors.toList());
 
     return Response.ok()
-      .entity(spireCountryList)
-      .cacheControl(getCacheControl(countryListEntry.getTimeStamp()))
-      .build();
+        .entity(spireCountryList)
+        .cacheControl(getCacheControl(countryListEntry.getTimeStamp()))
+        .build();
   }
 
   private CacheControl getCacheControl(long timestamp) {

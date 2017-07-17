@@ -3,8 +3,10 @@ package uk.gov.bis.lite.countryservice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.dropwizard.Application;
+import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.flywaydb.core.Flyway;
 import org.quartz.Scheduler;
 import org.quartz.impl.StdSchedulerFactory;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
@@ -15,6 +17,7 @@ import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import uk.gov.bis.lite.countryservice.config.GuiceModule;
 import uk.gov.bis.lite.countryservice.exception.CountryServiceException.ServiceExceptionMapper;
 import uk.gov.bis.lite.countryservice.resource.CountriesResource;
+import uk.gov.bis.lite.countryservice.resource.CountryDataResource;
 import uk.gov.bis.lite.countryservice.scheduler.CountryListCacheScheduler;
 
 public class CountryServiceApplication extends Application<CountryApplicationConfiguration> {
@@ -40,6 +43,7 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
         .modules(module)
         .installers(ResourceInstaller.class)
         .extensions(CountriesResource.class)
+        .extensions(CountryDataResource.class)
         .build();
 
     bootstrap.addBundle(guiceBundle);
@@ -56,6 +60,12 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
     scheduler.getContext().put("countryListCache", countryListCache);
 
     environment.lifecycle().manage(new CountryListCacheScheduler(scheduler, configuration));
+
+    //Perform/validate flyway migration on startup
+    DataSourceFactory dataSourceFactory = configuration.getDataSourceFactory();
+    Flyway flyway = new Flyway();
+    flyway.setDataSource(dataSourceFactory.getUrl(), dataSourceFactory.getUser(), dataSourceFactory.getPassword());
+    flyway.migrate();
 
     environment.jersey().register(ServiceExceptionMapper.class);
     environment.jersey().register(ContainerCorrelationIdFilter.class);

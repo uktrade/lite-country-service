@@ -2,13 +2,14 @@ package uk.gov.bis.lite.countryservice.api;
 
 public class CountryView {
 
-  private String countryRef;
+  private final String countryRef;
+  private final String countryName;
+  private final String[] synonyms;
 
-  private String countryName;
-
-  public CountryView(String countryRef, String countryName) {
+  public CountryView(String countryRef, String countryName, String[] synonyms) {
     this.countryRef = countryRef;
     this.countryName = countryName;
+    this.synonyms = synonyms;
   }
 
   public String getCountryRef() {
@@ -19,4 +20,7 @@ public class CountryView {
     return countryName;
   }
 
+  public String[] getSynonyms() {
+    return synonyms;
+  }
 }

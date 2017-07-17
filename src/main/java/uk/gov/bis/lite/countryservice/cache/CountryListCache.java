@@ -1,6 +1,5 @@
 package uk.gov.bis.lite.countryservice.cache;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import uk.gov.bis.lite.common.spire.client.SpireRequest;
@@ -9,6 +8,8 @@ import uk.gov.bis.lite.countryservice.exception.CountryServiceException;
 import uk.gov.bis.lite.countryservice.spire.SpireCountriesClient;
 import uk.gov.bis.lite.countryservice.spire.model.SpireCountry;
 
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,6 +23,7 @@ public class CountryListCache {
   private static final String COUNTRY_SET_CACHE_KEY = "countrySet";
 
   private final ConcurrentMap<String, CountryListEntry> cache = new ConcurrentHashMap<>();
+  private final ConcurrentMap<String, CountryView> countryCache = new ConcurrentHashMap<>();
 
   private final SpireCountriesClient spireCountriesClient;
 
@@ -36,6 +38,7 @@ public class CountryListCache {
     for (CountrySet countrySet : countrySets) {
       String countrySetName = countrySet.getName();
       List<CountryView> countries = loadCountriesByCountrySetId(countrySet.getSpireCountrySetId());
+      countries.forEach(countryView -> countryCache.put(countryView.getCountryRef(), countryView));
       cache.put(getCountrySetCacheKey(countrySetName), new CountryListEntry(countries));
     }
 
@@ -44,8 +47,21 @@ public class CountryListCache {
     for (CountryGroup countryGroup : countryGroups) {
       String countryGroupName = countryGroup.getName();
       List<CountryView> countries = loadCountriesByCountryGroupId(countryGroup.getSpireCountryGroupId());
+      countries.forEach(countryView -> countryCache.put(countryView.getCountryRef(), countryView));
       cache.put(getCountryGroupCacheKey(countryGroupName), new CountryListEntry(countries));
     }
+  }
+
+  public Optional<CountryView> getCountryView(String countryRef) {
+    if (countryRef == null) {
+      return Optional.empty();
+    } else {
+      return Optional.ofNullable(countryCache.get(countryRef));
+    }
+  }
+
+  public Collection<CountryView> getCountryViews() {
+    return countryCache.values();
   }
 
   public Optional<CountryListEntry> getCountriesBySetName(String key) {
@@ -84,7 +100,7 @@ public class CountryListCache {
   private List<CountryView> getCountriesFromSpire(SpireRequest request) {
     List<CountryView> countries = spireCountriesClient.sendRequest(request).stream().map(this::getCountryView).collect(Collectors.toList());
     if (!countries.isEmpty()) {
-      countries.sort((a, b) -> a.getCountryName().compareTo(b.getCountryName()));
+      countries.sort(Comparator.comparing(CountryView::getCountryName));
     }
     return countries;
   }
@@ -98,11 +114,7 @@ public class CountryListCache {
   }
 
   private CountryView getCountryView(SpireCountry spireCountry) {
-    return new CountryView(spireCountry.getCountryRef(), spireCountry.getCountryName());
+    return new CountryView(spireCountry.getCountryRef(), spireCountry.getCountryName(), new String[]{});
   }
 
-  @VisibleForTesting
-  ConcurrentMap<String, CountryListEntry> getCache() {
-    return cache;
-  }
 }
