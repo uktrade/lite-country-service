@@ -2,10 +2,11 @@ package uk.gov.bis.lite.countryservice.service;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import uk.gov.bis.lite.countryservice.api.CountryData;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.countryservice.cache.CountryListCache;
 import uk.gov.bis.lite.countryservice.dao.SynonymDao;
-import uk.gov.bis.lite.countryservice.api.CountryData;
+import uk.gov.bis.lite.countryservice.model.CountryEntry;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,11 +28,11 @@ public class CountryDataService {
   }
 
   public Optional<CountryView> getCountryData(String countryRef) {
-    Optional<CountryView> cachedCountryView = countryListCache.getCountryView(countryRef);
-    if (cachedCountryView.isPresent()) {
+    Optional<CountryEntry> countryEntry = countryListCache.getCountryEntry(countryRef);
+    if (countryEntry.isPresent()) {
       String[] synonyms = synonymDao.getSynonyms(countryRef);
       Arrays.sort(synonyms);
-      CountryView countryView = new CountryView(countryRef, cachedCountryView.get().getCountryName(), synonyms);
+      CountryView countryView = new CountryView(countryRef, countryEntry.get().getCountryName(), synonyms);
       return Optional.of(countryView);
     } else {
       return Optional.empty();
@@ -39,12 +40,12 @@ public class CountryDataService {
   }
 
   public List<CountryView> getCountryData() {
-    Collection<CountryView> countryViews = countryListCache.getCountryViews();
-    Multimap<String, String> map = HashMultimap.create();
-    synonymDao.getSynonyms().forEach(synonymData -> map.put(synonymData.getCountryRef(), synonymData.getSynonym()));
-    return countryViews.stream().map(countryView -> {
-      String[] synonyms = map.get(countryView.getCountryRef()).toArray(new String[0]);
-      return new CountryView(countryView.getCountryRef(), countryView.getCountryName(), synonyms);
+    Collection<CountryEntry> countryEntries = countryListCache.getCountryEntries();
+    Multimap<String, String> synonymMap = HashMultimap.create();
+    synonymDao.getSynonyms().forEach(synonymData -> synonymMap.put(synonymData.getCountryRef(), synonymData.getSynonym()));
+    return countryEntries.stream().map(countryEntry -> {
+      String[] synonyms = synonymMap.get(countryEntry.getCountryRef()).toArray(new String[0]);
+      return new CountryView(countryEntry.getCountryRef(), countryEntry.getCountryName(), synonyms);
     }).collect(Collectors.toList());
   }
 

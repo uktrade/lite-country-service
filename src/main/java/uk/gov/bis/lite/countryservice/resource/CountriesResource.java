@@ -4,9 +4,9 @@ import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.hibernate.validator.constraints.NotEmpty;
-import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
 import uk.gov.bis.lite.countryservice.exception.ErrorResponse;
+import uk.gov.bis.lite.countryservice.model.CountryEntry;
 import uk.gov.bis.lite.countryservice.service.CountriesService;
 
 import java.util.List;
@@ -61,7 +61,7 @@ public class CountriesResource {
 
   private Response buildResponse(CountryListEntry countryListEntry) {
     //Filter "negative" country IDs
-    List<CountryView> spireCountryList = countryListEntry.getList()
+    List<CountryEntry> spireCountryList = countryListEntry.getList()
         .stream()
         .filter(e -> !e.getCountryRef().startsWith(NEGATIVE_COUNTRY_ID_PREFIX))
         .collect(Collectors.toList());

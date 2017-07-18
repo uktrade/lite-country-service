@@ -8,10 +8,10 @@ import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.Rule;
 import org.junit.Test;
-import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
 import uk.gov.bis.lite.countryservice.exception.CountryServiceException;
 import uk.gov.bis.lite.countryservice.exception.CountryServiceException.ServiceExceptionMapper;
+import uk.gov.bis.lite.countryservice.model.CountryEntry;
 import uk.gov.bis.lite.countryservice.service.CountriesService;
 
 import java.util.Arrays;
@@ -35,7 +35,7 @@ public class CountriesResourceTest {
   @Test
   public void shouldGetCountrySetResource() throws Exception {
 
-    List<CountryView> countries = Arrays.asList(new CountryView("CTRY1", "France"), new CountryView("CTRY2", "Spain"));
+    List<CountryEntry> countries = Arrays.asList(new CountryEntry("CTRY1", "France"), new CountryEntry("CTRY2", "Spain"));
     when(countriesService.getCountrySet("export-control")).thenReturn(Optional.of(new CountryListEntry(countries)));
 
     Response result = resources.client()
@@ -54,20 +54,20 @@ public class CountriesResourceTest {
   @Test
   public void shouldGetCountryGroupResource() throws Exception {
 
-    List<CountryView> countries = Arrays.asList(new CountryView("CTRY1", "France"), new CountryView("CTRY2", "Spain"));
+    List<CountryEntry> countries = Arrays.asList(new CountryEntry("CTRY1", "France"), new CountryEntry("CTRY2", "Spain"));
     when(countriesService.getCountryGroup("eu")).thenReturn(Optional.of(new CountryListEntry(countries)));
 
     Response result = resources.client()
-      .target("/countries/group/eu")
-      .request()
-      .get();
+        .target("/countries/group/eu")
+        .request()
+        .get();
 
     assertThat(result.getStatus()).isEqualTo(200);
 
     String expectedJson = "[{\"countryRef\":\"CTRY1\",\"countryName\":\"France\"}," +
-      "{\"countryRef\":\"CTRY2\",\"countryName\":\"Spain\"}]";
+        "{\"countryRef\":\"CTRY2\",\"countryName\":\"Spain\"}]";
     assertEquals(expectedJson,
-      result.readEntity(String.class), false);
+        result.readEntity(String.class), false);
   }
 
   @Test
@@ -80,7 +80,8 @@ public class CountriesResourceTest {
         .request()
         .get();
 
-    Map<String, Object> map = result.readEntity(new GenericType<Map<String, Object>>(){});
+    Map<String, Object> map = result.readEntity(new GenericType<Map<String, Object>>() {
+    });
     assertThat((int) map.get("code")).isEqualTo(404);
     assertThat((String) map.get("message")).isEqualTo("Country set does not exist - blah");
   }
@@ -95,7 +96,8 @@ public class CountriesResourceTest {
         .request()
         .get();
 
-    Map<String, Object> map = result.readEntity(new GenericType<Map<String, Object>>(){});
+    Map<String, Object> map = result.readEntity(new GenericType<Map<String, Object>>() {
+    });
     assertThat((int) map.get("code")).isEqualTo(404);
     assertThat((String) map.get("message")).isEqualTo("Country group does not exist - blah");
   }
@@ -110,7 +112,8 @@ public class CountriesResourceTest {
         .request()
         .get();
 
-    Map<String, Object> map = result.readEntity(new GenericType<Map<String, Object>>(){});
+    Map<String, Object> map = result.readEntity(new GenericType<Map<String, Object>>() {
+    });
     assertThat((int) map.get("code")).isEqualTo(500);
     assertThat((String) map.get("message")).isEqualTo("service error");
   }
@@ -118,8 +121,8 @@ public class CountriesResourceTest {
   @Test
   public void shouldFilterCountriesWithNegativeId() throws Exception {
 
-    List<CountryView> countries = Arrays.asList(new CountryView("CTRY1", "France"), new CountryView("CTRY2", "Spain"),
-        new CountryView(CountriesResource.NEGATIVE_COUNTRY_ID_PREFIX + "1", "Negative"));
+    List<CountryEntry> countries = Arrays.asList(new CountryEntry("CTRY1", "France"), new CountryEntry("CTRY2", "Spain"),
+        new CountryEntry(CountriesResource.NEGATIVE_COUNTRY_ID_PREFIX + "1", "Negative"));
     when(countriesService.getCountrySet("export-control")).thenReturn(Optional.of(new CountryListEntry(countries)));
 
     Response result = resources.client()

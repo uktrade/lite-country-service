@@ -10,9 +10,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.countryservice.cache.CountryListCache;
 import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
+import uk.gov.bis.lite.countryservice.model.CountryEntry;
 
 import java.util.Arrays;
 import java.util.List;
@@ -35,8 +35,8 @@ public class CountriesServiceTest {
 
   @Test
   public void shouldGetCountrySet() throws Exception {
-    List<CountryView> countries = Arrays.asList(new CountryView("1", "Albania"), new CountryView("4", "Brazil"),
-        new CountryView("3", "Finland"));
+    List<CountryEntry> countries = Arrays.asList(new CountryEntry("1", "Albania"), new CountryEntry("4", "Brazil"),
+        new CountryEntry("3", "Finland"));
 
     CountryListEntry countryListEntry = new CountryListEntry(countries);
     when(countryListCache.getCountriesBySetName(COUNTRY_SET_NAME)).thenReturn(Optional.of(countryListEntry));
@@ -57,8 +57,8 @@ public class CountriesServiceTest {
 
   @Test
   public void shouldGetCountryGroup() throws Exception {
-    List<CountryView> countries = Arrays.asList(new CountryView("1", "Sweden"), new CountryView("4", "France"),
-      new CountryView("3", "Germany"));
+    List<CountryEntry> countries = Arrays.asList(new CountryEntry("1", "Sweden"), new CountryEntry("4", "France"),
+        new CountryEntry("3", "Germany"));
 
     CountryListEntry countryListEntry = new CountryListEntry(countries);
     when(countryListCache.getCountriesByGroupName(COUNTRY_GROUP_NAME)).thenReturn(Optional.of(countryListEntry));
