@@ -1,11 +1,11 @@
 package uk.gov.bis.lite.countryservice.model;
 
-public class SynonymData {
+public class SynonymEntry {
 
   private final String countryRef;
   private final String synonym;
 
-  public SynonymData(String countryRef, String synonym) {
+  public SynonymEntry(String countryRef, String synonym) {
     this.countryRef = countryRef;
     this.synonym = synonym;
   }

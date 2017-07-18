@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CountryListCacheTest {
+public class CountryCacheTest {
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
@@ -27,11 +27,11 @@ public class CountryListCacheTest {
   @Mock
   private SpireService spireService;
 
-  private CountryListCache countryListCache;
+  private CountryCache countryCache;
 
   @Before
   public void setUp() throws Exception {
-    countryListCache = new CountryListCache(spireService);
+    countryCache = new CountryCache(spireService);
   }
 
   @Test
@@ -39,11 +39,11 @@ public class CountryListCacheTest {
 
     setupCache();
 
-    Optional<CountryListEntry> countryListEntry = countryListCache.getCountriesBySetName("export-control");
+    Optional<List<CountryEntry>> countryListEntry = countryCache.getCountriesBySetName("export-control");
 
     assertThat(countryListEntry.isPresent()).isTrue();
 
-    List<CountryEntry> countries = countryListEntry.get().getList();
+    List<CountryEntry> countries = countryListEntry.get();
     assertThat(countries.size()).isEqualTo(3);
     assertThat(countries.get(0).getCountryName()).isEqualTo("Albania");
     assertThat(countries.get(1).getCountryName()).isEqualTo("Brazil");
@@ -53,7 +53,7 @@ public class CountryListCacheTest {
   @Test
   public void shouldGetEmptyListWhenCountrySetNotFoundInCache() throws Exception {
 
-    Optional<CountryListEntry> countryListEntry = countryListCache.getCountriesBySetName("blah");
+    Optional<List<CountryEntry>> countryListEntry = countryCache.getCountriesBySetName("blah");
 
     assertThat(countryListEntry.isPresent()).isFalse();
   }
@@ -63,11 +63,11 @@ public class CountryListCacheTest {
 
     setupCache();
 
-    Optional<CountryListEntry> countryListEntry = countryListCache.getCountriesByGroupName("eu");
+    Optional<List<CountryEntry>> countryListEntry = countryCache.getCountriesByGroupName("eu");
 
     assertThat(countryListEntry.isPresent()).isTrue();
 
-    List<CountryEntry> countries = countryListEntry.get().getList();
+    List<CountryEntry> countries = countryListEntry.get();
     assertThat(countries.size()).isEqualTo(3);
     assertThat(countries.get(0).getCountryName()).isEqualTo("France");
     assertThat(countries.get(1).getCountryName()).isEqualTo("Germany");
@@ -77,7 +77,7 @@ public class CountryListCacheTest {
   @Test
   public void shouldGetEmptyListWhenCountryGroupNotFoundInCache() throws Exception {
 
-    Optional<CountryListEntry> countryListEntry = countryListCache.getCountriesByGroupName("blah");
+    Optional<List<CountryEntry>> countryListEntry = countryCache.getCountriesByGroupName("blah");
 
     assertThat(countryListEntry.isPresent()).isFalse();
   }
@@ -95,7 +95,7 @@ public class CountryListCacheTest {
     when(spireService.loadCountriesByCountrySetId(Matchers.anyString())).thenReturn(countrySet);
     when(spireService.loadCountriesByCountryGroupId(Matchers.anyString())).thenReturn(countryGroup);
 
-    countryListCache.load();
+    countryCache.load();
   }
 
 }

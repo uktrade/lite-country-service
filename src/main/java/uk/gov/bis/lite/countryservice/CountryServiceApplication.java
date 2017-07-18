@@ -12,12 +12,11 @@ import org.quartz.impl.StdSchedulerFactory;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
 import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstaller;
 import uk.gov.bis.lite.common.jersey.filter.ContainerCorrelationIdFilter;
-import uk.gov.bis.lite.countryservice.cache.CountryListCache;
+import uk.gov.bis.lite.countryservice.cache.CountryCache;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import uk.gov.bis.lite.countryservice.config.GuiceModule;
-import uk.gov.bis.lite.countryservice.exception.CountryServiceException.ServiceExceptionMapper;
-import uk.gov.bis.lite.countryservice.resource.CountriesResource;
 import uk.gov.bis.lite.countryservice.resource.CountryDataResource;
+import uk.gov.bis.lite.countryservice.resource.CountryResource;
 import uk.gov.bis.lite.countryservice.scheduler.CountryListCacheScheduler;
 
 public class CountryServiceApplication extends Application<CountryApplicationConfiguration> {
@@ -42,7 +41,7 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
     guiceBundle = new GuiceBundle.Builder<CountryApplicationConfiguration>()
         .modules(module)
         .installers(ResourceInstaller.class)
-        .extensions(CountriesResource.class)
+        .extensions(CountryResource.class)
         .extensions(CountryDataResource.class)
         .build();
 
@@ -53,11 +52,11 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
   public void run(CountryApplicationConfiguration configuration, Environment environment) throws Exception {
     Injector injector = guiceBundle.getInjector();
 
-    CountryListCache countryListCache = injector.getInstance(CountryListCache.class);
+    CountryCache countryCache = injector.getInstance(CountryCache.class);
 
     // Store cache reference in scheduler context to be later retrieved from the job
     Scheduler scheduler = new StdSchedulerFactory().getScheduler();
-    scheduler.getContext().put("countryListCache", countryListCache);
+    scheduler.getContext().put("countryCache", countryCache);
 
     environment.lifecycle().manage(new CountryListCacheScheduler(scheduler, configuration));
 
@@ -66,8 +65,7 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
     Flyway flyway = new Flyway();
     flyway.setDataSource(dataSourceFactory.getUrl(), dataSourceFactory.getUser(), dataSourceFactory.getPassword());
     flyway.migrate();
-
-    environment.jersey().register(ServiceExceptionMapper.class);
+    
     environment.jersey().register(ContainerCorrelationIdFilter.class);
 
   }

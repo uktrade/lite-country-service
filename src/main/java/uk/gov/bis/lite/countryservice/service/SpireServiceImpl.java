@@ -35,10 +35,10 @@ public class SpireServiceImpl implements SpireService {
   }
 
   private List<CountryEntry> getCountriesFromSpire(SpireRequest request) {
-    List<CountryEntry> countries = spireCountriesClient.sendRequest(request).stream().map(this::getCountryEntry).collect(Collectors.toList());
-    if (!countries.isEmpty()) {
-      countries.sort(Comparator.comparing(CountryEntry::getCountryName));
-    }
+    List<CountryEntry> countries = spireCountriesClient.sendRequest(request).stream()
+        .map(this::getCountryEntry)
+        .collect(Collectors.toList());
+    countries.sort(Comparator.comparing(CountryEntry::getCountryName));
     return countries;
   }
 

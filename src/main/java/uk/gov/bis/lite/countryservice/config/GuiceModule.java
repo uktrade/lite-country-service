@@ -9,8 +9,12 @@ import org.skife.jdbi.v2.DBI;
 import ru.vyarus.dropwizard.guice.module.support.ConfigurationAwareModule;
 import uk.gov.bis.lite.common.spire.client.SpireClientConfig;
 import uk.gov.bis.lite.common.spire.client.SpireRequestConfig;
-import uk.gov.bis.lite.countryservice.service.CountriesService;
-import uk.gov.bis.lite.countryservice.service.CountriesServiceImpl;
+import uk.gov.bis.lite.countryservice.dao.SynonymDao;
+import uk.gov.bis.lite.countryservice.dao.SynonymDaoImpl;
+import uk.gov.bis.lite.countryservice.service.CountryService;
+import uk.gov.bis.lite.countryservice.service.CountryServiceImpl;
+import uk.gov.bis.lite.countryservice.service.SpireService;
+import uk.gov.bis.lite.countryservice.service.SpireServiceImpl;
 import uk.gov.bis.lite.countryservice.spire.CountryParser;
 import uk.gov.bis.lite.countryservice.spire.SpireCountriesClient;
 
@@ -23,7 +27,9 @@ public class GuiceModule extends AbstractModule implements ConfigurationAwareMod
 
   @Override
   protected void configure() {
-    bind(CountriesService.class).to(CountriesServiceImpl.class);
+    bind(SpireService.class).to(SpireServiceImpl.class);
+    bind(CountryService.class).to(CountryServiceImpl.class);
+    bind(SynonymDao.class).to(SynonymDaoImpl.class);
   }
 
   @Override

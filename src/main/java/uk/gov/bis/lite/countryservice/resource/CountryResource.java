@@ -4,10 +4,9 @@ import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import org.hibernate.validator.constraints.NotEmpty;
-import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
-import uk.gov.bis.lite.countryservice.exception.ErrorResponse;
-import uk.gov.bis.lite.countryservice.model.CountryEntry;
-import uk.gov.bis.lite.countryservice.service.CountriesService;
+import uk.gov.bis.lite.countryservice.api.CountryView;
+import uk.gov.bis.lite.countryservice.exception.CountryListNotFoundException;
+import uk.gov.bis.lite.countryservice.service.CountryService;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,15 +22,15 @@ import javax.ws.rs.core.Response;
 
 @Path("/countries")
 @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-public class CountriesResource {
+public class CountryResource {
 
   static final String NEGATIVE_COUNTRY_ID_PREFIX = "CTRY-";
-  private final CountriesService countriesService;
+  private final CountryService countryService;
   private final Integer cacheExpirySeconds;
 
   @Inject
-  public CountriesResource(CountriesService countriesService, @Named("cacheExpirySeconds") Integer cacheExpirySeconds) {
-    this.countriesService = countriesService;
+  public CountryResource(CountryService countryService, @Named("cacheExpirySeconds") Integer cacheExpirySeconds) {
+    this.countryService = countryService;
     this.cacheExpirySeconds = cacheExpirySeconds;
   }
 
@@ -39,11 +38,11 @@ public class CountriesResource {
   @Path("set/{countrySetName}")
   @Timed // measures the duration of requests to a resource
   public Response getCountryList(@PathParam("countrySetName") @NotEmpty String countrySetName) {
-    Optional<CountryListEntry> countryListEntry = countriesService.getCountrySet(countrySetName);
-    if (countryListEntry.isPresent()) {
-      return buildResponse(countryListEntry.get());
+    Optional<List<CountryView>> countryViews = countryService.getCountrySet(countrySetName);
+    if (countryViews.isPresent()) {
+      return buildResponse(countryViews.get());
     } else {
-      return ErrorResponse.buildResponse("Country set does not exist - " + countrySetName, 404);
+      throw new CountryListNotFoundException("Country set does not exist - " + countrySetName);
     }
   }
 
@@ -51,30 +50,31 @@ public class CountriesResource {
   @Path("group/{groupName}")
   @Timed // measures the duration of requests to a resource
   public Response getCountryGroups(@PathParam("groupName") @NotEmpty String groupName) {
-    Optional<CountryListEntry> countryListEntry = countriesService.getCountryGroup(groupName);
-    if (countryListEntry.isPresent()) {
-      return buildResponse(countryListEntry.get());
+    Optional<List<CountryView>> countryViews = countryService.getCountryGroup(groupName);
+    if (countryViews.isPresent()) {
+      return buildResponse(countryViews.get());
     } else {
-      return ErrorResponse.buildResponse("Country group does not exist - " + groupName, 404);
+      throw new CountryListNotFoundException("Country group does not exist - " + groupName);
     }
   }
 
-  private Response buildResponse(CountryListEntry countryListEntry) {
+  private Response buildResponse(List<CountryView> countryViews) {
     //Filter "negative" country IDs
-    List<CountryEntry> spireCountryList = countryListEntry.getList()
+    List<CountryView> spireCountryList = countryViews
         .stream()
         .filter(e -> !e.getCountryRef().startsWith(NEGATIVE_COUNTRY_ID_PREFIX))
         .collect(Collectors.toList());
 
     return Response.ok()
         .entity(spireCountryList)
-        .cacheControl(getCacheControl(countryListEntry.getTimeStamp()))
+        .cacheControl(getCacheControl())
         .build();
   }
 
-  private CacheControl getCacheControl(long timestamp) {
+  private CacheControl getCacheControl() {
+    long lastCached = countryService.getLastCached();
     CacheControl cacheControl = new CacheControl();
-    int elapsedTime = (int) ((System.currentTimeMillis() - timestamp) / 1000);
+    int elapsedTime = (int) ((System.currentTimeMillis() - lastCached) / 1000);
 
     cacheControl.setMaxAge(cacheExpirySeconds - elapsedTime);
 

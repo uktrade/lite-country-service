@@ -1,8 +1,5 @@
 package uk.gov.bis.lite.countryservice.cache;
 
-import java.util.Arrays;
-import java.util.Optional;
-
 public enum CountryGroup {
 
   EU("eu", "EU");
@@ -22,8 +19,5 @@ public enum CountryGroup {
   public String getSpireCountryGroupId() {
     return spireCountryGroupId;
   }
-
-  public static Optional<CountryGroup> getByName(String name) {
-    return Arrays.stream(CountryGroup.values()).filter(c -> c.getName().equals(name)).findFirst();
-  }
+  
 }

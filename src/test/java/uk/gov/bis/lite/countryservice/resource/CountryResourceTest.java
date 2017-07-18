@@ -8,11 +8,9 @@ import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.Rule;
 import org.junit.Test;
-import uk.gov.bis.lite.countryservice.cache.CountryListEntry;
+import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.countryservice.exception.CountryServiceException;
-import uk.gov.bis.lite.countryservice.exception.CountryServiceException.ServiceExceptionMapper;
-import uk.gov.bis.lite.countryservice.model.CountryEntry;
-import uk.gov.bis.lite.countryservice.service.CountriesService;
+import uk.gov.bis.lite.countryservice.service.CountryService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,21 +20,20 @@ import java.util.Optional;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
-public class CountriesResourceTest {
+public class CountryResourceTest {
 
-  private CountriesService countriesService = mock(CountriesService.class);
+  private CountryService countryService = mock(CountryService.class);
 
   @Rule
   public final ResourceTestRule resources = ResourceTestRule.builder()
-      .addResource(new CountriesResource(countriesService, 1000))
-      .addProvider(ServiceExceptionMapper.class)
+      .addResource(new CountryResource(countryService, 1000))
       .build();
 
   @Test
   public void shouldGetCountrySetResource() throws Exception {
 
-    List<CountryEntry> countries = Arrays.asList(new CountryEntry("CTRY1", "France"), new CountryEntry("CTRY2", "Spain"));
-    when(countriesService.getCountrySet("export-control")).thenReturn(Optional.of(new CountryListEntry(countries)));
+    List<CountryView> countries = Arrays.asList(new CountryView("CTRY1", "France", new String[]{}), new CountryView("CTRY2", "Spain", new String[]{}));
+    when(countryService.getCountrySet("export-control")).thenReturn(Optional.of(countries));
 
     Response result = resources.client()
         .target("/countries/set/export-control")
@@ -54,8 +51,8 @@ public class CountriesResourceTest {
   @Test
   public void shouldGetCountryGroupResource() throws Exception {
 
-    List<CountryEntry> countries = Arrays.asList(new CountryEntry("CTRY1", "France"), new CountryEntry("CTRY2", "Spain"));
-    when(countriesService.getCountryGroup("eu")).thenReturn(Optional.of(new CountryListEntry(countries)));
+    List<CountryView> countries = Arrays.asList(new CountryView("CTRY1", "France", new String[]{}), new CountryView("CTRY2", "Spain", new String[]{}));
+    when(countryService.getCountryGroup("eu")).thenReturn(Optional.of(countries));
 
     Response result = resources.client()
         .target("/countries/group/eu")
@@ -73,7 +70,7 @@ public class CountriesResourceTest {
   @Test
   public void shouldReturn404StatusCodeWhenCountrySetNotFound() throws Exception {
 
-    when(countriesService.getCountrySet("blah")).thenReturn(Optional.empty());
+    when(countryService.getCountrySet("blah")).thenReturn(Optional.empty());
 
     Response result = resources.client()
         .target("/countries/set/blah")
@@ -89,7 +86,7 @@ public class CountriesResourceTest {
   @Test
   public void shouldReturn404StatusCodeWhenCountryGroupNotFound() throws Exception {
 
-    when(countriesService.getCountryGroup("blah")).thenReturn(Optional.empty());
+    when(countryService.getCountryGroup("blah")).thenReturn(Optional.empty());
 
     Response result = resources.client()
         .target("/countries/group/blah")
@@ -105,7 +102,7 @@ public class CountriesResourceTest {
   @Test
   public void shouldReturn500StatusCodeForServiceException() throws Exception {
 
-    when(countriesService.getCountrySet("blah")).thenThrow(new CountryServiceException("service error", null));
+    when(countryService.getCountrySet("blah")).thenThrow(new CountryServiceException("service error", null));
 
     Response result = resources.client()
         .target("/countries/set/blah")
@@ -121,9 +118,9 @@ public class CountriesResourceTest {
   @Test
   public void shouldFilterCountriesWithNegativeId() throws Exception {
 
-    List<CountryEntry> countries = Arrays.asList(new CountryEntry("CTRY1", "France"), new CountryEntry("CTRY2", "Spain"),
-        new CountryEntry(CountriesResource.NEGATIVE_COUNTRY_ID_PREFIX + "1", "Negative"));
-    when(countriesService.getCountrySet("export-control")).thenReturn(Optional.of(new CountryListEntry(countries)));
+    List<CountryView> countries = Arrays.asList(new CountryView("CTRY1", "France", new String[]{}), new CountryView("CTRY2", "Spain", new String[]{}),
+        new CountryView(CountryResource.NEGATIVE_COUNTRY_ID_PREFIX + "1", "Negative", new String[]{}));
+    when(countryService.getCountrySet("export-control")).thenReturn(Optional.of(countries));
 
     Response result = resources.client()
         .target("/countries/set/export-control")
