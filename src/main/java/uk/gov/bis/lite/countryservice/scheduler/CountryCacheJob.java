@@ -9,9 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.countryservice.cache.CountryCache;
 
-public class CountryListCacheJob implements Job {
+public class CountryCacheJob implements Job {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(CountryListCacheJob.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CountryCacheJob.class);
 
   @Override
   public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {

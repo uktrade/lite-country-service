@@ -25,4 +25,4 @@ A `CountryView` is currently very simple and consists only of a reference and co
 ## SPIRE integration
 
 The `SpireCountriesClient` is used to retrieve the country list and group data from a SOAP endpoint. This is populated into 
-the `CountryListCache`, and refreshed by a daily job (`CountryListCacheJob`).
+the `CountryCache`, and refreshed by a daily job (`CountryCacheJob`).

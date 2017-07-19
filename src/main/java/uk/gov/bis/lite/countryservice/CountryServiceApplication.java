@@ -17,7 +17,7 @@ import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import uk.gov.bis.lite.countryservice.config.GuiceModule;
 import uk.gov.bis.lite.countryservice.resource.CountryDataResource;
 import uk.gov.bis.lite.countryservice.resource.CountryResource;
-import uk.gov.bis.lite.countryservice.scheduler.CountryListCacheScheduler;
+import uk.gov.bis.lite.countryservice.scheduler.CountryCacheScheduler;
 
 public class CountryServiceApplication extends Application<CountryApplicationConfiguration> {
 
@@ -58,7 +58,7 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
     Scheduler scheduler = new StdSchedulerFactory().getScheduler();
     scheduler.getContext().put("countryCache", countryCache);
 
-    environment.lifecycle().manage(new CountryListCacheScheduler(scheduler, configuration));
+    environment.lifecycle().manage(new CountryCacheScheduler(scheduler, configuration));
 
     //Perform/validate flyway migration on startup
     DataSourceFactory dataSourceFactory = configuration.getDataSourceFactory();

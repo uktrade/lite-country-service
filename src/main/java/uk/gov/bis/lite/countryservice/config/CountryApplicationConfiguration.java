@@ -16,7 +16,7 @@ public class CountryApplicationConfiguration extends Configuration {
 
   @NotEmpty
   @JsonProperty
-  private String countryListCacheJobCron;
+  private String countryCacheJobCron;
 
   @NotEmpty
   @JsonProperty
@@ -39,8 +39,8 @@ public class CountryApplicationConfiguration extends Configuration {
     return cacheExpirySeconds;
   }
 
-  public String getCountryListCacheJobCron() {
-    return countryListCacheJobCron;
+  public String getCountryCacheJobCron() {
+    return countryCacheJobCron;
   }
 
   public String getSpireClientUserName() {
