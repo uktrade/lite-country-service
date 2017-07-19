@@ -78,7 +78,7 @@ public class CountryDataResource {
     if (!unmatchedCountryRefs.isEmpty()) {
       throw new CountryRefNotFoundException("The following countryRef do not exist: " + String.join(", ", unmatchedCountryRefs));
     } else if (!duplicateCountryRefs.isEmpty()) {
-      throw new WebApplicationException("The following countryRef are duplicate: " + String.join(", ", duplicateCountryRefs));
+      throw new WebApplicationException("The following countryRef are duplicate: " + String.join(", ", duplicateCountryRefs), Response.Status.BAD_REQUEST);
     } else {
       countryService.bulkUpdateCountryData(countryDataList);
       return Response.ok().build();

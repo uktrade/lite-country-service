@@ -25,6 +25,11 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
 
   private final Module module;
 
+  public CountryServiceApplication() {
+    super();
+    this.module = new GuiceModule();
+  }
+
   public CountryServiceApplication(Module module) {
     super();
     this.module = module;
@@ -65,13 +70,13 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
     Flyway flyway = new Flyway();
     flyway.setDataSource(dataSourceFactory.getUrl(), dataSourceFactory.getUser(), dataSourceFactory.getPassword());
     flyway.migrate();
-    
+
     environment.jersey().register(ContainerCorrelationIdFilter.class);
 
   }
 
   public static void main(String[] args) throws Exception {
-    new CountryServiceApplication(new GuiceModule()).run(args);
+    new CountryServiceApplication().run(args);
   }
 
   public GuiceBundle<CountryApplicationConfiguration> getGuiceBundle() {

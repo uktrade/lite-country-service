@@ -8,8 +8,8 @@ import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import uk.gov.bis.lite.countryservice.api.CountryView;
-import uk.gov.bis.lite.countryservice.exception.CountryServiceException;
 import uk.gov.bis.lite.countryservice.service.CountryService;
 
 import java.util.Arrays;
@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
 
 public class CountryResourceTest {
 
-  private CountryService countryService = mock(CountryService.class);
+  private final CountryService countryService = mock(CountryService.class);
 
   @Rule
   public final ResourceTestRule resources = ResourceTestRule.builder()
@@ -30,9 +30,11 @@ public class CountryResourceTest {
       .build();
 
   @Test
-  public void shouldGetCountrySetResource() throws Exception {
+  public void shouldGetCountrySetResource() {
 
-    List<CountryView> countries = Arrays.asList(new CountryView("CTRY1", "France", new String[]{}), new CountryView("CTRY2", "Spain", new String[]{}));
+    List<CountryView> countries = Arrays.asList(
+        new CountryView("CTRY1", "France", new String[]{}),
+        new CountryView("CTRY2", "Spain", new String[]{"España"}));
     when(countryService.getCountrySet("export-control")).thenReturn(Optional.of(countries));
 
     Response result = resources.client()
@@ -42,16 +44,17 @@ public class CountryResourceTest {
 
     assertThat(result.getStatus()).isEqualTo(200);
 
-    String expectedJson = "[{\"countryRef\":\"CTRY1\",\"countryName\":\"France\"}," +
-        "{\"countryRef\":\"CTRY2\",\"countryName\":\"Spain\"}]";
-    assertEquals(expectedJson,
-        result.readEntity(String.class), false);
+    String expected = "[{'countryRef':'CTRY1','countryName':'France','synonyms':[]},{'countryRef':'CTRY2','countryName':'Spain','synonyms':['España']}]";
+    String actual = result.readEntity(String.class);
+    assertEquals(toJson(expected), actual, JSONCompareMode.NON_EXTENSIBLE);
   }
 
   @Test
-  public void shouldGetCountryGroupResource() throws Exception {
+  public void shouldGetCountryGroupResource() {
 
-    List<CountryView> countries = Arrays.asList(new CountryView("CTRY1", "France", new String[]{}), new CountryView("CTRY2", "Spain", new String[]{}));
+    List<CountryView> countries = Arrays.asList(
+        new CountryView("CTRY1", "France", new String[]{}),
+        new CountryView("CTRY2", "Spain", new String[]{"España"}));
     when(countryService.getCountryGroup("eu")).thenReturn(Optional.of(countries));
 
     Response result = resources.client()
@@ -61,14 +64,13 @@ public class CountryResourceTest {
 
     assertThat(result.getStatus()).isEqualTo(200);
 
-    String expectedJson = "[{\"countryRef\":\"CTRY1\",\"countryName\":\"France\"}," +
-        "{\"countryRef\":\"CTRY2\",\"countryName\":\"Spain\"}]";
-    assertEquals(expectedJson,
-        result.readEntity(String.class), false);
+    String expected = "[{'countryRef':'CTRY1','countryName':'France','synonyms':[]},{'countryRef':'CTRY2','countryName':'Spain','synonyms':['España']}]";
+    String actual = result.readEntity(String.class);
+    assertEquals(toJson(expected), actual, JSONCompareMode.NON_EXTENSIBLE);
   }
 
   @Test
-  public void shouldReturn404StatusCodeWhenCountrySetNotFound() throws Exception {
+  public void shouldReturn404StatusCodeWhenCountrySetNotFound() {
 
     when(countryService.getCountrySet("blah")).thenReturn(Optional.empty());
 
@@ -84,7 +86,7 @@ public class CountryResourceTest {
   }
 
   @Test
-  public void shouldReturn404StatusCodeWhenCountryGroupNotFound() throws Exception {
+  public void shouldReturn404StatusCodeWhenCountryGroupNotFound() {
 
     when(countryService.getCountryGroup("blah")).thenReturn(Optional.empty());
 
@@ -100,25 +102,10 @@ public class CountryResourceTest {
   }
 
   @Test
-  public void shouldReturn500StatusCodeForServiceException() throws Exception {
+  public void shouldFilterNegativeIdFromCountrySet() {
 
-    when(countryService.getCountrySet("blah")).thenThrow(new CountryServiceException("service error", null));
-
-    Response result = resources.client()
-        .target("/countries/set/blah")
-        .request()
-        .get();
-
-    Map<String, Object> map = result.readEntity(new GenericType<Map<String, Object>>() {
-    });
-    assertThat((int) map.get("code")).isEqualTo(500);
-    assertThat((String) map.get("message")).isEqualTo("service error");
-  }
-
-  @Test
-  public void shouldFilterCountriesWithNegativeId() throws Exception {
-
-    List<CountryView> countries = Arrays.asList(new CountryView("CTRY1", "France", new String[]{}), new CountryView("CTRY2", "Spain", new String[]{}),
+    List<CountryView> countries = Arrays.asList(
+        new CountryView("CTRY2", "Spain", new String[]{"España"}),
         new CountryView(CountryResource.NEGATIVE_COUNTRY_ID_PREFIX + "1", "Negative", new String[]{}));
     when(countryService.getCountrySet("export-control")).thenReturn(Optional.of(countries));
 
@@ -129,9 +116,33 @@ public class CountryResourceTest {
 
     assertThat(result.getStatus()).isEqualTo(200);
 
-    String expectedJson = "[{\"countryRef\":\"CTRY1\",\"countryName\":\"France\"}," +
-        "{\"countryRef\":\"CTRY2\",\"countryName\":\"Spain\"}]";
-    assertEquals(expectedJson, result.readEntity(String.class), false);
+    String expected = "[{'countryRef':'CTRY2','countryName':'Spain','synonyms':['España']}]";
+    String actual = result.readEntity(String.class);
+    assertEquals(toJson(expected), actual, JSONCompareMode.NON_EXTENSIBLE);
+  }
+
+  @Test
+  public void shouldFilterNegativeIdFromCountryGroup() {
+
+    List<CountryView> countries = Arrays.asList(
+        new CountryView("CTRY2", "Spain", new String[]{"España"}),
+        new CountryView(CountryResource.NEGATIVE_COUNTRY_ID_PREFIX + "1", "Negative", new String[]{}));
+    when(countryService.getCountryGroup("eu")).thenReturn(Optional.of(countries));
+
+    Response result = resources.client()
+        .target("/countries/group/eu")
+        .request()
+        .get();
+
+    assertThat(result.getStatus()).isEqualTo(200);
+
+    String expected = "[{'countryRef':'CTRY2','countryName':'Spain','synonyms':['España']}]";
+    String actual = result.readEntity(String.class);
+    assertEquals(toJson(expected), actual, JSONCompareMode.NON_EXTENSIBLE);
+  }
+
+  private String toJson(String str) {
+    return str.replace("'", "\"");
   }
 
 }

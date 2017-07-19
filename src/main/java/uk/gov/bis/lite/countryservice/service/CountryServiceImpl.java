@@ -15,6 +15,7 @@ import uk.gov.bis.lite.countryservice.model.CountryEntry;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -37,7 +38,7 @@ public class CountryServiceImpl implements CountryService {
   public List<String> getUnmatchedCountryRefs(List<CountryData> countryDataList) {
     return countryDataList.stream()
         .map(countryData -> countryData == null ? null : countryData.getCountryRef())
-        .filter(countryRef -> countryCache.getCountryEntry(countryRef).isPresent())
+        .filter(countryRef -> !countryCache.getCountryEntry(countryRef).isPresent())
         .collect(Collectors.toList());
   }
 
@@ -90,17 +91,9 @@ public class CountryServiceImpl implements CountryService {
   @Override
   public List<CountryView> getCountryViews() {
     Collection<CountryEntry> countryEntries = countryCache.getCountryEntries();
-    return createCountryViews(countryEntries);
-  }
-
-  private List<CountryView> createCountryViews(Collection<CountryEntry> countryEntries) {
-    Multimap<String, String> synonymMap = HashMultimap.create();
-    synonymDao.getSynonyms().forEach(synonymData -> synonymMap.put(synonymData.getCountryRef(), synonymData.getSynonym()));
-    return countryEntries.stream()
-        .map(countryEntry -> {
-          String[] synonyms = synonymMap.get(countryEntry.getCountryRef()).toArray(new String[0]);
-          return new CountryView(countryEntry.getCountryRef(), countryEntry.getCountryName(), synonyms);
-        }).collect(Collectors.toList());
+    List<CountryView> countryViews = createCountryViews(countryEntries);
+    countryViews.sort(Comparator.comparing(CountryView::getCountryName));
+    return countryViews;
   }
 
   @Override
@@ -121,6 +114,17 @@ public class CountryServiceImpl implements CountryService {
   @Override
   public long getLastCached() {
     return countryCache.getLastCached();
+  }
+
+  private List<CountryView> createCountryViews(Collection<CountryEntry> countryEntries) {
+    Multimap<String, String> synonymMap = HashMultimap.create();
+    synonymDao.getSynonyms().forEach(synonymData -> synonymMap.put(synonymData.getCountryRef(), synonymData.getSynonym()));
+    return countryEntries.stream()
+        .map(countryEntry -> {
+          String[] synonyms = synonymMap.get(countryEntry.getCountryRef()).toArray(new String[0]);
+          Arrays.sort(synonyms);
+          return new CountryView(countryEntry.getCountryRef(), countryEntry.getCountryName(), synonyms);
+        }).collect(Collectors.toList());
   }
 
 }

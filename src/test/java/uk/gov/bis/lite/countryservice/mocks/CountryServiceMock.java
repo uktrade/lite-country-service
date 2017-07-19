@@ -5,9 +5,12 @@ import uk.gov.bis.lite.countryservice.api.CountryData;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.countryservice.service.CountryService;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Singleton
 public class CountryServiceMock implements CountryService {
@@ -18,6 +21,16 @@ public class CountryServiceMock implements CountryService {
 
   public CountryServiceMock() {
     countries = Collections.singletonList(new CountryView("CRTY0", "United Kingdom", new String[]{}));
+  }
+
+  @Override
+  public List<String> getUnmatchedCountryRefs(List<CountryData> countryDataList) {
+    return new ArrayList<>();
+  }
+
+  @Override
+  public Set<String> getDuplicates(List<CountryData> countryDataList) {
+    return new HashSet<>();
   }
 
   @Override

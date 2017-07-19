@@ -15,12 +15,12 @@ import java.util.Optional;
 @Singleton
 public class CountryCache {
 
+  private final SpireService spireService;
+
   private volatile Map<String, List<CountryEntry>> groupCache = new HashMap<>();
   private volatile Map<String, List<CountryEntry>> setCache = new HashMap<>();
   private volatile Map<String, CountryEntry> countryCache = new HashMap<>();
   private volatile long lastCached = System.currentTimeMillis();
-
-  private final SpireService spireService;
 
   @Inject
   public CountryCache(SpireService spireService) {
@@ -31,6 +31,7 @@ public class CountryCache {
     Map<String, List<CountryEntry>> spireGroupCache = new HashMap<>();
     Map<String, List<CountryEntry>> spireSetCache = new HashMap<>();
     Map<String, CountryEntry> spireCountryCache = new HashMap<>();
+
     // Load country sets
     CountrySet[] countrySets = CountrySet.values();
     for (CountrySet countrySet : countrySets) {
@@ -72,19 +73,11 @@ public class CountryCache {
   }
 
   public Optional<List<CountryEntry>> getCountriesBySetName(String key) {
-    if (key == null) {
-      return Optional.empty();
-    } else {
-      return Optional.ofNullable(setCache.get(key));
-    }
+    return Optional.ofNullable(setCache.get(key));
   }
 
   public Optional<List<CountryEntry>> getCountriesByGroupName(String key) {
-    if (key == null) {
-      return Optional.empty();
-    } else {
-      return Optional.ofNullable(groupCache.get(key));
-    }
+    return Optional.ofNullable(groupCache.get(key));
   }
 
 

@@ -4,40 +4,47 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import uk.gov.bis.lite.countryservice.model.CountryEntry;
 import uk.gov.bis.lite.countryservice.service.SpireService;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CountryCacheTest {
 
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
-
   @Mock
   private SpireService spireService;
 
   private CountryCache countryCache;
 
+  private CountryEntry albania = new CountryEntry("1", "Albania");
+  private CountryEntry brazil = new CountryEntry("2", "Brazil");
+  private CountryEntry finland = new CountryEntry("3", "Finland");
+  private CountryEntry france = new CountryEntry("4", "France");
+  private CountryEntry germany = new CountryEntry("5", "Germany");
+  private CountryEntry sweden = new CountryEntry("6", "Sweden");
+
   @Before
   public void setUp() throws Exception {
     countryCache = new CountryCache(spireService);
+    List<CountryEntry> countrySet = Arrays.asList(albania, brazil, finland);
+    List<CountryEntry> countryGroup = Arrays.asList(france, germany, sweden);
+
+    when(spireService.loadCountriesByCountrySetId("EXPORT_CONTROL")).thenReturn(countrySet);
+    when(spireService.loadCountriesByCountryGroupId("EU")).thenReturn(countryGroup);
+
+    countryCache.load();
   }
 
   @Test
   public void shouldGetCountrySetFromCache() throws Exception {
-
-    setupCache();
 
     Optional<List<CountryEntry>> countryListEntry = countryCache.getCountriesBySetName("export-control");
 
@@ -45,9 +52,9 @@ public class CountryCacheTest {
 
     List<CountryEntry> countries = countryListEntry.get();
     assertThat(countries.size()).isEqualTo(3);
-    assertThat(countries.get(0).getCountryName()).isEqualTo("Albania");
-    assertThat(countries.get(1).getCountryName()).isEqualTo("Brazil");
-    assertThat(countries.get(2).getCountryName()).isEqualTo("Finland");
+    assertThat(countries.get(0)).isEqualTo(albania);
+    assertThat(countries.get(1)).isEqualTo(brazil);
+    assertThat(countries.get(2)).isEqualTo(finland);
   }
 
   @Test
@@ -61,17 +68,15 @@ public class CountryCacheTest {
   @Test
   public void shouldGetCountryGroupFromCache() throws Exception {
 
-    setupCache();
-
     Optional<List<CountryEntry>> countryListEntry = countryCache.getCountriesByGroupName("eu");
 
     assertThat(countryListEntry.isPresent()).isTrue();
 
     List<CountryEntry> countries = countryListEntry.get();
     assertThat(countries.size()).isEqualTo(3);
-    assertThat(countries.get(0).getCountryName()).isEqualTo("France");
-    assertThat(countries.get(1).getCountryName()).isEqualTo("Germany");
-    assertThat(countries.get(2).getCountryName()).isEqualTo("Sweden");
+    assertThat(countries.get(0)).isEqualTo(france);
+    assertThat(countries.get(1)).isEqualTo(germany);
+    assertThat(countries.get(2)).isEqualTo(sweden);
   }
 
   @Test
@@ -82,20 +87,31 @@ public class CountryCacheTest {
     assertThat(countryListEntry.isPresent()).isFalse();
   }
 
-  private void setupCache() throws Exception {
-    CountryEntry albania = new CountryEntry("1", "Albania");
-    CountryEntry brazil = new CountryEntry("2", "Brazil");
-    CountryEntry finland = new CountryEntry("3", "Finland");
-    List<CountryEntry> countrySet = Arrays.asList(albania, brazil, finland);
-    CountryEntry france = new CountryEntry("1", "France");
-    CountryEntry germany = new CountryEntry("2", "Germany");
-    CountryEntry sweden = new CountryEntry("3", "Sweden");
-    List<CountryEntry> countryGroup = Arrays.asList(france, germany, sweden);
+  @Test
+  public void shouldGetCountryEntries() {
+    Collection<CountryEntry> countryEntries = countryCache.getCountryEntries();
+    assertThat(countryEntries).hasSize(6);
+    assertThat(countryEntries).containsExactlyInAnyOrder(albania, brazil, finland, france, germany, sweden);
+  }
 
-    when(spireService.loadCountriesByCountrySetId(Matchers.anyString())).thenReturn(countrySet);
-    when(spireService.loadCountriesByCountryGroupId(Matchers.anyString())).thenReturn(countryGroup);
+  @Test
+  public void shouldGetCountryEntry() {
+    Optional<CountryEntry> countryEntry = countryCache.getCountryEntry("1");
 
-    countryCache.load();
+    assertThat(countryEntry.isPresent());
+    assertThat(countryEntry.get()).isEqualTo(albania);
+  }
+
+  @Test
+  public void shouldGetEmptyOptionalForUnknownCountryRef() {
+    Optional<CountryEntry> countryEntry = countryCache.getCountryEntry("MADE-UP");
+
+    assertThat(countryEntry).isEmpty();
+  }
+
+  @Test
+  public void shouldGetLastCached() {
+    assertThat(countryCache.getLastCached()).isPositive();
   }
 
 }

@@ -41,8 +41,7 @@ public class SpireServiceImpl implements SpireService {
     countries.sort(Comparator.comparing(CountryEntry::getCountryName));
     return countries;
   }
-
-
+  
   private CountryEntry getCountryEntry(SpireCountry spireCountry) {
     return new CountryEntry(spireCountry.getCountryRef(), spireCountry.getCountryName());
   }
