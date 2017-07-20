@@ -172,9 +172,8 @@ public class CountryDataResourceTest {
         .request()
         .put(Entity.json(countryDataList));
 
-    String expected = "{'code':400,'message':'The following countryRef are duplicate: 1, 2'}";
-    String actual = response.readEntity(String.class);
-    assertEquals(toJson(expected), actual, JSONCompareMode.NON_EXTENSIBLE);
+    assertThat(response.getStatus()).isEqualTo(400);
+    assertThat(response.readEntity(String.class)).contains("The following countryRef are duplicate:", "1", "2");
   }
 
   @Test

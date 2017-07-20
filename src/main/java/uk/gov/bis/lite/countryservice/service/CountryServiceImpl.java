@@ -44,7 +44,9 @@ public class CountryServiceImpl implements CountryService {
 
   @Override
   public Set<String> getDuplicates(List<CountryData> countryDataList) {
-    List<String> countryRefs = countryDataList.stream().map(CountryData::getCountryRef).collect(Collectors.toList());
+    List<String> countryRefs = countryDataList.stream()
+        .map(countryData -> countryData == null ? null : countryData.getCountryRef())
+        .collect(Collectors.toList());
     return HashMultiset.create(countryRefs).entrySet().stream()
         .filter(entry -> entry.getCount() > 1)
         .map(Multiset.Entry::getElement)

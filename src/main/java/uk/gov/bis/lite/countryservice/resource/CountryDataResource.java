@@ -47,11 +47,11 @@ public class CountryDataResource {
   @PUT
   @Path("/{countryRef}")
   public Response updateCountryData(@PathParam("countryRef") String countryRef, @NotNull CountryData countryData) {
-    List<String> unmatchedCountryRefs = countryService.getUnmatchedCountryRefs(Collections.singletonList(countryData));
+    CountryData updateCountryData = new CountryData(countryRef, countryData.getSynonyms());
+    List<String> unmatchedCountryRefs = countryService.getUnmatchedCountryRefs(Collections.singletonList(updateCountryData));
     if (!unmatchedCountryRefs.isEmpty()) {
       throw new CountryRefNotFoundException("The following countryRef does not exist: " + unmatchedCountryRefs.get(0));
     } else {
-      CountryData updateCountryData = new CountryData(countryRef, countryData.getSynonyms());
       countryService.bulkUpdateCountryData(Collections.singletonList(updateCountryData));
       return Response.ok().build();
     }
