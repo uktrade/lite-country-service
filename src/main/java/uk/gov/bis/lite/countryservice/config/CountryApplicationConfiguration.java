@@ -30,6 +30,14 @@ public class CountryApplicationConfiguration extends Configuration {
   @JsonProperty
   private String spireClientUrl;
 
+  @NotEmpty
+  @JsonProperty
+  private String adminLogin;
+
+  @NotEmpty
+  @JsonProperty
+  private String adminPassword;
+
   @Valid
   @NotNull
   @JsonProperty("database")
@@ -57,5 +65,13 @@ public class CountryApplicationConfiguration extends Configuration {
 
   public DataSourceFactory getDataSourceFactory() {
     return dataSourceFactory;
+  }
+
+  public String getAdminLogin() {
+    return adminLogin;
+  }
+
+  public String getAdminPassword() {
+    return adminPassword;
   }
 }

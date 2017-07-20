@@ -50,6 +50,7 @@ dependencies {
   compile "io.dropwizard:dropwizard-core:$dropwizardVersion"
   compile "io.dropwizard:dropwizard-db:$dropwizardVersion"
   compile "io.dropwizard:dropwizard-jdbi:$dropwizardVersion"
+  compile "io.dropwizard:dropwizard-auth:$dropwizardVersion"
   compile 'ru.vyarus:dropwizard-guicey:3.2.0'
   compile 'org.quartz-scheduler:quartz:2.1.5'
   compile 'uk.gov.bis.lite:spire-client:1.3'

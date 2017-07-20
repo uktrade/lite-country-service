@@ -67,6 +67,7 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
     Response updateResponse = JerseyClientBuilder.createClient()
         .target(URL + "/CTRY3")
         .request()
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
         .put(Entity.json(updateCountryData));
 
     assertThat(updateResponse.getStatus()).isEqualTo(200);
@@ -87,6 +88,7 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(URL + "/MADE-UP")
         .request()
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
         .put(Entity.json(updateCountryData));
 
     assertThat(response.getStatus()).isEqualTo(404);
@@ -94,6 +96,19 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
     String expected = "{'code':404,'message':'The following countryRef does not exist: MADE-UP'}";
     String actual = response.readEntity(String.class);
     assertEquals(toJson(expected), actual, JSONCompareMode.NON_EXTENSIBLE);
+  }
+
+  @Test
+  public void shouldReturn401ForUpdateCountryDataIfUnauthorized() {
+
+    CountryData updateCountryData = new CountryData(null, new String[]{"madeUp", "M.A.D.E.U.P."});
+    Response response = JerseyClientBuilder.createClient()
+        .target(URL + "/MADE-UP")
+        .request()
+        .put(Entity.json(updateCountryData));
+
+    assertThat(response.getStatus()).isEqualTo(401);
+    assertThat(response.readEntity(String.class)).isEqualTo("Credentials are required to access this resource.");
   }
 
   @Test
@@ -109,6 +124,7 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(URL + "/CTRY3")
         .request()
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
         .delete();
 
     assertThat(response.getStatus()).isEqualTo(202);
@@ -119,6 +135,18 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
     assertThat(afterDelete.getCountryName()).isEqualTo("Abu Dhabi");
     assertThat(afterDelete.getCountryRef()).isEqualTo("CTRY3");
     assertThat(afterDelete.getSynonyms()).isEmpty();
+  }
+
+  @Test
+  public void shouldReturn401ForDeleteCountryDataIfUnauthorized() {
+
+    Response response = JerseyClientBuilder.createClient()
+        .target(URL + "/CTRY3")
+        .request()
+        .delete();
+
+    assertThat(response.getStatus()).isEqualTo(401);
+    assertThat(response.readEntity(String.class)).isEqualTo("Credentials are required to access this resource.");
   }
 
   @Test
@@ -168,6 +196,7 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(URL)
         .request()
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
         .put(Entity.json(countryDataList));
 
     assertThat(response.getStatus()).isEqualTo(404);
@@ -186,11 +215,25 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(URL)
         .request()
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
         .put(Entity.json(countryDataList));
 
     assertThat(response.getStatus()).isEqualTo(400);
 
     assertThat(response.readEntity(String.class)).contains("The following countryRef are duplicate:", "CTRY1434", "CTRY781");
+  }
+
+  @Test
+  public void shouldReturn401ForBulkUpdateIfUnauthorized() {
+
+    CountryData abuDhabi = new CountryData("CTRY3", new String[]{"Arab Emirates", "Dubai"});
+    Response response = JerseyClientBuilder.createClient()
+        .target(URL)
+        .request()
+        .put(Entity.json(Arrays.asList(abuDhabi)));
+
+    assertThat(response.getStatus()).isEqualTo(401);
+    assertThat(response.readEntity(String.class)).isEqualTo("Credentials are required to access this resource.");
   }
 
   @Test
@@ -203,6 +246,7 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(URL)
         .request()
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
         .put(Entity.json(countryDataList));
 
     assertThat(response.getStatus()).isEqualTo(200);
@@ -233,6 +277,7 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(URL)
         .request()
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
         .delete();
 
     assertThat(response.getStatus()).isEqualTo(202);
@@ -254,6 +299,18 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
 
     assertThat(countryViewsAfterDelete).hasSize(21);
     assertThat(countryViewsAfterDelete).extracting(CountryView::getSynonyms).containsOnly(new String[]{});
+  }
+
+  @Test
+  public void shouldReturn401ForDeleteAllCountriesIfUnauthorized() {
+
+    Response response = JerseyClientBuilder.createClient()
+        .target(URL)
+        .request()
+        .delete();
+
+    assertThat(response.getStatus()).isEqualTo(401);
+    assertThat(response.readEntity(String.class)).isEqualTo("Credentials are required to access this resource.");
   }
 
   private CountryView getCountryView(String countryRef) {

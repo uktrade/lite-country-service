@@ -28,3 +28,6 @@ database:
   checkConnectionWhileIdle: false
   evictionInterval: 10s
   minIdleTime: 1 minute
+
+adminLogin: user
+adminPassword: password

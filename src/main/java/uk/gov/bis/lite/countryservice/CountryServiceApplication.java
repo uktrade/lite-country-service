@@ -3,6 +3,9 @@ package uk.gov.bis.lite.countryservice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.dropwizard.Application;
+import io.dropwizard.auth.AuthDynamicFeature;
+import io.dropwizard.auth.PrincipalImpl;
+import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -12,6 +15,7 @@ import org.quartz.impl.StdSchedulerFactory;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
 import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstaller;
 import uk.gov.bis.lite.common.jersey.filter.ContainerCorrelationIdFilter;
+import uk.gov.bis.lite.countryservice.auth.SimpleAuthenticator;
 import uk.gov.bis.lite.countryservice.cache.CountryCache;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import uk.gov.bis.lite.countryservice.config.GuiceModule;
@@ -55,6 +59,13 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
 
   @Override
   public void run(CountryApplicationConfiguration configuration, Environment environment) throws Exception {
+
+    environment.jersey().register(new AuthDynamicFeature(
+        new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
+            .setAuthenticator(new SimpleAuthenticator(configuration.getAdminLogin(), configuration.getAdminPassword()))
+            .setRealm("Control Code Service Admin Authentication")
+            .buildAuthFilter()));
+
     Injector injector = guiceBundle.getInjector();
 
     CountryCache countryCache = injector.getInstance(CountryCache.class);

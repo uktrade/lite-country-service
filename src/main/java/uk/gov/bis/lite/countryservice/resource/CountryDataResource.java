@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.annotation.security.PermitAll;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.DELETE;
@@ -45,6 +46,7 @@ public class CountryDataResource {
   }
 
   @PUT
+  @PermitAll
   @Path("/{countryRef}")
   public Response updateCountryData(@PathParam("countryRef") String countryRef, @NotNull CountryData countryData) {
     CountryData updateCountryData = new CountryData(countryRef, countryData.getSynonyms());
@@ -58,6 +60,7 @@ public class CountryDataResource {
   }
 
   @DELETE
+  @PermitAll
   @Path("/{countryRef}")
   public Response deleteCountryData(@PathParam("countryRef") String countryRef) {
     countryService.deleteCountryData(countryRef);
@@ -72,6 +75,7 @@ public class CountryDataResource {
   }
 
   @PUT
+  @PermitAll
   public Response bulkUpdateCountryData(@NotNull List<CountryData> countryDataList) {
     List<String> unmatchedCountryRefs = countryService.getUnmatchedCountryRefs(countryDataList);
     Set<String> duplicateCountryRefs = countryService.getDuplicates(countryDataList);
@@ -86,6 +90,7 @@ public class CountryDataResource {
   }
 
   @DELETE
+  @PermitAll
   public Response deleteAllCountryData() {
     countryService.deleteAllCountryData();
     return Response.accepted().build();
