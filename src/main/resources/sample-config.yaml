@@ -17,3 +17,19 @@ logging:
     - type: console
       includeCallerData : true
       logFormat: "[%mdc{corrID}] %d [%p] %marker %logger %m%n"
+
+database:
+  driverClass: org.sqlite.JDBC
+  url: jdbc:sqlite:localCountry.db
+  properties:
+    charSet: UTF-8
+  maxWaitForConnection: 30s
+  validationQuery: "/* MyService Health Check */ SELECT 1"
+  minSize: 8
+  maxSize: 32
+  checkConnectionWhileIdle: false
+  evictionInterval: 10s
+  minIdleTime: 1 minute
+
+adminLogin: user
+adminPassword: password

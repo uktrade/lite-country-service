@@ -53,7 +53,7 @@ public class CountryServiceMock implements CountryService {
 
   @Override
   public Optional<CountryView> getCountryView(String countryRef) {
-    return null;
+    return Optional.empty();
   }
 
   @Override

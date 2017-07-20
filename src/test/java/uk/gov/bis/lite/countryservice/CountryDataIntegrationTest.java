@@ -4,17 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONCompareMode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.countryservice.api.CountryData;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.ws.rs.client.Entity;
@@ -22,9 +19,6 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 public class CountryDataIntegrationTest extends BaseIntegrationTest {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(CountryDataIntegrationTest.class);
-  private static final ObjectWriter WRITER = new ObjectMapper().writerWithDefaultPrettyPrinter();
 
   private static final String URL = "http://localhost:8090/country-data";
 
@@ -230,7 +224,7 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(URL)
         .request()
-        .put(Entity.json(Arrays.asList(abuDhabi)));
+        .put(Entity.json(Collections.singletonList(abuDhabi)));
 
     assertThat(response.getStatus()).isEqualTo(401);
     assertThat(response.readEntity(String.class)).isEqualTo("Credentials are required to access this resource.");

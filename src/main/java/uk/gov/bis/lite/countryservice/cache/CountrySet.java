@@ -1,8 +1,5 @@
 package uk.gov.bis.lite.countryservice.cache;
 
-import java.util.Arrays;
-import java.util.Optional;
-
 public enum CountrySet {
 
   EXPORT_CONTROL("export-control", "EXPORT_CONTROL"),

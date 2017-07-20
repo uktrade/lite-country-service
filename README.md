@@ -22,6 +22,17 @@ Known sets and groups are enumerated in `CountrySet` and `CountryGroup` respecti
 
 A `CountryView` is currently very simple and consists only of a reference and country name.
 
+`/country-data`
+
+Endpoints for additional data maintenance. Currently only allow for updating the string array `synonyms`
+
+* GET `/country-data/<countryRef>` - view additional data for a single country
+* PUT `/country-data/<countryRef>` - update additional data for a single country
+* DELETE `/country-data/<countryRef>` - delete additional data for a single country
+* GET `/country-data` - bulk view all country data stored in the service
+* PUT `/country-data` - bulk update data for multiple countries at once
+* DELETE `/country-data` - bulk delete all additional country data
+
 ## SPIRE integration
 
 The `SpireCountriesClient` is used to retrieve the country list and group data from a SOAP endpoint. This is populated into 

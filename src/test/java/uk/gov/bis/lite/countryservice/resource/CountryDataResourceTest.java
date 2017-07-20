@@ -12,8 +12,6 @@ import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONCompareMode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.countryservice.api.CountryData;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.countryservice.service.CountryService;
@@ -29,8 +27,6 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
 public class CountryDataResourceTest {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(CountryDataResourceTest.class);
 
   private static final String URL = "/country-data";
 

@@ -151,7 +151,7 @@ public class CountryServiceTest {
     CountryEntry germany = new CountryEntry("1", "Germany");
     CountryEntry france = new CountryEntry("2", "France");
     when(countryCache.getCountryEntries()).thenReturn(Arrays.asList(germany, france));
-    when(synonymDao.getSynonyms()).thenReturn(Arrays.asList(new SynonymEntry("1", "Deutschland")));
+    when(synonymDao.getSynonyms()).thenReturn(Collections.singletonList(new SynonymEntry("1", "Deutschland")));
 
     List<CountryView> countryViews = countryService.getCountryViews();
     assertThat(countryViews).usingFieldByFieldElementComparator().containsExactly(

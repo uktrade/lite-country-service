@@ -24,12 +24,12 @@ public class CountryCacheTest {
 
   private CountryCache countryCache;
 
-  private CountryEntry albania = new CountryEntry("1", "Albania");
-  private CountryEntry brazil = new CountryEntry("2", "Brazil");
-  private CountryEntry finland = new CountryEntry("3", "Finland");
-  private CountryEntry france = new CountryEntry("4", "France");
-  private CountryEntry germany = new CountryEntry("5", "Germany");
-  private CountryEntry sweden = new CountryEntry("6", "Sweden");
+  private final CountryEntry albania = new CountryEntry("1", "Albania");
+  private final CountryEntry brazil = new CountryEntry("2", "Brazil");
+  private final CountryEntry finland = new CountryEntry("3", "Finland");
+  private final CountryEntry france = new CountryEntry("4", "France");
+  private final CountryEntry germany = new CountryEntry("5", "Germany");
+  private final CountryEntry sweden = new CountryEntry("6", "Sweden");
 
   @Before
   public void setUp() throws Exception {
