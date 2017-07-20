@@ -43,7 +43,6 @@ public class BaseIntegrationTest {
             .withStatus(200)
             .withHeader("Content-Type", "text/xml")
             .withBody(fixture("spire-getCountryGroup.xml"))));
-
   }
 
   @Before

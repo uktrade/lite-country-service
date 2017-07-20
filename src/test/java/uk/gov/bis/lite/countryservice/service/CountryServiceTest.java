@@ -79,7 +79,7 @@ public class CountryServiceTest {
 
     Optional<List<CountryView>> result = countryService.getCountrySet(COUNTRY_SET_NAME);
 
-    assertThat(result.isPresent()).isTrue();
+    assertThat(result).isPresent();
     assertThat(result.get()).usingFieldByFieldElementComparator().containsExactly(
         new CountryView("1", "Albania", new String[]{}),
         new CountryView("4", "Brazil", new String[]{"Brasil"}),
@@ -106,7 +106,7 @@ public class CountryServiceTest {
     when(synonymDao.getSynonyms()).thenReturn(Collections.singletonList(new SynonymEntry("3", "Deutschland")));
 
     Optional<List<CountryView>> result = countryService.getCountryGroup(COUNTRY_GROUP_NAME);
-    assertThat(result.isPresent()).isTrue();
+    assertThat(result).isPresent();
     assertThat(result.get()).usingFieldByFieldElementComparator().containsExactly(
         new CountryView("4", "France", new String[]{}),
         new CountryView("3", "Germany", new String[]{"Deutschland"}),
@@ -119,7 +119,7 @@ public class CountryServiceTest {
 
     Optional<List<CountryView>> countryGroup = countryService.getCountryGroup("MADE-UP");
 
-    assertThat(countryGroup.isPresent()).isFalse();
+    assertThat(countryGroup).isEmpty();
   }
 
   @Test

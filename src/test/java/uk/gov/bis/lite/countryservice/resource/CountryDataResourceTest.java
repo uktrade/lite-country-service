@@ -39,7 +39,7 @@ public class CountryDataResourceTest {
 
   @Test
   public void shouldGetCountryData() {
-    CountryView germany = new CountryView("1", "Germany", new String[]{"Deutschland", "BRD"});
+    CountryView germany = new CountryView("1", "Germany", new String[]{"BRD", "Deutschland"});
     when(countryService.getCountryView("1")).thenReturn(Optional.of(germany));
 
     Response response = resources.client()
@@ -49,9 +49,9 @@ public class CountryDataResourceTest {
 
     assertThat(response.getStatus()).isEqualTo(200);
 
-    String expected = "{'countryRef':'1','countryName':'Germany','synonyms':['Deutschland','BRD']}";
+    String expected = "{'countryRef':'1','countryName':'Germany','synonyms':['BRD','Deutschland']}";
     String actual = response.readEntity(String.class);
-    assertEquals(toJson(expected), actual, JSONCompareMode.NON_EXTENSIBLE);
+    assertEquals(toJson(expected), actual, true);
   }
 
   @Test
@@ -74,7 +74,7 @@ public class CountryDataResourceTest {
   public void shouldReturn404ForUpdateCountryIfCountryRefNotFound() {
     when(countryService.getUnmatchedCountryRefs(anyListOf(CountryData.class))).thenReturn(Collections.singletonList("1"));
 
-    CountryView germany = new CountryView("1", "Germany", new String[]{});
+    CountryView germany = new CountryView(null, "Germany", new String[]{});
     Response response = resources.client()
         .target(URL + "/1")
         .request()

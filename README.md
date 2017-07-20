@@ -24,7 +24,7 @@ A `CountryView` is currently very simple and consists only of a reference and co
 
 `/country-data`
 
-Endpoints for additional data maintenance. Currently only allow for updating the string array `synonyms`
+Endpoints for additional data maintenance. Currently only allow for updating the string array `synonyms`.
 
 * GET `/country-data/<countryRef>` - view additional data for a single country
 * PUT `/country-data/<countryRef>` - update additional data for a single country

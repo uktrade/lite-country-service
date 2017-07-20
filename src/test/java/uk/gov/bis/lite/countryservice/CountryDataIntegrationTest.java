@@ -38,7 +38,7 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
-  public void shouldReturn404ForGetCountryIfCountryRefDoesNotExist() {
+  public void shouldReturn404ForGetCountryDataIfCountryRefDoesNotExist() {
 
     Response response = JerseyClientBuilder.createClient()
         .target(URL + "/MADE-UP")

@@ -9,7 +9,6 @@ import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONCompareMode;
-import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.countryservice.service.CountryService;
 
@@ -20,8 +19,6 @@ import java.util.Optional;
 import javax.ws.rs.core.Response;
 
 public class CountryResourceTest {
-
-  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(CountryResourceTest.class);
 
   private final CountryService countryService = mock(CountryService.class);
 
@@ -67,7 +64,7 @@ public class CountryResourceTest {
 
     String expected = "[{'countryRef':'CTRY2','countryName':'Spain','synonyms':['España']}]";
     String actual = result.readEntity(String.class);
-    assertEquals(toJson(expected), actual, JSONCompareMode.NON_EXTENSIBLE);
+    assertEquals(toJson(expected), actual, true);
   }
 
   @Test
@@ -141,7 +138,7 @@ public class CountryResourceTest {
 
     String expected = "[{'countryRef':'CTRY2','countryName':'Spain','synonyms':['España']}]";
     String actual = result.readEntity(String.class);
-    assertEquals(toJson(expected), actual, JSONCompareMode.NON_EXTENSIBLE);
+    assertEquals(toJson(expected), actual, true);
   }
 
   private String toJson(String str) {
