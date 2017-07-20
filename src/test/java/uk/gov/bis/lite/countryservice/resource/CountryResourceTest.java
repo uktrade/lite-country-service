@@ -9,18 +9,19 @@ import io.dropwizard.testing.junit.ResourceTestRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.countryservice.service.CountryService;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.Response;
 
 public class CountryResourceTest {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(CountryResourceTest.class);
 
   private final CountryService countryService = mock(CountryService.class);
 
@@ -50,6 +51,43 @@ public class CountryResourceTest {
   }
 
   @Test
+  public void shouldFilterNegativeIdFromCountrySet() {
+
+    List<CountryView> countries = Arrays.asList(
+        new CountryView("CTRY2", "Spain", new String[]{"España"}),
+        new CountryView(CountryResource.NEGATIVE_COUNTRY_ID_PREFIX + "1", "Negative", new String[]{}));
+    when(countryService.getCountrySet("export-control")).thenReturn(Optional.of(countries));
+
+    Response result = resources.client()
+        .target("/countries/set/export-control")
+        .request()
+        .get();
+
+    assertThat(result.getStatus()).isEqualTo(200);
+
+    String expected = "[{'countryRef':'CTRY2','countryName':'Spain','synonyms':['España']}]";
+    String actual = result.readEntity(String.class);
+    assertEquals(toJson(expected), actual, JSONCompareMode.NON_EXTENSIBLE);
+  }
+
+  @Test
+  public void shouldReturn404StatusCodeWhenCountrySetNotFound() {
+
+    when(countryService.getCountrySet("blah")).thenReturn(Optional.empty());
+
+    Response result = resources.client()
+        .target("/countries/set/blah")
+        .request()
+        .get();
+
+    assertThat(result.getStatus()).isEqualTo(404);
+
+    String expected = "{'code':404,'message':'Country set does not exist - blah'}";
+    String actual = result.readEntity(String.class);
+    assertEquals(expected, actual, true);
+  }
+
+  @Test
   public void shouldGetCountryGroupResource() {
 
     List<CountryView> countries = Arrays.asList(
@@ -70,22 +108,6 @@ public class CountryResourceTest {
   }
 
   @Test
-  public void shouldReturn404StatusCodeWhenCountrySetNotFound() {
-
-    when(countryService.getCountrySet("blah")).thenReturn(Optional.empty());
-
-    Response result = resources.client()
-        .target("/countries/set/blah")
-        .request()
-        .get();
-
-    Map<String, Object> map = result.readEntity(new GenericType<Map<String, Object>>() {
-    });
-    assertThat((int) map.get("code")).isEqualTo(404);
-    assertThat((String) map.get("message")).isEqualTo("Country set does not exist - blah");
-  }
-
-  @Test
   public void shouldReturn404StatusCodeWhenCountryGroupNotFound() {
 
     when(countryService.getCountryGroup("blah")).thenReturn(Optional.empty());
@@ -95,30 +117,11 @@ public class CountryResourceTest {
         .request()
         .get();
 
-    Map<String, Object> map = result.readEntity(new GenericType<Map<String, Object>>() {
-    });
-    assertThat((int) map.get("code")).isEqualTo(404);
-    assertThat((String) map.get("message")).isEqualTo("Country group does not exist - blah");
-  }
+    assertThat(result.getStatus()).isEqualTo(404);
 
-  @Test
-  public void shouldFilterNegativeIdFromCountrySet() {
-
-    List<CountryView> countries = Arrays.asList(
-        new CountryView("CTRY2", "Spain", new String[]{"España"}),
-        new CountryView(CountryResource.NEGATIVE_COUNTRY_ID_PREFIX + "1", "Negative", new String[]{}));
-    when(countryService.getCountrySet("export-control")).thenReturn(Optional.of(countries));
-
-    Response result = resources.client()
-        .target("/countries/set/export-control")
-        .request()
-        .get();
-
-    assertThat(result.getStatus()).isEqualTo(200);
-
-    String expected = "[{'countryRef':'CTRY2','countryName':'Spain','synonyms':['España']}]";
+    String expected = "{'code':404,'message':'Country group does not exist - blah'}";
     String actual = result.readEntity(String.class);
-    assertEquals(toJson(expected), actual, JSONCompareMode.NON_EXTENSIBLE);
+    assertEquals(expected, actual, true);
   }
 
   @Test

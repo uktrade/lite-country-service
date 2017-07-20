@@ -29,7 +29,7 @@ public class CountryServiceMock implements CountryService {
   }
 
   @Override
-  public Set<String> getDuplicates(List<CountryData> countryDataList) {
+  public Set<String> getDuplicateCountryRefs(List<CountryData> countryDataList) {
     return new HashSet<>();
   }
 
@@ -58,7 +58,7 @@ public class CountryServiceMock implements CountryService {
 
   @Override
   public List<CountryView> getCountryViews() {
-    return null;
+    return new ArrayList<>();
   }
 
   @Override

@@ -67,7 +67,7 @@ public class CountryDataResourceTest {
 
     String expected = "{'code':404,'message':'The following countryRef does not exist: 1'}";
     String actual = response.readEntity(String.class);
-    assertEquals(toJson(expected), actual, JSONCompareMode.NON_EXTENSIBLE);
+    assertEquals(toJson(expected), actual, true);
   }
 
   @Test
@@ -84,7 +84,7 @@ public class CountryDataResourceTest {
 
     String expected = "{'code':404,'message':'The following countryRef does not exist: 1'}";
     String actual = response.readEntity(String.class);
-    assertEquals(toJson(expected), actual, JSONCompareMode.NON_EXTENSIBLE);
+    assertEquals(toJson(expected), actual, true);
   }
 
   @Test
@@ -136,7 +136,7 @@ public class CountryDataResourceTest {
   @Test
   public void shouldReturn404ForBulkUpdateIfCountryRefNotFound() {
     when(countryService.getUnmatchedCountryRefs(anyListOf(CountryData.class))).thenReturn(Arrays.asList("1", "2"));
-    when(countryService.getDuplicates(anyListOf(CountryData.class))).thenReturn(new HashSet<>());
+    when(countryService.getDuplicateCountryRefs(anyListOf(CountryData.class))).thenReturn(new HashSet<>());
 
     CountryData germany = new CountryData("1", new String[]{});
     CountryData france = new CountryData("2", new String[]{});
@@ -151,13 +151,13 @@ public class CountryDataResourceTest {
 
     String expected = "{'code':404,'message':'The following countryRef do not exist: 1, 2'}";
     String actual = response.readEntity(String.class);
-    assertEquals(toJson(expected), actual, JSONCompareMode.NON_EXTENSIBLE);
+    assertEquals(toJson(expected), actual, true);
   }
 
   @Test
   public void shouldReturn400ForBulkUpdateIfDuplicateRefFound() {
     when(countryService.getUnmatchedCountryRefs(anyListOf(CountryData.class))).thenReturn(new ArrayList<>());
-    when(countryService.getDuplicates(anyListOf(CountryData.class))).thenReturn(new HashSet<>(Arrays.asList("1", "2")));
+    when(countryService.getDuplicateCountryRefs(anyListOf(CountryData.class))).thenReturn(new HashSet<>(Arrays.asList("1", "2")));
 
     CountryData germany = new CountryData("1", new String[]{});
     CountryData france = new CountryData("2", new String[]{});

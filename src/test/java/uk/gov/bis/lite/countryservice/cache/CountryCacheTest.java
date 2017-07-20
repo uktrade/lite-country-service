@@ -44,47 +44,35 @@ public class CountryCacheTest {
   }
 
   @Test
-  public void shouldGetCountrySetFromCache() throws Exception {
+  public void shouldGetCountrySetFromCache() {
 
     Optional<List<CountryEntry>> countryListEntry = countryCache.getCountriesBySetName("export-control");
 
-    assertThat(countryListEntry.isPresent()).isTrue();
-
-    List<CountryEntry> countries = countryListEntry.get();
-    assertThat(countries.size()).isEqualTo(3);
-    assertThat(countries.get(0)).isEqualTo(albania);
-    assertThat(countries.get(1)).isEqualTo(brazil);
-    assertThat(countries.get(2)).isEqualTo(finland);
+    assertThat(countryListEntry.get()).containsExactly(albania, brazil, finland);
   }
 
   @Test
-  public void shouldGetEmptyListWhenCountrySetNotFoundInCache() throws Exception {
+  public void shouldGetEmptyListWhenCountrySetNotFoundInCache() {
 
     Optional<List<CountryEntry>> countryListEntry = countryCache.getCountriesBySetName("blah");
 
-    assertThat(countryListEntry.isPresent()).isFalse();
+    assertThat(countryListEntry).isEmpty();
   }
 
   @Test
-  public void shouldGetCountryGroupFromCache() throws Exception {
+  public void shouldGetCountryGroupFromCache() {
 
     Optional<List<CountryEntry>> countryListEntry = countryCache.getCountriesByGroupName("eu");
 
-    assertThat(countryListEntry.isPresent()).isTrue();
-
-    List<CountryEntry> countries = countryListEntry.get();
-    assertThat(countries.size()).isEqualTo(3);
-    assertThat(countries.get(0)).isEqualTo(france);
-    assertThat(countries.get(1)).isEqualTo(germany);
-    assertThat(countries.get(2)).isEqualTo(sweden);
+    assertThat(countryListEntry.get()).containsExactly(france, germany, sweden);
   }
 
   @Test
-  public void shouldGetEmptyListWhenCountryGroupNotFoundInCache() throws Exception {
+  public void shouldGetEmptyListWhenCountryGroupNotFoundInCache() {
 
     Optional<List<CountryEntry>> countryListEntry = countryCache.getCountriesByGroupName("blah");
 
-    assertThat(countryListEntry.isPresent()).isFalse();
+    assertThat(countryListEntry).isEmpty();
   }
 
   @Test
@@ -98,7 +86,6 @@ public class CountryCacheTest {
   public void shouldGetCountryEntry() {
     Optional<CountryEntry> countryEntry = countryCache.getCountryEntry("1");
 
-    assertThat(countryEntry.isPresent());
     assertThat(countryEntry.get()).isEqualTo(albania);
   }
 

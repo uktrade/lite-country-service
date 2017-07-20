@@ -21,8 +21,9 @@ public class SimpleAuthenticator implements Authenticator<BasicCredentials, Prin
   public Optional<PrincipalImpl> authenticate(BasicCredentials credentials) throws AuthenticationException {
     if (password.equals(credentials.getPassword()) && login.equals(credentials.getUsername())) {
       return Optional.of(new PrincipalImpl(credentials.getUsername()));
+    } else {
+      return Optional.empty();
     }
-    return Optional.empty();
   }
 
 }

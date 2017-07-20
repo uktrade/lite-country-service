@@ -63,7 +63,7 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
     environment.jersey().register(new AuthDynamicFeature(
         new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
             .setAuthenticator(new SimpleAuthenticator(configuration.getAdminLogin(), configuration.getAdminPassword()))
-            .setRealm("Control Code Service Admin Authentication")
+            .setRealm("Country Service Admin Authentication")
             .buildAuthFilter()));
 
     Injector injector = guiceBundle.getInjector();
@@ -76,7 +76,7 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
 
     environment.lifecycle().manage(new CountryCacheScheduler(scheduler, configuration));
 
-    //Perform/validate flyway migration on startup
+    // Perform / validate flyway migration on startup
     DataSourceFactory dataSourceFactory = configuration.getDataSourceFactory();
     Flyway flyway = new Flyway();
     flyway.setDataSource(dataSourceFactory.getUrl(), dataSourceFactory.getUser(), dataSourceFactory.getPassword());

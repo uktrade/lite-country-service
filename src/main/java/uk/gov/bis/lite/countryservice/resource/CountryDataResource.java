@@ -78,7 +78,7 @@ public class CountryDataResource {
   @PermitAll
   public Response bulkUpdateCountryData(@NotNull List<CountryData> countryDataList) {
     List<String> unmatchedCountryRefs = countryService.getUnmatchedCountryRefs(countryDataList);
-    Set<String> duplicateCountryRefs = countryService.getDuplicates(countryDataList);
+    Set<String> duplicateCountryRefs = countryService.getDuplicateCountryRefs(countryDataList);
     if (!unmatchedCountryRefs.isEmpty()) {
       throw new CountryRefNotFoundException("The following countryRef do not exist: " + String.join(", ", unmatchedCountryRefs));
     } else if (!duplicateCountryRefs.isEmpty()) {

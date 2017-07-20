@@ -17,7 +17,7 @@ public class CountryIntegrationTest extends BaseIntegrationTest {
   private static final String URL = "http://localhost:8090/countries";
 
   @Test
-  public void shouldGetCountryList() throws Exception {
+  public void shouldGetCountryList() {
 
     Response response = JerseyClientBuilder.createClient()
         .target(URL + "/set/export-control")
@@ -30,7 +30,7 @@ public class CountryIntegrationTest extends BaseIntegrationTest {
     });
 
     assertThat(countryList).hasSize(10);
-    assertThat(countryList).extracting(CountryView::getCountryName).contains(
+    assertThat(countryList).extracting(CountryView::getCountryName).containsExactly(
         "Abu Dhabi", "Afghanistan", "Ajman", "Aland Islands", "Albania", "Alderney", "Algeria", "American Samoa", "Andorra", "Angola");
 
     // Verify country with synonyms
@@ -53,7 +53,7 @@ public class CountryIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
-  public void shouldReturn404StatusIfCountrySetNamesDoesNotExist() {
+  public void shouldReturn404StatusIfCountrySetNameDoesNotExist() {
 
     Response response = JerseyClientBuilder.createClient()
         .target(URL + "/set/MADE-UP")

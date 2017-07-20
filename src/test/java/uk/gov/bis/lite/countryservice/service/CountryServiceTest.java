@@ -63,7 +63,7 @@ public class CountryServiceTest {
     CountryData brazil = new CountryData("4", new String[]{"Brasil"});
     List<CountryData> countryDataList = Arrays.asList(germany, germany, unitedKingdom, uk, france, france, france, brazil);
 
-    Set<String> duplicates = countryService.getDuplicates(countryDataList);
+    Set<String> duplicates = countryService.getDuplicateCountryRefs(countryDataList);
     assertThat(duplicates).containsExactlyInAnyOrder("1", "2", "3");
   }
 
@@ -114,7 +114,7 @@ public class CountryServiceTest {
   }
 
   @Test
-  public void shouldReturnEmptyOptionalCountryGroupDoesNotExist() {
+  public void shouldReturnEmptyOptionalIfCountryGroupDoesNotExist() {
     when(countryCache.getCountriesByGroupName("MADE-UP")).thenReturn(Optional.empty());
 
     Optional<List<CountryView>> countryGroup = countryService.getCountryGroup("MADE-UP");
@@ -189,6 +189,5 @@ public class CountryServiceTest {
 
     verify(countryCache).getLastCached();
   }
-
 
 }

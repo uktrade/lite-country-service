@@ -3,10 +3,8 @@ package uk.gov.bis.lite.countryservice;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Test;
-import org.skyscreamer.jsonassert.JSONCompareMode;
 import uk.gov.bis.lite.countryservice.api.CountryData;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 
@@ -23,7 +21,7 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
   private static final String URL = "http://localhost:8090/country-data";
 
   @Test
-  public void shouldReturnCountryData() throws JsonProcessingException {
+  public void shouldReturnCountryData() {
 
     Response response = JerseyClientBuilder.createClient()
         .target(URL + "/CTRY3")
@@ -51,7 +49,7 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
 
     String expected = "{'code':404,'message':'The following countryRef does not exist: MADE-UP'}";
     String actual = response.readEntity(String.class);
-    assertEquals(toJson(expected), actual, JSONCompareMode.NON_EXTENSIBLE);
+    assertEquals(toJson(expected), actual, true);
   }
 
   @Test
@@ -89,15 +87,15 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
 
     String expected = "{'code':404,'message':'The following countryRef does not exist: MADE-UP'}";
     String actual = response.readEntity(String.class);
-    assertEquals(toJson(expected), actual, JSONCompareMode.NON_EXTENSIBLE);
+    assertEquals(toJson(expected), actual, true);
   }
 
   @Test
   public void shouldReturn401ForUpdateCountryDataIfUnauthorized() {
 
-    CountryData updateCountryData = new CountryData(null, new String[]{"madeUp", "M.A.D.E.U.P."});
+    CountryData updateCountryData = new CountryData(null, new String[]{"Emirates", "Dubai"});
     Response response = JerseyClientBuilder.createClient()
-        .target(URL + "/MADE-UP")
+        .target(URL + "/CTRY3")
         .request()
         .put(Entity.json(updateCountryData));
 
@@ -144,7 +142,8 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
-  public void shouldGetAllCountries() throws JsonProcessingException {
+  public void shouldGetAllCountries() {
+
     Response response = JerseyClientBuilder.createClient()
         .target(URL)
         .request()
@@ -197,7 +196,7 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
 
     String expected = "{'code':404,'message':'The following countryRef do not exist: MADE-UP, null, null'}";
     String actual = response.readEntity(String.class);
-    assertEquals(toJson(expected), actual, JSONCompareMode.NON_EXTENSIBLE);
+    assertEquals(toJson(expected), actual, true);
   }
 
   @Test

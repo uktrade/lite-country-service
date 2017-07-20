@@ -43,7 +43,7 @@ public class CountryServiceImpl implements CountryService {
   }
 
   @Override
-  public Set<String> getDuplicates(List<CountryData> countryDataList) {
+  public Set<String> getDuplicateCountryRefs(List<CountryData> countryDataList) {
     List<String> countryRefs = countryDataList.stream()
         .map(countryData -> countryData == null ? null : countryData.getCountryRef())
         .collect(Collectors.toList());

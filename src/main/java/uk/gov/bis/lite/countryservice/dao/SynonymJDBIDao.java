@@ -18,8 +18,7 @@ public interface SynonymJDBIDao {
   List<String> getSynonyms(@Bind("countryRef") String countryRef);
 
   @SqlUpdate("INSERT INTO SYNONYMS (COUNTRY_REF, SYNONYM) VALUES (:countryRef, :synonym)")
-  void insert(@Bind("countryRef") String countryRef,
-              @Bind("synonym") String synonym);
+  void insert(@Bind("countryRef") String countryRef, @Bind("synonym") String synonym);
 
   @SqlUpdate("DELETE FROM SYNONYMS WHERE COUNTRY_REF = :countryRef")
   void delete(@Bind("countryRef") String countryRef);
