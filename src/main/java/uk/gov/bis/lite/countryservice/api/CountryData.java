@@ -4,15 +4,17 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.List;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CountryData {
 
   private final String countryRef;
-  private final String[] synonyms;
+  private final List<String> synonyms;
 
   @JsonCreator
   public CountryData(@JsonProperty("countryRef") String countryRef,
-                     @JsonProperty("synonyms") String[] synonyms) {
+                     @JsonProperty("synonyms") List<String> synonyms) {
     this.countryRef = countryRef;
     this.synonyms = synonyms;
   }
@@ -21,7 +23,7 @@ public class CountryData {
     return countryRef;
   }
 
-  public String[] getSynonyms() {
+  public List<String> getSynonyms() {
     return synonyms;
   }
 }

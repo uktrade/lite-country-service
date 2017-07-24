@@ -8,6 +8,7 @@ import org.junit.Test;
 import uk.gov.bis.lite.countryservice.api.CountryData;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -55,7 +56,7 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
   @Test
   public void shouldUpdateCountryData() {
 
-    CountryData updateCountryData = new CountryData(null, new String[]{"Emirates", "Dubai"});
+    CountryData updateCountryData = new CountryData(null, Arrays.asList("Emirates", "Dubai"));
     Response updateResponse = JerseyClientBuilder.createClient()
         .target(URL + "/CTRY3")
         .request()
@@ -76,7 +77,7 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
   @Test
   public void shouldReturn404ForUpdateCountryDataIfCountryRefDoesNotExist() {
 
-    CountryData updateCountryData = new CountryData(null, new String[]{"madeUp", "M.A.D.E.U.P."});
+    CountryData updateCountryData = new CountryData(null, Arrays.asList("madeUp", "M.A.D.E.U.P."));
     Response response = JerseyClientBuilder.createClient()
         .target(URL + "/MADE-UP")
         .request()
@@ -93,7 +94,7 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
   @Test
   public void shouldReturn401ForUpdateCountryDataIfUnauthorized() {
 
-    CountryData updateCountryData = new CountryData(null, new String[]{"Emirates", "Dubai"});
+    CountryData updateCountryData = new CountryData(null, Arrays.asList("Emirates", "Dubai"));
     Response response = JerseyClientBuilder.createClient()
         .target(URL + "/CTRY3")
         .request()
@@ -101,6 +102,42 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
 
     assertThat(response.getStatus()).isEqualTo(401);
     assertThat(response.readEntity(String.class)).isEqualTo("Credentials are required to access this resource.");
+  }
+
+  @Test
+  public void shouldReturn400ForUpdateCountryDataIfBlankSynonymFound() {
+
+    CountryData abuDhabi = new CountryData("CTRY3", Collections.singletonList("  "));
+
+    Response response = JerseyClientBuilder.createClient()
+        .target(URL + "/CTRY3")
+        .request()
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+        .put(Entity.json(abuDhabi));
+
+    assertThat(response.getStatus()).isEqualTo(400);
+
+    String expected = "{'code':400,'message':'The following countryRef contains null or empty synonyms: CTRY3'}";
+    String actual = response.readEntity(String.class);
+    assertEquals(toJson(expected), actual, true);
+  }
+
+  @Test
+  public void shouldReturn400ForUpdateCountryDataIfDuplicateSynonymFound() {
+
+    CountryData abuDhabi = new CountryData("CTRY3", Arrays.asList("Arab Emirates", "Dubai", "Arab Emirates"));
+
+    Response response = JerseyClientBuilder.createClient()
+        .target(URL + "/CTRY3")
+        .request()
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+        .put(Entity.json(abuDhabi));
+
+    assertThat(response.getStatus()).isEqualTo(400);
+
+    String expected = "{'code':400,'message':'The following countryRef contains duplicate synonyms: CTRY3'}";
+    String actual = response.readEntity(String.class);
+    assertEquals(toJson(expected), actual, true);
   }
 
   @Test
@@ -182,9 +219,9 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
   @Test
   public void shouldReturn404ForBulkUpdateIfCountryRefNotFound() {
 
-    CountryData madeUpCountryRef = new CountryData("MADE-UP", new String[]{});
-    CountryData nullCountryRef = new CountryData(null, new String[]{});
-    List<CountryData> countryDataList = Arrays.asList(madeUpCountryRef, nullCountryRef, null);
+    CountryData madeUpCountryRef = new CountryData("MADE-UP", new ArrayList<>());
+    CountryData nullCountryRef = new CountryData(null, new ArrayList<>());
+    List<CountryData> countryDataList = Arrays.asList(madeUpCountryRef, nullCountryRef);
 
     Response response = JerseyClientBuilder.createClient()
         .target(URL)
@@ -194,15 +231,15 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
 
     assertThat(response.getStatus()).isEqualTo(404);
 
-    String expected = "{'code':404,'message':'The following countryRef do not exist: MADE-UP, null, null'}";
+    String expected = "{'code':404,'message':'The following countryRef do not exist: MADE-UP, null'}";
     String actual = response.readEntity(String.class);
     assertEquals(toJson(expected), actual, true);
   }
 
   @Test
   public void shouldReturn400ForBulkUpdateIfDuplicateRefFound() {
-    CountryData austria = new CountryData("CTRY781", new String[]{});
-    CountryData france = new CountryData("CTRY1434", new String[]{});
+    CountryData austria = new CountryData("CTRY781", new ArrayList<>());
+    CountryData france = new CountryData("CTRY1434", new ArrayList<>());
     List<CountryData> countryDataList = Arrays.asList(austria, france, austria, france, france);
 
     Response response = JerseyClientBuilder.createClient()
@@ -217,9 +254,66 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
   }
 
   @Test
+  public void shouldReturn400ForBulkUpdateIfListContainsNull() {
+    List<CountryData> countryDataList = Collections.singletonList(null);
+
+    Response response = JerseyClientBuilder.createClient()
+        .target(URL)
+        .request()
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+        .put(Entity.json(countryDataList));
+
+    assertThat(response.getStatus()).isEqualTo(400);
+
+    String expected = "{'code':400,'message':'Array cannot contain null values.'}";
+    String actual = response.readEntity(String.class);
+    assertEquals(toJson(expected), actual, true);
+  }
+
+  @Test
+  public void shouldReturn400ForBulkUpdateIfBlankSynonymFound() {
+    CountryData abuDhabi = new CountryData("CTRY3", Collections.singletonList("  "));
+    CountryData france = new CountryData("CTRY1434", null);
+    List<CountryData> countryDataList = Arrays.asList(abuDhabi, france);
+
+    Response response = JerseyClientBuilder.createClient()
+        .target(URL)
+        .request()
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+        .put(Entity.json(countryDataList));
+
+    assertThat(response.getStatus()).isEqualTo(400);
+
+    String expected = "{'code':400,'message':'The following countryRef contain null or empty synonyms: CTRY3'}";
+    String actual = response.readEntity(String.class);
+    assertEquals(toJson(expected), actual, true);
+  }
+
+
+  @Test
+  public void shouldReturn400ForBulkUpdateIfDuplicateSynonymFound() {
+    CountryData abuDhabi = new CountryData("CTRY3", Arrays.asList("Arab Emirates", "Dubai", "Arab Emirates"));
+    CountryData france = new CountryData("CTRY1434", Collections.singletonList("French Republic"));
+    List<CountryData> countryDataList = Arrays.asList(abuDhabi, france);
+
+    Response response = JerseyClientBuilder.createClient()
+        .target(URL)
+        .request()
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+        .put(Entity.json(countryDataList));
+
+    assertThat(response.getStatus()).isEqualTo(400);
+
+    String expected = "{'code':400,'message':'The following countryRef contain duplicate synonyms: CTRY3'}";
+    String actual = response.readEntity(String.class);
+    assertEquals(toJson(expected), actual, true);
+  }
+
+  @Test
   public void shouldReturn401ForBulkUpdateIfUnauthorized() {
 
-    CountryData abuDhabi = new CountryData("CTRY3", new String[]{"Arab Emirates", "Dubai"});
+    CountryData abuDhabi = new CountryData("CTRY3", Arrays.asList("Arab Emirates", "Dubai"));
+
     Response response = JerseyClientBuilder.createClient()
         .target(URL)
         .request()
@@ -232,7 +326,7 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
   @Test
   public void shouldBulkUpdate() {
 
-    CountryData abuDhabi = new CountryData("CTRY3", new String[]{"Arab Emirates", "Dubai"});
+    CountryData abuDhabi = new CountryData("CTRY3", Arrays.asList("Arab Emirates", "Dubai"));
     CountryData france = new CountryData("CTRY1434", null);
     List<CountryData> countryDataList = Arrays.asList(abuDhabi, france);
 
@@ -291,7 +385,7 @@ public class CountryDataIntegrationTest extends BaseIntegrationTest {
         });
 
     assertThat(countryViewsAfterDelete).hasSize(21);
-    assertThat(countryViewsAfterDelete).extracting(CountryView::getSynonyms).containsOnly(new String[]{});
+    assertThat(countryViewsAfterDelete).extracting(CountryView::getSynonyms).allMatch(List::isEmpty);
   }
 
   @Test

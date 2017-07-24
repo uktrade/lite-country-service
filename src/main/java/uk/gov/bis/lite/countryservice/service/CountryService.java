@@ -5,13 +5,8 @@ import uk.gov.bis.lite.countryservice.api.CountryView;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public interface CountryService {
-
-  List<String> getUnmatchedCountryRefs(List<CountryData> countryDataList);
-
-  Set<String> getDuplicateCountryRefs(List<CountryData> countryDataList);
 
   Optional<List<CountryView>> getCountrySet(String countrySetName);
 

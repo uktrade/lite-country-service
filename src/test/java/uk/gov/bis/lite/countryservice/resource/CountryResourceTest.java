@@ -1,5 +1,6 @@
 package uk.gov.bis.lite.countryservice.resource;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -12,6 +13,7 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.countryservice.service.CountryService;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -31,8 +33,8 @@ public class CountryResourceTest {
   public void shouldGetCountrySetResource() {
 
     List<CountryView> countries = Arrays.asList(
-        new CountryView("CTRY1", "France", new String[]{}),
-        new CountryView("CTRY2", "Spain", new String[]{"España"}));
+        new CountryView("CTRY1", "France", new ArrayList<>()),
+        new CountryView("CTRY2", "Spain", singletonList("España")));
     when(countryService.getCountrySet("export-control")).thenReturn(Optional.of(countries));
 
     Response result = resources.client()
@@ -51,8 +53,8 @@ public class CountryResourceTest {
   public void shouldFilterNegativeIdFromCountrySet() {
 
     List<CountryView> countries = Arrays.asList(
-        new CountryView("CTRY2", "Spain", new String[]{"España"}),
-        new CountryView(CountryResource.NEGATIVE_COUNTRY_ID_PREFIX + "1", "Negative", new String[]{}));
+        new CountryView("CTRY2", "Spain", singletonList("España")),
+        new CountryView(CountryResource.NEGATIVE_COUNTRY_ID_PREFIX + "1", "Negative", new ArrayList<>()));
     when(countryService.getCountrySet("export-control")).thenReturn(Optional.of(countries));
 
     Response result = resources.client()
@@ -88,8 +90,8 @@ public class CountryResourceTest {
   public void shouldGetCountryGroupResource() {
 
     List<CountryView> countries = Arrays.asList(
-        new CountryView("CTRY1", "France", new String[]{}),
-        new CountryView("CTRY2", "Spain", new String[]{"España"}));
+        new CountryView("CTRY1", "France", new ArrayList<>()),
+        new CountryView("CTRY2", "Spain", singletonList("España")));
     when(countryService.getCountryGroup("eu")).thenReturn(Optional.of(countries));
 
     Response result = resources.client()
@@ -125,8 +127,8 @@ public class CountryResourceTest {
   public void shouldFilterNegativeIdFromCountryGroup() {
 
     List<CountryView> countries = Arrays.asList(
-        new CountryView("CTRY2", "Spain", new String[]{"España"}),
-        new CountryView(CountryResource.NEGATIVE_COUNTRY_ID_PREFIX + "1", "Negative", new String[]{}));
+        new CountryView("CTRY2", "Spain", singletonList("España")),
+        new CountryView(CountryResource.NEGATIVE_COUNTRY_ID_PREFIX + "1", "Negative", new ArrayList<>()));
     when(countryService.getCountryGroup("eu")).thenReturn(Optional.of(countries));
 
     Response result = resources.client()

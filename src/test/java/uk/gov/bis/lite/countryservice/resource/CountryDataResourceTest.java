@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import uk.gov.bis.lite.countryservice.api.CountryData;
 import uk.gov.bis.lite.countryservice.api.CountryView;
+import uk.gov.bis.lite.countryservice.service.CountryDataValidationService;
 import uk.gov.bis.lite.countryservice.service.CountryService;
 
 import java.util.ArrayList;
@@ -32,14 +33,16 @@ public class CountryDataResourceTest {
 
   private final CountryService countryService = mock(CountryService.class);
 
+  private final CountryDataValidationService countryDataValidationService = mock(CountryDataValidationService.class);
+
   @Rule
   public final ResourceTestRule resources = ResourceTestRule.builder()
-      .addResource(new CountryDataResource(countryService))
+      .addResource(new CountryDataResource(countryService, countryDataValidationService))
       .build();
 
   @Test
   public void shouldGetCountryData() {
-    CountryView germany = new CountryView("1", "Germany", new String[]{"BRD", "Deutschland"});
+    CountryView germany = new CountryView("1", "Germany", Arrays.asList("BRD", "Deutschland"));
     when(countryService.getCountryView("1")).thenReturn(Optional.of(germany));
 
     Response response = resources.client()
@@ -72,9 +75,9 @@ public class CountryDataResourceTest {
 
   @Test
   public void shouldReturn404ForUpdateCountryIfCountryRefNotFound() {
-    when(countryService.getUnmatchedCountryRefs(anyListOf(CountryData.class))).thenReturn(Collections.singletonList("1"));
+    when(countryDataValidationService.getUnmatchedCountryRefs(anyListOf(CountryData.class))).thenReturn(Collections.singletonList("1"));
 
-    CountryView germany = new CountryView(null, "Germany", new String[]{});
+    CountryView germany = new CountryView(null, "Germany", new ArrayList<>());
     Response response = resources.client()
         .target(URL + "/1")
         .request()
@@ -90,7 +93,7 @@ public class CountryDataResourceTest {
   @Test
   public void shouldUpdateCountry() {
 
-    CountryView germany = new CountryView("1", "Germany", new String[]{});
+    CountryView germany = new CountryView("1", "Germany", new ArrayList<>());
     Response response = resources.client()
         .target(URL + "/1")
         .request()
@@ -117,8 +120,8 @@ public class CountryDataResourceTest {
 
   @Test
   public void shouldGetAllCountries() {
-    CountryView germany = new CountryView("1", "Germany", new String[]{"Deutschland", "BRD"});
-    CountryView france = new CountryView("2", "France", new String[]{});
+    CountryView germany = new CountryView("1", "Germany", Arrays.asList("Deutschland", "BRD"));
+    CountryView france = new CountryView("2", "France", new ArrayList<>());
     when(countryService.getCountryViews()).thenReturn(Arrays.asList(germany, france));
 
     Response response = resources.client()
@@ -135,11 +138,11 @@ public class CountryDataResourceTest {
 
   @Test
   public void shouldReturn404ForBulkUpdateIfCountryRefNotFound() {
-    when(countryService.getUnmatchedCountryRefs(anyListOf(CountryData.class))).thenReturn(Arrays.asList("1", "2"));
-    when(countryService.getDuplicateCountryRefs(anyListOf(CountryData.class))).thenReturn(new HashSet<>());
+    when(countryDataValidationService.getUnmatchedCountryRefs(anyListOf(CountryData.class))).thenReturn(Arrays.asList("1", "2"));
+    when(countryDataValidationService.getDuplicateCountryRefs(anyListOf(CountryData.class))).thenReturn(new HashSet<>());
 
-    CountryData germany = new CountryData("1", new String[]{});
-    CountryData france = new CountryData("2", new String[]{});
+    CountryData germany = new CountryData("1", new ArrayList<>());
+    CountryData france = new CountryData("2", new ArrayList<>());
     List<CountryData> countryDataList = Arrays.asList(germany, france);
 
     Response response = resources.client()
@@ -156,11 +159,11 @@ public class CountryDataResourceTest {
 
   @Test
   public void shouldReturn400ForBulkUpdateIfDuplicateRefFound() {
-    when(countryService.getUnmatchedCountryRefs(anyListOf(CountryData.class))).thenReturn(new ArrayList<>());
-    when(countryService.getDuplicateCountryRefs(anyListOf(CountryData.class))).thenReturn(new HashSet<>(Arrays.asList("1", "2")));
+    when(countryDataValidationService.getUnmatchedCountryRefs(anyListOf(CountryData.class))).thenReturn(new ArrayList<>());
+    when(countryDataValidationService.getDuplicateCountryRefs(anyListOf(CountryData.class))).thenReturn(new HashSet<>(Arrays.asList("1", "2")));
 
-    CountryData germany = new CountryData("1", new String[]{});
-    CountryData france = new CountryData("2", new String[]{});
+    CountryData germany = new CountryData("1", new ArrayList<>());
+    CountryData france = new CountryData("2", new ArrayList<>());
     List<CountryData> countryDataList = Arrays.asList(germany, france, germany, france);
 
     Response response = resources.client()
@@ -175,8 +178,8 @@ public class CountryDataResourceTest {
   @Test
   public void shouldBulkUpdate() {
 
-    CountryData germany = new CountryData("1", new String[]{});
-    CountryData france = new CountryData("2", new String[]{});
+    CountryData germany = new CountryData("1", new ArrayList<>());
+    CountryData france = new CountryData("2", new ArrayList<>());
     List<CountryData> countryDataList = Arrays.asList(germany, france);
 
     Response response = resources.client()

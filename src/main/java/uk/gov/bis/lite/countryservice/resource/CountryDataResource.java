@@ -2,7 +2,9 @@ package uk.gov.bis.lite.countryservice.resource;
 
 import uk.gov.bis.lite.countryservice.api.CountryData;
 import uk.gov.bis.lite.countryservice.api.CountryView;
+import uk.gov.bis.lite.countryservice.exception.BadRequestException;
 import uk.gov.bis.lite.countryservice.exception.CountryRefNotFoundException;
+import uk.gov.bis.lite.countryservice.service.CountryDataValidationService;
 import uk.gov.bis.lite.countryservice.service.CountryService;
 
 import java.util.Collections;
@@ -19,7 +21,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -27,10 +28,12 @@ import javax.ws.rs.core.Response;
 public class CountryDataResource {
 
   private final CountryService countryService;
+  private final CountryDataValidationService countryDataValidationService;
 
   @Inject
-  public CountryDataResource(CountryService countryService) {
+  public CountryDataResource(CountryService countryService, CountryDataValidationService countryDataValidationService) {
     this.countryService = countryService;
+    this.countryDataValidationService = countryDataValidationService;
   }
 
   @GET
@@ -39,7 +42,7 @@ public class CountryDataResource {
   public Response getCountryData(@PathParam("countryRef") String countryRef) {
     Optional<CountryView> countryView = countryService.getCountryView(countryRef);
     if (countryView.isPresent()) {
-      return Response.ok(countryView).build();
+      return Response.ok(countryView.get()).build();
     } else {
       throw new CountryRefNotFoundException("The following countryRef does not exist: " + countryRef);
     }
@@ -50,11 +53,18 @@ public class CountryDataResource {
   @Path("/{countryRef}")
   public Response updateCountryData(@PathParam("countryRef") String countryRef, @NotNull CountryData countryData) {
     CountryData updateCountryData = new CountryData(countryRef, countryData.getSynonyms());
-    List<String> unmatchedCountryRefs = countryService.getUnmatchedCountryRefs(Collections.singletonList(updateCountryData));
+    List<CountryData> updateCountryDataList = Collections.singletonList(updateCountryData);
+    List<String> unmatchedCountryRefs = countryDataValidationService.getUnmatchedCountryRefs(updateCountryDataList);
+    List<String> countryRefsWithBlankSynonyms = countryDataValidationService.getCountryRefsWithBlankSynonyms(updateCountryDataList);
+    List<String> countryRefsWithDuplicateSynonyms = countryDataValidationService.getCountryRefsWithDuplicateSynonyms(updateCountryDataList);
     if (!unmatchedCountryRefs.isEmpty()) {
       throw new CountryRefNotFoundException("The following countryRef does not exist: " + unmatchedCountryRefs.get(0));
+    } else if (!countryRefsWithBlankSynonyms.isEmpty()) {
+      throw new BadRequestException("The following countryRef contains null or empty synonyms: " + countryRefsWithBlankSynonyms.get(0));
+    } else if (!countryRefsWithDuplicateSynonyms.isEmpty()) {
+      throw new BadRequestException("The following countryRef contains duplicate synonyms: " + countryRefsWithDuplicateSynonyms.get(0));
     } else {
-      countryService.bulkUpdateCountryData(Collections.singletonList(updateCountryData));
+      countryService.bulkUpdateCountryData(updateCountryDataList);
       return Response.ok().build();
     }
   }
@@ -77,12 +87,21 @@ public class CountryDataResource {
   @PUT
   @PermitAll
   public Response bulkUpdateCountryData(@NotNull List<CountryData> countryDataList) {
-    List<String> unmatchedCountryRefs = countryService.getUnmatchedCountryRefs(countryDataList);
-    Set<String> duplicateCountryRefs = countryService.getDuplicateCountryRefs(countryDataList);
+    if (countryDataList.contains(null)) {
+      throw new BadRequestException("Array cannot contain null values.");
+    }
+    List<String> unmatchedCountryRefs = countryDataValidationService.getUnmatchedCountryRefs(countryDataList);
+    Set<String> duplicateCountryRefs = countryDataValidationService.getDuplicateCountryRefs(countryDataList);
+    List<String> countryRefsWithBlankSynonyms = countryDataValidationService.getCountryRefsWithBlankSynonyms(countryDataList);
+    List<String> countryRefsWithDuplicateSynonyms = countryDataValidationService.getCountryRefsWithDuplicateSynonyms(countryDataList);
     if (!unmatchedCountryRefs.isEmpty()) {
       throw new CountryRefNotFoundException("The following countryRef do not exist: " + String.join(", ", unmatchedCountryRefs));
     } else if (!duplicateCountryRefs.isEmpty()) {
-      throw new WebApplicationException("The following countryRef are duplicate: " + String.join(", ", duplicateCountryRefs), Response.Status.BAD_REQUEST);
+      throw new BadRequestException("The following countryRef are duplicate: " + String.join(", ", duplicateCountryRefs));
+    } else if (!countryRefsWithBlankSynonyms.isEmpty()) {
+      throw new BadRequestException("The following countryRef contain null or empty synonyms: " + String.join(", ", countryRefsWithBlankSynonyms));
+    } else if (!countryRefsWithDuplicateSynonyms.isEmpty()) {
+      throw new BadRequestException("The following countryRef contain duplicate synonyms: " + String.join(", ", countryRefsWithDuplicateSynonyms));
     } else {
       countryService.bulkUpdateCountryData(countryDataList);
       return Response.ok().build();
