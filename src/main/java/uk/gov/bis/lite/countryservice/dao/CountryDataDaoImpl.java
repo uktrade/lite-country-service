@@ -1,6 +1,6 @@
 package uk.gov.bis.lite.countryservice.dao;
 
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.skife.jdbi.v2.DBI;
 import org.skife.jdbi.v2.Handle;
 import uk.gov.bis.lite.countryservice.api.CountryData;
@@ -42,11 +42,10 @@ public class CountryDataDaoImpl implements CountryDataDao {
     try (final Handle handle = dbi.open()) {
       CountryDataJDBIDao countryDataJDBIDao = handle.attach(CountryDataJDBIDao.class);
       countryDataList.forEach(countryData -> {
-        if (CollectionUtils.isEmpty(countryData.getSynonyms())) {
-          countryDataJDBIDao.delete(countryData.getCountryRef());
-        } else {
-          countryDataJDBIDao.insert(countryData.getCountryRef(), JsonUtil.convertListToJson(countryData.getSynonyms()));
-        }
+        List<String> synonyms = ListUtils.emptyIfNull(countryData.getSynonyms());
+        // Since in the database we have defined COUNTRY_REF with the attribute UNIQUE ON CONFLICT REPLACE,
+        // an insert will delete any previous data for the specified countryRef
+        countryDataJDBIDao.insert(countryData.getCountryRef(), JsonUtil.convertListToJson(synonyms));
       });
     }
   }
