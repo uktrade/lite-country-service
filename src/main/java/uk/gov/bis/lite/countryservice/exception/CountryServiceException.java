@@ -1,20 +1,10 @@
 package uk.gov.bis.lite.countryservice.exception;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.WebApplicationException;
 
-public class CountryServiceException extends RuntimeException {
+public class CountryServiceException extends WebApplicationException {
 
-  public CountryServiceException(String message, Throwable cause) {
-    super(message, cause);
-  }
-
-  public static class ServiceExceptionMapper implements ExceptionMapper<CountryServiceException> {
-
-    @Override
-    public Response toResponse(CountryServiceException exception) {
-      return ErrorResponse.buildResponse(exception.getMessage(), 500);
-    }
-
+  public CountryServiceException(String message, Throwable throwable) {
+    super(message, throwable);
   }
 }

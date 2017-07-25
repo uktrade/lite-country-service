@@ -1,9 +1,9 @@
 cacheExpirySeconds: 1440
-countryListCacheJobCron: 0 0 0 * * ? # run at midnight everyday
+countryCacheJobCron: 0 0 0 * * ? # run at midnight everyday
 
 spireClientUserName: PUT_SPIRE_USERNAME_HERE
 spireClientPassword: PUT_SPIRE_PASSWORD_HERE
-spireClientUrl: PUT_SPIRE_URL_HERE
+spireClientUrl: http://localhost:9000/spirefox4dev/fox/ispire/
 
 server:
   type: default
@@ -15,3 +15,19 @@ logging:
   level: INFO
   appenders:
     - type: console
+
+database:
+  driverClass: org.sqlite.JDBC
+  url: jdbc:sqlite:file::memory:?cache=shared
+  properties:
+    charSet: UTF-8
+  maxWaitForConnection: 30s
+  validationQuery: "/* MyService Health Check */ SELECT 1"
+  minSize: 8
+  maxSize: 32
+  checkConnectionWhileIdle: false
+  evictionInterval: 10s
+  minIdleTime: 1 minute
+
+adminLogin: user
+adminPassword: password

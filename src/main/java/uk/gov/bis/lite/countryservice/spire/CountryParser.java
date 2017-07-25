@@ -6,16 +6,17 @@ import org.w3c.dom.NodeList;
 import uk.gov.bis.lite.common.spire.client.SpireResponse;
 import uk.gov.bis.lite.common.spire.client.parser.SpireParser;
 import uk.gov.bis.lite.countryservice.exception.CountryServiceException;
-import uk.gov.bis.lite.countryservice.spire.model.SpireCountry;
 import uk.gov.bis.lite.countryservice.spire.model.CountryList;
+import uk.gov.bis.lite.countryservice.spire.model.SpireCountry;
+
+import java.util.Collections;
+import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPMessage;
-import java.util.Collections;
-import java.util.List;
 
 public class CountryParser implements SpireParser<List<SpireCountry>> {
 
@@ -36,8 +37,9 @@ public class CountryParser implements SpireParser<List<SpireCountry>> {
         Node node = ((Element) getCountriesResponse.item(0)).getElementsByTagName("COUNTRY_LIST").item(0);
         CountryList countryList = unmarshaller.unmarshal(node, CountryList.class).getValue();
         return countryList.getCountries();
+      } else {
+        return Collections.emptyList();
       }
-      return Collections.emptyList();
 
     } catch (JAXBException | SOAPException e) {
       throw new CountryServiceException("Failed to parse Spire country service response.", e);

@@ -7,11 +7,11 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uk.gov.bis.lite.countryservice.cache.CountryListCache;
+import uk.gov.bis.lite.countryservice.cache.CountryCache;
 
-public class CountryListCacheJob implements Job {
+public class CountryCacheJob implements Job {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(CountryListCacheJob.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(CountryCacheJob.class);
 
   @Override
   public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
@@ -20,8 +20,8 @@ public class CountryListCacheJob implements Job {
     Scheduler scheduler = jobExecutionContext.getScheduler();
 
     try {
-      CountryListCache countryListCache = (CountryListCache) scheduler.getContext().get("countryListCache");
-      countryListCache.load();
+      CountryCache countryCache = (CountryCache) scheduler.getContext().get("countryCache");
+      countryCache.load();
       LOGGER.info("Successfully finished loading the country list cache.");
     } catch (SchedulerException e) {
       LOGGER.error("Failed to load country list cache.", e);

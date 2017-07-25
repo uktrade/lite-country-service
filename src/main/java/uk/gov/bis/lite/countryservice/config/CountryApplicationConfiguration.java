@@ -2,8 +2,10 @@ package uk.gov.bis.lite.countryservice.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dropwizard.Configuration;
+import io.dropwizard.db.DataSourceFactory;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 public class CountryApplicationConfiguration extends Configuration {
@@ -14,7 +16,7 @@ public class CountryApplicationConfiguration extends Configuration {
 
   @NotEmpty
   @JsonProperty
-  private String countryListCacheJobCron;
+  private String countryCacheJobCron;
 
   @NotEmpty
   @JsonProperty
@@ -28,12 +30,25 @@ public class CountryApplicationConfiguration extends Configuration {
   @JsonProperty
   private String spireClientUrl;
 
+  @NotEmpty
+  @JsonProperty
+  private String adminLogin;
+
+  @NotEmpty
+  @JsonProperty
+  private String adminPassword;
+
+  @Valid
+  @NotNull
+  @JsonProperty("database")
+  private DataSourceFactory dataSourceFactory;
+
   public Integer getCacheExpirySeconds() {
     return cacheExpirySeconds;
   }
 
-  public String getCountryListCacheJobCron() {
-    return countryListCacheJobCron;
+  public String getCountryCacheJobCron() {
+    return countryCacheJobCron;
   }
 
   public String getSpireClientUserName() {
@@ -46,5 +61,17 @@ public class CountryApplicationConfiguration extends Configuration {
 
   public String getSpireClientUrl() {
     return spireClientUrl;
+  }
+
+  public DataSourceFactory getDataSourceFactory() {
+    return dataSourceFactory;
+  }
+
+  public String getAdminLogin() {
+    return adminLogin;
+  }
+
+  public String getAdminPassword() {
+    return adminPassword;
   }
 }

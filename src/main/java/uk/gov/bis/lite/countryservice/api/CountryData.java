@@ -1,31 +1,26 @@
 package uk.gov.bis.lite.countryservice.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-public class CountryView {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class CountryData {
 
   private final String countryRef;
-  private final String countryName;
   private final List<String> synonyms;
 
   @JsonCreator
-  public CountryView(@JsonProperty("countryRef") String countryRef,
-                     @JsonProperty("countryName") String countryName,
+  public CountryData(@JsonProperty("countryRef") String countryRef,
                      @JsonProperty("synonyms") List<String> synonyms) {
     this.countryRef = countryRef;
-    this.countryName = countryName;
     this.synonyms = synonyms;
   }
 
   public String getCountryRef() {
     return countryRef;
-  }
-
-  public String getCountryName() {
-    return countryName;
   }
 
   public List<String> getSynonyms() {
