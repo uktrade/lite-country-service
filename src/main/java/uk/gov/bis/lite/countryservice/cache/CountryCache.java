@@ -80,5 +80,7 @@ public class CountryCache {
     return Optional.ofNullable(groupCache.get(key));
   }
 
-
+  public boolean isPopulated() {
+    return countryCache.size() > 0;
+  }
 }

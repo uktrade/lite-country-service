@@ -15,6 +15,7 @@ import org.quartz.impl.StdSchedulerFactory;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
 import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstaller;
 import uk.gov.bis.lite.common.jersey.filter.ContainerCorrelationIdFilter;
+import uk.gov.bis.lite.common.metrics.readiness.ReadinessServlet;
 import uk.gov.bis.lite.countryservice.auth.SimpleAuthenticator;
 import uk.gov.bis.lite.countryservice.cache.CountryCache;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
@@ -67,6 +68,9 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
             .buildAuthFilter()));
 
     Injector injector = guiceBundle.getInjector();
+
+    ReadinessServlet readinessServlet = injector.getInstance(ReadinessServlet.class);
+    environment.admin().addServlet("ready", readinessServlet).addMapping("/ready");
 
     CountryCache countryCache = injector.getInstance(CountryCache.class);
 

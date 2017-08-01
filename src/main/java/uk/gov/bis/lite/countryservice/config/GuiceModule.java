@@ -7,8 +7,10 @@ import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Environment;
 import org.skife.jdbi.v2.DBI;
 import ru.vyarus.dropwizard.guice.module.support.ConfigurationAwareModule;
+import uk.gov.bis.lite.common.metrics.readiness.ReadinessService;
 import uk.gov.bis.lite.common.spire.client.SpireClientConfig;
 import uk.gov.bis.lite.common.spire.client.SpireRequestConfig;
+import uk.gov.bis.lite.countryservice.CountryReadinessService;
 import uk.gov.bis.lite.countryservice.dao.CountryDataDao;
 import uk.gov.bis.lite.countryservice.dao.CountryDataDaoImpl;
 import uk.gov.bis.lite.countryservice.service.CountryDataValidationService;
@@ -33,6 +35,7 @@ public class GuiceModule extends AbstractModule implements ConfigurationAwareMod
     bind(CountryService.class).to(CountryServiceImpl.class);
     bind(CountryDataDao.class).to(CountryDataDaoImpl.class);
     bind(CountryDataValidationService.class).to(CountryDataValidationServiceImpl.class);
+    bind(ReadinessService.class).to(CountryReadinessService.class);
   }
 
   @Override
