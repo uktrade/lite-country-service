@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import uk.gov.bis.lite.common.metrics.readiness.ReadinessService;
 import uk.gov.bis.lite.countryservice.cache.CountryCache;
+import uk.gov.bis.lite.countryservice.healthcheck.SpireHealthStatus;
 
 @Singleton
 public class CountryReadinessService implements ReadinessService {
@@ -33,18 +34,23 @@ public class CountryReadinessService implements ReadinessService {
 
   @Override
   public boolean isReady() {
-    return countryCache.isPopulated();
+    return getReadiness().ready;
+  }
+
+  public CountryReadiness getReadiness() {
+    SpireHealthStatus cacheHealthStatus = countryCache.getHealthStatus();
+    boolean ready = cacheHealthStatus.isHealthy() || countryCache.isPopulated();
+    if (cacheHealthStatus.isHealthy()) {
+      return new CountryReadiness(ready, null);
+    } else {
+      // Cache is unhealthy, but application may still be ready to respond
+      return new CountryReadiness(ready,  "Country list cache is unhealthy: " + cacheHealthStatus.getErrorMessage());
+    }
   }
 
   @Override
   public JsonNode readinessJson() {
-    CountryReadiness countryReadiness;
-    if (isReady()) {
-      countryReadiness = new CountryReadiness(true, null);
-    } else {
-      countryReadiness = new CountryReadiness(false, "Country list cache is not populated.");
-    }
     ObjectMapper mapper = new ObjectMapper();
-    return mapper.valueToTree(countryReadiness);
+    return mapper.valueToTree(getReadiness());
   }
 }
