@@ -2,6 +2,7 @@ package uk.gov.bis.lite.countryservice.cache;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import uk.gov.bis.lite.countryservice.healthcheck.SpireHealthStatus;
 import uk.gov.bis.lite.countryservice.model.CountryEntry;
 import uk.gov.bis.lite.countryservice.service.SpireService;
 
@@ -21,6 +22,7 @@ public class CountryCache {
   private volatile Map<String, List<CountryEntry>> setCache = new HashMap<>();
   private volatile Map<String, CountryEntry> countryCache = new HashMap<>();
   private volatile long lastCached = System.currentTimeMillis();
+  private volatile SpireHealthStatus healthStatus = SpireHealthStatus.unhealthy("Cache not initialised");
 
   @Inject
   public CountryCache(SpireService spireService) {
@@ -80,7 +82,23 @@ public class CountryCache {
     return Optional.ofNullable(groupCache.get(key));
   }
 
+  public SpireHealthStatus getHealthStatus() {
+    return healthStatus;
+  }
+
+  public void setHealthStatus(SpireHealthStatus healthStatus) {
+    this.healthStatus = healthStatus;
+  }
+
   public boolean isPopulated() {
-    return countryCache.size() > 0;
+    return !countryCache.isEmpty();
+  }
+
+  public void doHealthCheck() {
+    if (isPopulated()) {
+      setHealthStatus(SpireHealthStatus.healthy());
+    } else {
+      setHealthStatus(SpireHealthStatus.unhealthy("Cache is empty"));
+    }
   }
 }

@@ -13,6 +13,7 @@ import org.flywaydb.core.Flyway;
 import org.quartz.Scheduler;
 import org.quartz.impl.StdSchedulerFactory;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
+import ru.vyarus.dropwizard.guice.module.installer.feature.health.HealthCheckInstaller;
 import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstaller;
 import uk.gov.bis.lite.common.jersey.filter.ContainerCorrelationIdFilter;
 import uk.gov.bis.lite.common.metrics.readiness.ReadinessServlet;
@@ -20,6 +21,7 @@ import uk.gov.bis.lite.countryservice.auth.SimpleAuthenticator;
 import uk.gov.bis.lite.countryservice.cache.CountryCache;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import uk.gov.bis.lite.countryservice.config.GuiceModule;
+import uk.gov.bis.lite.countryservice.healthcheck.SpireHealthCheck;
 import uk.gov.bis.lite.countryservice.resource.CountryDataResource;
 import uk.gov.bis.lite.countryservice.resource.CountryResource;
 import uk.gov.bis.lite.countryservice.scheduler.CountryCacheScheduler;
@@ -50,9 +52,8 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
 
     guiceBundle = new GuiceBundle.Builder<CountryApplicationConfiguration>()
         .modules(module)
-        .installers(ResourceInstaller.class)
-        .extensions(CountryResource.class)
-        .extensions(CountryDataResource.class)
+        .installers(ResourceInstaller.class, HealthCheckInstaller.class)
+        .extensions(CountryResource.class, CountryDataResource.class, SpireHealthCheck.class)
         .build();
 
     bootstrap.addBundle(guiceBundle);

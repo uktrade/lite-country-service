@@ -8,6 +8,8 @@ import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.gov.bis.lite.countryservice.cache.CountryCache;
+import uk.gov.bis.lite.countryservice.exception.CountryServiceException;
+import uk.gov.bis.lite.countryservice.healthcheck.SpireHealthStatus;
 
 public class CountryCacheJob implements Job {
 
@@ -19,12 +21,19 @@ public class CountryCacheJob implements Job {
 
     Scheduler scheduler = jobExecutionContext.getScheduler();
 
+    CountryCache countryCache = null;
     try {
-      CountryCache countryCache = (CountryCache) scheduler.getContext().get("countryCache");
+      countryCache = (CountryCache) scheduler.getContext().get("countryCache");
       countryCache.load();
+      countryCache.doHealthCheck();
+
       LOGGER.info("Successfully finished loading the country list cache.");
-    } catch (SchedulerException e) {
+
+    } catch (SchedulerException | CountryServiceException e) {
       LOGGER.error("Failed to load country list cache.", e);
+      if (countryCache != null) {
+        countryCache.setHealthStatus(SpireHealthStatus.unhealthy("An unexpected error occurred whilst retrieving the country lists from Spire."));
+      }
     }
   }
 

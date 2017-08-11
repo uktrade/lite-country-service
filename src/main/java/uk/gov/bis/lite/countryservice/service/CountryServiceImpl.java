@@ -7,6 +7,7 @@ import uk.gov.bis.lite.countryservice.api.CountryData;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.countryservice.cache.CountryCache;
 import uk.gov.bis.lite.countryservice.dao.CountryDataDao;
+import uk.gov.bis.lite.countryservice.healthcheck.SpireHealthStatus;
 import uk.gov.bis.lite.countryservice.model.CountryEntry;
 
 import java.util.ArrayList;
@@ -81,6 +82,11 @@ public class CountryServiceImpl implements CountryService {
     List<CountryView> countryViews = createCountryViews(countryEntries);
     countryViews.sort(Comparator.comparing(CountryView::getCountryName));
     return countryViews;
+  }
+
+  @Override
+  public SpireHealthStatus getHealthStatus() {
+    return countryCache.getHealthStatus();
   }
 
   @Override
