@@ -3,6 +3,7 @@ package uk.gov.bis.lite.countryservice.mocks;
 import com.google.inject.Singleton;
 import uk.gov.bis.lite.countryservice.api.CountryData;
 import uk.gov.bis.lite.countryservice.api.CountryView;
+import uk.gov.bis.lite.countryservice.healthcheck.SpireHealthStatus;
 import uk.gov.bis.lite.countryservice.service.CountryService;
 
 import java.util.ArrayList;
@@ -47,6 +48,11 @@ public class CountryServiceMock implements CountryService {
   @Override
   public List<CountryView> getCountryViews() {
     return new ArrayList<>();
+  }
+
+  @Override
+  public SpireHealthStatus getHealthStatus() {
+    return SpireHealthStatus.healthy();
   }
 
   @Override
