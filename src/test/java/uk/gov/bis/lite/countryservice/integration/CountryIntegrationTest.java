@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.countryservice;
+package uk.gov.bis.lite.countryservice.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;

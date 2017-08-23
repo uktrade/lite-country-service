@@ -1,4 +1,4 @@
-package uk.gov.bis.lite.countryservice;
+package uk.gov.bis.lite.countryservice.integration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
+import uk.gov.bis.lite.countryservice.CountryServiceApplication;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 
 public class BaseIntegrationTest {
