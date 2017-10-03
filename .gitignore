@@ -1,4 +1,5 @@
 *.iml
+*.db
 dependency-reduced-pom.xml
 .idea/
 .gradle/
