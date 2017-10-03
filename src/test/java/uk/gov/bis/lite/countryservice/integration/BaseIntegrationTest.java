@@ -9,16 +9,17 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 
-import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.testing.ConfigOverride;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.flywaydb.core.Flyway;
+import org.glassfish.jersey.client.JerseyClientBuilder;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
 import uk.gov.bis.lite.countryservice.CountryServiceApplication;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 
@@ -28,18 +29,19 @@ public class BaseIntegrationTest {
    * Configured to bind port dynamically to mitigate bug https://github.com/tomakehurst/wiremock/issues/97
    * TODO revert to static port once bug is resolved
    */
-  @ClassRule
-  public static final WireMockClassRule wireMockClassRule = new WireMockClassRule(options().dynamicPort());
+  private WireMockRule wireMockRule;
 
-  @Rule
-  public final DropwizardAppRule<CountryApplicationConfiguration> RULE =
-      new DropwizardAppRule<>(CountryServiceApplication.class, resourceFilePath("service-test.yaml"),
-          ConfigOverride.config("spireClientUrl", "http://localhost:" +  wireMockClassRule.port() + "/spire/fox/ispire/"));
+  private DropwizardAppRule<CountryApplicationConfiguration> dwAppRule;
 
-  @BeforeClass
-  public static void setUp() throws Exception {
+  @Before
+  public void setUp() throws Exception {
+    //Note all setup must be done in a single method (without use of @Rule/@ClassRule), so execution order can be guaranteed
 
-    configureFor(wireMockClassRule.port());
+    wireMockRule = new WireMockRule(options().dynamicPort());
+    wireMockRule.start();
+
+    //Configures stubFor to use allocated port
+    configureFor("localhost",  wireMockRule.port());
 
     stubFor(post(urlEqualTo("/spire/fox/ispire/SPIRE_COUNTRIES"))
         .withRequestBody(containing("countrySetId"))
@@ -54,14 +56,31 @@ public class BaseIntegrationTest {
             .withStatus(200)
             .withHeader("Content-Type", "text/xml")
             .withBody(fixture("spire-getCountryGroup.xml"))));
-  }
 
-  @Before
-  public void setupDatabase() {
-    DataSourceFactory f = RULE.getConfiguration().getDataSourceFactory();
+    //Tell Dropwizard to use the dynamically allocated Wiremock port
+    dwAppRule = new DropwizardAppRule<>(CountryServiceApplication.class, resourceFilePath("service-test.yaml"),
+        ConfigOverride.config("spireClientUrl", "http://localhost:" +  wireMockRule.port() + "/spire/fox/ispire/"));
+    dwAppRule.getTestSupport().before(); //This would be called automatically when using the @Rule annotation
+
+    //Setup database
+    DataSourceFactory f = dwAppRule.getConfiguration().getDataSourceFactory();
     Flyway flyway = new Flyway();
     flyway.setDataSource(f.getUrl(), f.getUser(), f.getPassword());
     flyway.migrate();
+
+    //Await country cache load - if tests start before the cache is populated they will fail
+    await().with().pollInterval(1, SECONDS).atMost(10, SECONDS).until(() -> JerseyClientBuilder.createClient()
+        .target("http://localhost:"+ dwAppRule.getAdminPort()+"/ready")
+        .request()
+        .get()
+        .getStatus() == 200);
   }
 
+  @After
+  public void tearDown() throws Exception {
+    wireMockRule.stop();
+    dwAppRule.getTestSupport().after();
+    wireMockRule = null;
+    dwAppRule = null;
+  }
 }
