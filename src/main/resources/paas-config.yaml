@@ -1,15 +1,15 @@
 cacheExpirySeconds: 86400
 countryCacheJobCron: 0 0 0 * * ? # run at midnight everyday
 
-spireClientUserName: spire_username
-spireClientPassword: spire_password
-spireClientUrl: http://service-mocking.svc.dev.licensing.service.trade.gov.uk.test/spire/fox/ispire/
+spireClientUserName: ${SPIRE_CLIENT_USERNAME}
+spireClientPassword: ${SPIRE_CLIENT_PASSWORD}
+spireClientUrl: ${SPIRE_CLIENT_URL}
 
 server:
   type: default
   applicationConnectors:
     - type: http
-      port: 8080
+      port: ${PORT}
 
 logging:
   level: INFO
@@ -17,12 +17,16 @@ logging:
     - type: console
       includeCallerData : true
       logFormat: "[%mdc{corrID}] %d [%p] %marker %logger %m%n"
+  loggers:
+    "uk.gov.bis.lite.common.spire.client.SpireClient": WARN
+    "org.skife.jdbi.v2": TRACE
 
 database:
   driverClass: org.postgresql.Driver
-  url: jdbc:postgresql://localhost:5432/postgres?currentSchema=countrysvc
-  user: postgres
-  password: password
+  url: ${VCAP_JDBC_URL}
+  schema: ${DATABASE_SCHEMA}
+  #user: postgres
+  #password: password
   properties:
     charSet: UTF-8
   maxWaitForConnection: 30s
@@ -33,8 +37,8 @@ database:
   evictionInterval: 10s
   minIdleTime: 1 minute
 
-adminLogin: user
-adminPassword: pass
+adminLogin: ${ADMIN_LOGIN}
+adminPassword: ${ADMIN_PASSWORD}
 
-serviceLogin: service
-servicePassword: password
+serviceLogin: ${SERVICE_LOGIN}
+servicePassword: ${SERVICE_PASSWORD}
