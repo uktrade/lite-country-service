@@ -58,7 +58,7 @@ dependencies {
   compile 'ch.qos.logback.contrib:logback-jackson:0.1.5'
   compile 'uk.gov.bis.lite:json-console-appender:1.1'
   compile 'uk.gov.bis.lite:jersey-correlation-id:1.0'
-  compile 'org.xerial:sqlite-jdbc:3.8.11.2'
+  compile 'org.postgresql:postgresql:42.1.4'
   compile 'org.flywaydb:flyway-core:4.0.1'
   compile 'org.apache.commons:commons-collections4:4.1'
   compile 'uk.gov.bis.lite:readiness-metric:1.0'
@@ -76,7 +76,7 @@ dependencies {
 }
 
 flyway {
-  url = 'jdbc:sqlite:localCountry.db'
+  url = 'jdbc:postgresql://localhost:5432/postgres?currentSchema=countrysvc'
 }
 
 shadowJar {

@@ -54,7 +54,7 @@ public class GuiceModule extends AbstractModule implements ConfigurationAwareMod
   @Provides
   @Singleton
   public DBI provideDataSourceDbi(Environment environment, CountryApplicationConfiguration configuration) {
-    return new DBIFactory().build(environment, configuration.getDataSourceFactory(), "sqlite");
+    return new DBIFactory().build(environment, configuration.getDataSourceFactory(), "postgres");
   }
 
   @Provides

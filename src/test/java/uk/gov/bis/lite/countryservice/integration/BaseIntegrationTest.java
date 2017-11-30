@@ -13,15 +13,19 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.testing.ConfigOverride;
 import io.dropwizard.testing.junit.DropwizardAppRule;
-import org.flywaydb.core.Flyway;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.After;
 import org.junit.Before;
 import uk.gov.bis.lite.countryservice.CountryServiceApplication;
+import uk.gov.bis.lite.countryservice.api.CountryData;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
+
+import java.util.Arrays;
+import java.util.Collections;
+
+import javax.ws.rs.client.Entity;
 
 public class BaseIntegrationTest {
 
@@ -62,18 +66,26 @@ public class BaseIntegrationTest {
         ConfigOverride.config("spireClientUrl", "http://localhost:" +  wireMockRule.port() + "/spire/fox/ispire/"));
     dwAppRule.getTestSupport().before(); //This would be called automatically when using the @Rule annotation
 
-    //Setup database
-    DataSourceFactory f = dwAppRule.getConfiguration().getDataSourceFactory();
-    Flyway flyway = new Flyway();
-    flyway.setDataSource(f.getUrl(), f.getUser(), f.getPassword());
-    flyway.migrate();
-
     //Await country cache load - if tests start before the cache is populated they will fail
     await().with().pollInterval(1, SECONDS).atMost(10, SECONDS).until(() -> JerseyClientBuilder.createClient()
         .target("http://localhost:"+ dwAppRule.getAdminPort()+"/ready")
         .request()
         .get()
         .getStatus() == 200);
+
+    JerseyClientBuilder.createClient()
+        .target("http://localhost:"+ dwAppRule.getLocalPort()+"/country-data")
+        .request()
+        .delete();
+
+    CountryData uae = new CountryData("CTRY3", Arrays.asList("United Arab Emirates","UAE","U.A.E."));
+    CountryData france = new CountryData("CTRY1434", Collections.singletonList("French Republic"));
+
+    JerseyClientBuilder.createClient()
+        .target("http://localhost:"+ dwAppRule.getLocalPort()+"/country-data")
+        .request()
+        .header("Authorization", "Basic dXNlcjpwYXNzd29yZA==")
+        .put(Entity.json(Arrays.asList(uae, france)));
   }
 
   @After
