@@ -1,5 +1,3 @@
-import java.text.SimpleDateFormat
-
 plugins {
   id 'application'
   id 'java'
@@ -25,9 +23,10 @@ group 'uk.gov.bis.lite'
 if (project.hasProperty('projVersion')) {
   project.version = project.projVersion
 } else {
-  SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd.HHmmss")
-  sdf.setTimeZone(new SimpleTimeZone(SimpleTimeZone.UTC_TIME, "UTC"))
-  project.version = sdf.format(new Date()) + "-SNAPSHOT"
+  project.version = "1.0-SNAPSHOT"
+//  SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd.HHmmss")
+//  sdf.setTimeZone(new SimpleTimeZone(SimpleTimeZone.UTC_TIME, "UTC"))
+//  project.version = sdf.format(new Date()) + "-SNAPSHOT"
 }
 
 mainClassName = "uk.gov.bis.lite.countryservice.CountryServiceApplication"

@@ -6,6 +6,9 @@ import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.PrincipalImpl;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
+import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
+import io.dropwizard.configuration.ResourceConfigurationSourceProvider;
+import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -49,6 +52,9 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
 
   @Override
   public void initialize(Bootstrap<CountryApplicationConfiguration> bootstrap) {
+    //Load config from a resource (i.e. file within the JAR), and substitute environment variables into it
+    bootstrap.setConfigurationSourceProvider(new SubstitutingSourceProvider(
+        new ResourceConfigurationSourceProvider(), new EnvironmentVariableSubstitutor(false)));
 
     guiceBundle = new GuiceBundle.Builder<CountryApplicationConfiguration>()
         .modules(module)
