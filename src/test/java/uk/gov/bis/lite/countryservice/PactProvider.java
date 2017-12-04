@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
 import ru.vyarus.dropwizard.guice.injector.lookup.InjectorLookup;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import uk.gov.bis.lite.countryservice.mocks.CountryServiceMock;
-import uk.gov.bis.lite.countryservice.service.TestCountryServiceApplication;
+import uk.gov.bis.lite.countryservice.service.CountryServicePactTestApplication;
 
 @RunWith(PactRunner.class)
 @Provider("lite-country-service")
@@ -23,7 +23,7 @@ import uk.gov.bis.lite.countryservice.service.TestCountryServiceApplication;
 public class PactProvider {
   @ClassRule
   public static final DropwizardAppRule<CountryApplicationConfiguration> RULE =
-      new DropwizardAppRule<>(TestCountryServiceApplication.class, resourceFilePath("service-test.yaml"));
+      new DropwizardAppRule<>(CountryServicePactTestApplication.class, resourceFilePath("service-test.yaml"));
 
   @TestTarget
   public final Target target = new HttpTarget(RULE.getLocalPort());

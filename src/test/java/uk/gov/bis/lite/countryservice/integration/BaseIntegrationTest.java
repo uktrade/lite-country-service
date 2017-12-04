@@ -20,7 +20,7 @@ import org.junit.After;
 import org.junit.Before;
 import uk.gov.bis.lite.countryservice.api.CountryData;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
-import uk.gov.bis.lite.countryservice.service.TestCountryServiceApplication;
+import uk.gov.bis.lite.countryservice.service.CountryServiceIntegrationTestApplication;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,7 +62,7 @@ public class BaseIntegrationTest {
             .withBody(fixture("spire-getCountryGroup.xml"))));
 
     //Tell Dropwizard to use the dynamically allocated Wiremock port
-    dwAppRule = new DropwizardAppRule<>(TestCountryServiceApplication.class, resourceFilePath("service-test.yaml"),
+    dwAppRule = new DropwizardAppRule<>(CountryServiceIntegrationTestApplication.class, resourceFilePath("service-test.yaml"),
         ConfigOverride.config("spireClientUrl", "http://localhost:" +  wireMockRule.port() + "/spire/fox/ispire/"));
     dwAppRule.getTestSupport().before(); //This would be called automatically when using the @Rule annotation
 
