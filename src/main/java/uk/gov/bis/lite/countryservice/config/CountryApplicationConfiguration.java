@@ -41,7 +41,7 @@ public class CountryApplicationConfiguration extends Configuration {
   @Valid
   @NotNull
   @JsonProperty("database")
-  private DataSourceFactory dataSourceFactory;
+  private SchemaAwareDataSourceFactory dataSourceFactory;
 
   public Integer getCacheExpirySeconds() {
     return cacheExpirySeconds;

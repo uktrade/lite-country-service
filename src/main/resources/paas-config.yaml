@@ -18,12 +18,16 @@ logging:
     - type: console
       includeCallerData : true
       logFormat: "[%mdc{corrID}] %d [%p] %marker %logger %m%n"
+  loggers:
+    "uk.gov.bis.lite.common.spire.client.SpireClient": WARN
+    "org.skife.jdbi.v2": TRACE
 
 database:
   driverClass: org.postgresql.Driver
-  url: jdbc:postgresql://localhost:5432/postgres?currentSchema=countrysvc
-  user: postgres
-  password: password
+  url: ${VCAP_JDBC_URL}
+  schema: countrysvc
+  #user: postgres
+  #password: password
   properties:
     charSet: UTF-8
   maxWaitForConnection: 30s

@@ -6,7 +6,6 @@ import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.PrincipalImpl;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
-import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
 import io.dropwizard.configuration.ResourceConfigurationSourceProvider;
 import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.db.DataSourceFactory;
@@ -24,6 +23,7 @@ import uk.gov.bis.lite.countryservice.auth.SimpleAuthenticator;
 import uk.gov.bis.lite.countryservice.cache.CountryCache;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import uk.gov.bis.lite.countryservice.config.GuiceModule;
+import uk.gov.bis.lite.countryservice.config.VcapAwareSubstitutor;
 import uk.gov.bis.lite.countryservice.healthcheck.SpireHealthCheck;
 import uk.gov.bis.lite.countryservice.resource.CountryDataResource;
 import uk.gov.bis.lite.countryservice.resource.CountryResource;
@@ -54,7 +54,7 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
   public void initialize(Bootstrap<CountryApplicationConfiguration> bootstrap) {
     //Load config from a resource (i.e. file within the JAR), and substitute environment variables into it
     bootstrap.setConfigurationSourceProvider(new SubstitutingSourceProvider(
-        new ResourceConfigurationSourceProvider(), new EnvironmentVariableSubstitutor(false)));
+        new ResourceConfigurationSourceProvider(), new VcapAwareSubstitutor(false)));
 
     guiceBundle = new GuiceBundle.Builder<CountryApplicationConfiguration>()
         .modules(module)
