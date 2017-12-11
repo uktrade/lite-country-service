@@ -17,13 +17,16 @@ public class SchemaAwareDataSourceFactory extends DataSourceFactory {
   @JsonProperty
   public void setSchema(String schema) {
     this.schema = schema;
+    setUrl(fixUrl(getUrl()));
   }
 
   @Override
-  public String getUrl() {
-    String url = super.getUrl();
+  public void setUrl(String url) {
+    super.setUrl(fixUrl(url));
+  }
 
-    if (!url.contains("currentSchema=") && StringUtils.isNoneBlank(schema)) { //&& "org.postgresql.Driver".equals(getDriver())
+  private String fixUrl(String url) {
+    if (!url.contains("currentSchema=") && StringUtils.isNoneBlank(schema)) {
       if (!url.contains("?")) {
         url += "?";
       } else {
@@ -31,7 +34,6 @@ public class SchemaAwareDataSourceFactory extends DataSourceFactory {
       }
       url += "currentSchema=" + schema;
     }
-
     return url;
   }
 }
