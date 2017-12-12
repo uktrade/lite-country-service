@@ -43,11 +43,11 @@ ext.dropwizardVersion = '1.2.1'
 
 repositories {
   //mavenCentral()
-  jcenter() //TODO MOVE TO DW COMMON
   maven {
     name "proxy"
     url "https://nexus.ci.uktrade.io/repository/lite-build-and-proxy/"
   }
+  jcenter() //TODO MOVE TO DW COMMON
   maven {
     name "snapshots"
     url "https://nexus.ci.uktrade.io/repository/maven-snapshots/"
