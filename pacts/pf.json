@@ -1,0 +1,194 @@
+{
+  "provider": {
+    "name": "lite-country-service"
+  },
+  "consumer": {
+    "name": "lite-permissions-finder"
+  },
+  "interactions": [
+    {
+      "request": {
+        "method": "GET",
+        "path": "/countries/group/DOES_NOT_EXIST"
+      },
+      "description": "a request for provided country group",
+      "response": {
+        "status": 404,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "code": 404,
+          "message": "Country group does not exist - DOES_NOT_EXIST"
+        },
+        "matchingRules": {
+          "$.body.message": {
+            "match": "type"
+          },
+          "$.body.code": {
+            "match": "integer"
+          }
+        }
+      },
+      "providerState": "provided country group does not exist"
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/countries/group/EXISTS"
+      },
+      "description": "a request for provided country group",
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": [
+          {
+            "countryName": "United Kingdom",
+            "countryRef": "CRTY0"
+          },
+          {
+            "countryName": "United Kingdom",
+            "countryRef": "CRTY0"
+          },
+          {
+            "countryName": "United Kingdom",
+            "countryRef": "CRTY0"
+          }
+        ],
+        "matchingRules": {
+          "$.body": {
+            "match": "type",
+            "min": 0
+          },
+          "$.body[*].countryRef": {
+            "match": "type"
+          },
+          "$.body[*].countryName": {
+            "match": "type"
+          }
+        }
+      },
+      "providerState": "provided country group exists"
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/countries/set/DOES_NOT_EXIST"
+      },
+      "description": "a request for provided country set",
+      "response": {
+        "status": 404,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "code": 404,
+          "message": "Country set does not exist - DOES_NOT_EXIST"
+        },
+        "matchingRules": {
+          "$.body.message": {
+            "match": "type"
+          },
+          "$.body.code": {
+            "match": "integer"
+          }
+        }
+      },
+      "providerState": "provided country set does not exist"
+    },
+    {
+      "request": {
+        "method": "GET",
+        "path": "/countries/set/EXISTS"
+      },
+      "description": "a request for provided country set",
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": [
+          {
+            "countryName": "United Kingdom",
+            "countryRef": "CRTY0"
+          },
+          {
+            "countryName": "United Kingdom",
+            "countryRef": "CRTY0"
+          },
+          {
+            "countryName": "United Kingdom",
+            "countryRef": "CRTY0"
+          }
+        ],
+        "matchingRules": {
+          "$.body": {
+            "match": "type",
+            "min": 0
+          },
+          "$.body[*].countryRef": {
+            "match": "type"
+          },
+          "$.body[*].countryName": {
+            "match": "type"
+          }
+        }
+      },
+      "providerState": "provided country set exists"
+    }
+  ],
+  "createdAt": "2017-12-11T17:57:29+00:00",
+  "_links": {
+    "self": {
+      "title": "Pact",
+      "name": "Pact between lite-permissions-finder (v1.0.0) and lite-country-service",
+      "href": "http://pact-broker.mgmt.licensing.service.trade.gov.uk.test/pacts/provider/lite-country-service/consumer/lite-permissions-finder/version/1.0.0"
+    },
+    "pb:consumer": {
+      "title": "Consumer",
+      "name": "lite-permissions-finder",
+      "href": "http://pact-broker.mgmt.licensing.service.trade.gov.uk.test/pacticipants/lite-permissions-finder"
+    },
+    "pb:provider": {
+      "title": "Provider",
+      "name": "lite-country-service",
+      "href": "http://pact-broker.mgmt.licensing.service.trade.gov.uk.test/pacticipants/lite-country-service"
+    },
+    "pb:latest-pact-version": {
+      "title": "Pact",
+      "name": "Latest version of this pact",
+      "href": "http://pact-broker.mgmt.licensing.service.trade.gov.uk.test/pacts/provider/lite-country-service/consumer/lite-permissions-finder/latest"
+    },
+    "pb:previous-distinct": {
+      "title": "Pact",
+      "name": "Previous distinct version of this pact",
+      "href": "http://pact-broker.mgmt.licensing.service.trade.gov.uk.test/pacts/provider/lite-country-service/consumer/lite-permissions-finder/version/1.0.0/previous-distinct"
+    },
+    "pb:diff-previous-distinct": {
+      "title": "Diff",
+      "name": "Diff with previous distinct version of this pact",
+      "href": "http://pact-broker.mgmt.licensing.service.trade.gov.uk.test/pacts/provider/lite-country-service/consumer/lite-permissions-finder/version/1.0.0/diff/previous-distinct"
+    },
+    "pb:pact-webhooks": {
+      "title": "Webhooks for the pact between lite-permissions-finder and lite-country-service",
+      "href": "http://pact-broker.mgmt.licensing.service.trade.gov.uk.test/webhooks/provider/lite-country-service/consumer/lite-permissions-finder"
+    },
+    "pb:tag-prod-version": {
+      "title": "Tag this version as 'production'",
+      "href": "http://pact-broker.mgmt.licensing.service.trade.gov.uk.test/pacticipants/lite-permissions-finder/versions/1.0.0/tags/prod"
+    },
+    "pb:tag-version": {
+      "title": "Tag version",
+      "href": "http://pact-broker.mgmt.licensing.service.trade.gov.uk.test/pacticipants/lite-permissions-finder/versions/1.0.0/tags/{tag}"
+    },
+    "curies": [
+      {
+        "name": "pb",
+        "href": "http://pact-broker.mgmt.licensing.service.trade.gov.uk.test/doc/{rel}",
+        "templated": true
+      }
+    ]
+  }
+}

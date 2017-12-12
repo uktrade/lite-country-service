@@ -5,7 +5,7 @@ import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import au.com.dius.pact.provider.junit.PactRunner;
 import au.com.dius.pact.provider.junit.Provider;
 import au.com.dius.pact.provider.junit.State;
-import au.com.dius.pact.provider.junit.loader.PactBroker;
+import au.com.dius.pact.provider.junit.loader.PactFolder;
 import au.com.dius.pact.provider.junit.target.HttpTarget;
 import au.com.dius.pact.provider.junit.target.Target;
 import au.com.dius.pact.provider.junit.target.TestTarget;
@@ -19,7 +19,8 @@ import uk.gov.bis.lite.countryservice.service.CountryServicePactTestApplication;
 
 @RunWith(PactRunner.class)
 @Provider("lite-country-service")
-@PactBroker(host = "pact-broker.mgmt.licensing.service.trade.gov.uk.test", port = "80")
+//@PactBroker(host = "pact-broker.mgmt.licensing.service.trade.gov.uk.test", port = "80")
+@PactFolder("pacts")
 public class PactProvider {
   @ClassRule
   public static final DropwizardAppRule<CountryApplicationConfiguration> RULE =
