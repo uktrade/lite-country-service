@@ -24,4 +24,9 @@ public class CountryServicePactTestApplication extends CountryServiceApplication
     //"undo" override in parent to load from a file (instead of a resource)
     bootstrap.setConfigurationSourceProvider(new FileConfigurationSourceProvider());
   }
+
+  @Override
+  protected void flywayMigrate(CountryApplicationConfiguration configuration) {
+    //NO DB to migrate
+  }
 }

@@ -11,23 +11,30 @@ import static io.dropwizard.testing.FixtureHelpers.fixture;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
+import static ru.yandex.qatools.embed.postgresql.distribution.Version.Main.V9_5;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.dropwizard.testing.ConfigOverride;
 import io.dropwizard.testing.junit.DropwizardAppRule;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import ru.yandex.qatools.embed.postgresql.EmbeddedPostgres;
 import uk.gov.bis.lite.countryservice.api.CountryData;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import uk.gov.bis.lite.countryservice.service.CountryServiceIntegrationTestApplication;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 
 import javax.ws.rs.client.Entity;
 
 public class BaseIntegrationTest {
+
+  private static EmbeddedPostgres postgres;
 
   /**
    * Configured to bind port dynamically to mitigate bug https://github.com/tomakehurst/wiremock/issues/97
@@ -36,6 +43,16 @@ public class BaseIntegrationTest {
   private WireMockRule wireMockRule;
 
   private DropwizardAppRule<CountryApplicationConfiguration> dwAppRule;
+
+  @BeforeClass
+  public static void pgSetup() {
+    postgres = new EmbeddedPostgres(V9_5);
+    try {
+      String url = postgres.start("localhost", 5432, "dbName", "postgres", "password");
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -94,5 +111,10 @@ public class BaseIntegrationTest {
     dwAppRule.getTestSupport().after();
     wireMockRule = null;
     dwAppRule = null;
+  }
+
+  @AfterClass
+  public static void pgStop() {
+    postgres.stop();
   }
 }

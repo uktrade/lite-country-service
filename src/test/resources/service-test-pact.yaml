@@ -1,0 +1,35 @@
+cacheExpirySeconds: 1440
+countryCacheJobCron: 0 0 0 * * ? # run at midnight everyday
+
+spireClientUserName: PUT_SPIRE_USERNAME_HERE
+spireClientPassword: PUT_SPIRE_PASSWORD_HERE
+spireClientUrl: http://localhost:9000/spire/fox/ispire/
+
+server:
+  type: default
+  applicationConnectors:
+    - type: http
+      port: 8090
+
+logging:
+  level: INFO
+  appenders:
+    - type: console
+
+database:
+  driverClass: org.h2.Driver
+  url: "jdbc:h2:mem:"
+  user: postgres
+  password: password
+  properties:
+    charSet: UTF-8
+  maxWaitForConnection: 30s
+  validationQuery: "/* MyService Health Check */ SELECT 1"
+  minSize: 8
+  maxSize: 32
+  checkConnectionWhileIdle: false
+  evictionInterval: 10s
+  minIdleTime: 1 minute
+
+adminLogin: user
+adminPassword: password

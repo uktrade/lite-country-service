@@ -87,14 +87,17 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
 
     environment.lifecycle().manage(new CountryCacheScheduler(scheduler, configuration));
 
+    flywayMigrate(configuration);
+
+    environment.jersey().register(ContainerCorrelationIdFilter.class);
+  }
+
+  protected void flywayMigrate(CountryApplicationConfiguration configuration) {
     // Perform / validate flyway migration on startup
     DataSourceFactory dataSourceFactory = configuration.getDataSourceFactory();
     Flyway flyway = new Flyway();
     flyway.setDataSource(dataSourceFactory.getUrl(), dataSourceFactory.getUser(), dataSourceFactory.getPassword());
     flyway.migrate();
-
-    environment.jersey().register(ContainerCorrelationIdFilter.class);
-
   }
 
   public static void main(String[] args) throws Exception {

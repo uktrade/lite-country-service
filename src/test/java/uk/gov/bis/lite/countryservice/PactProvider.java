@@ -23,7 +23,7 @@ import uk.gov.bis.lite.countryservice.service.CountryServicePactTestApplication;
 public class PactProvider {
   @ClassRule
   public static final DropwizardAppRule<CountryApplicationConfiguration> RULE =
-      new DropwizardAppRule<>(CountryServicePactTestApplication.class, resourceFilePath("service-test.yaml"));
+      new DropwizardAppRule<>(CountryServicePactTestApplication.class, resourceFilePath("service-test-pact.yaml"));
 
   @TestTarget
   public final Target target = new HttpTarget(RULE.getLocalPort());
