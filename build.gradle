@@ -1,3 +1,11 @@
+buildscript {
+  repositories {
+    maven {
+      url 'https://nexus.ci.uktrade.io/repository/lite-build-and-proxy/'
+    }
+  }
+}
+
 plugins {
   id 'application'
   id 'java'
@@ -34,17 +42,34 @@ mainClassName = "uk.gov.bis.lite.countryservice.CountryServiceApplication"
 ext.dropwizardVersion = '1.2.1'
 
 repositories {
-  mavenCentral()
+  //mavenCentral()
   jcenter() //TODO MOVE TO DW COMMON
   maven {
+    name "proxy"
+    url "https://nexus.ci.uktrade.io/repository/lite-build-and-proxy/"
+  }
+  maven {
     name "snapshots"
-    url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-snapshots/"
+    url "https://nexus.ci.uktrade.io/repository/maven-snapshots/"
   }
   maven {
     name "releases"
-    url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
+    url "https://nexus.ci.uktrade.io/repository/maven-releases/"
   }
 }
+
+//repositories {
+//  mavenCentral()
+//  jcenter() //TODO MOVE TO DW COMMON
+//  maven {
+//    name "snapshots"
+//    url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-snapshots/"
+//  }
+//  maven {
+//    name "releases"
+//    url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
+//  }
+//}
 
 dependencies {
   compile "io.dropwizard:dropwizard-core:$dropwizardVersion"
@@ -114,7 +139,11 @@ publishing {
     }
     maven {
       name "lite-builds"
-      url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/lite-builds/"
+      url "https://nexus.ci.uktrade.io/repository/lite-builds/"
+      credentials {
+        username 'admin'
+        password 'admin123'
+      }
     }
   }
 }
@@ -140,7 +169,7 @@ publishing {
       }
     }
     service(MavenPublication) {
-      artifactId 'country-service'
+      artifactId 'lite-country-service'
       from components.shadow
     }
   }
