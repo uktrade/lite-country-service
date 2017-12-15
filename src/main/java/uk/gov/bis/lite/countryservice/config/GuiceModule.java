@@ -45,7 +45,7 @@ public class GuiceModule extends AbstractModule implements ConfigurationAwareMod
 
   @Provides
   @Singleton
-  SpireCountriesClient provideCountryClient(Environment env, CountryApplicationConfiguration config) throws JAXBException {
+  SpireCountriesClient provideCountryClient(CountryApplicationConfiguration config) throws JAXBException {
     return new SpireCountriesClient(new CountryParser(),
         new SpireClientConfig(config.getSpireClientUserName(), config.getSpireClientPassword(), config.getSpireClientUrl()),
         new SpireRequestConfig("SPIRE_COUNTRIES", "getCountries", true));
