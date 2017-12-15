@@ -38,6 +38,14 @@ public class CountryApplicationConfiguration extends Configuration {
   @JsonProperty
   private String adminPassword;
 
+  @NotEmpty
+  @JsonProperty
+  private String serviceLogin;
+
+  @NotEmpty
+  @JsonProperty
+  private String servicePassword;
+
   @Valid
   @NotNull
   @JsonProperty("database")
@@ -74,4 +82,13 @@ public class CountryApplicationConfiguration extends Configuration {
   public String getAdminPassword() {
     return adminPassword;
   }
+
+  public String getServiceLogin() {
+    return serviceLogin;
+  }
+
+  public String getServicePassword() {
+    return servicePassword;
+  }
+
 }

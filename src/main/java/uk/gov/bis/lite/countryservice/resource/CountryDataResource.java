@@ -1,7 +1,10 @@
 package uk.gov.bis.lite.countryservice.resource;
 
+import io.dropwizard.auth.Auth;
 import uk.gov.bis.lite.countryservice.api.CountryData;
 import uk.gov.bis.lite.countryservice.api.CountryView;
+import uk.gov.bis.lite.countryservice.auth.Roles;
+import uk.gov.bis.lite.countryservice.auth.User;
 import uk.gov.bis.lite.countryservice.exception.BadRequestException;
 import uk.gov.bis.lite.countryservice.exception.CountryRefNotFoundException;
 import uk.gov.bis.lite.countryservice.service.CountryDataValidationService;
@@ -12,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.DELETE;
@@ -36,10 +39,12 @@ public class CountryDataResource {
     this.countryDataValidationService = countryDataValidationService;
   }
 
+  @RolesAllowed(Roles.SERVICE)
   @GET
   @Path("/{countryRef}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getCountryData(@PathParam("countryRef") String countryRef) {
+  public Response getCountryData(@Auth User user,
+                                 @PathParam("countryRef") String countryRef) {
     Optional<CountryView> countryView = countryService.getCountryView(countryRef);
     if (countryView.isPresent()) {
       return Response.ok(countryView.get()).build();
@@ -48,10 +53,12 @@ public class CountryDataResource {
     }
   }
 
+  @RolesAllowed(Roles.ADMIN)
   @PUT
-  @PermitAll
   @Path("/{countryRef}")
-  public Response updateCountryData(@PathParam("countryRef") String countryRef, @NotNull CountryData countryData) {
+  public Response updateCountryData(@Auth User user,
+                                    @PathParam("countryRef") String countryRef,
+                                    @NotNull CountryData countryData) {
     CountryData updateCountryData = new CountryData(countryRef, countryData.getSynonyms());
     List<CountryData> updateCountryDataList = Collections.singletonList(updateCountryData);
     List<String> unmatchedCountryRefs = countryDataValidationService.getUnmatchedCountryRefs(updateCountryDataList);
@@ -69,24 +76,27 @@ public class CountryDataResource {
     }
   }
 
+  @RolesAllowed(Roles.ADMIN)
   @DELETE
-  @PermitAll
   @Path("/{countryRef}")
-  public Response deleteCountryData(@PathParam("countryRef") String countryRef) {
+  public Response deleteCountryData(@Auth User user,
+                                    @PathParam("countryRef") String countryRef) {
     countryService.deleteCountryData(countryRef);
     return Response.accepted().build();
   }
 
+  @RolesAllowed(Roles.SERVICE)
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getAllCountryData() {
+  public Response getAllCountryData(@Auth User user) {
     List<CountryView> countryViews = countryService.getCountryViews();
     return Response.ok(countryViews).build();
   }
 
+  @RolesAllowed(Roles.ADMIN)
   @PUT
-  @PermitAll
-  public Response bulkUpdateCountryData(@NotNull List<CountryData> countryDataList) {
+  public Response bulkUpdateCountryData(@Auth User user,
+                                        @NotNull List<CountryData> countryDataList) {
     if (countryDataList.contains(null)) {
       throw new BadRequestException("Array cannot contain null values.");
     }
@@ -108,9 +118,9 @@ public class CountryDataResource {
     }
   }
 
+  @RolesAllowed(Roles.ADMIN)
   @DELETE
-  @PermitAll
-  public Response deleteAllCountryData() {
+  public Response deleteAllCountryData(@Auth User user) {
     countryService.deleteAllCountryData();
     return Response.accepted().build();
   }

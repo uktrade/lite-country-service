@@ -32,4 +32,7 @@ database:
   minIdleTime: 1 minute
 
 adminLogin: user
-adminPassword: password
+adminPassword: pass
+
+serviceLogin: service
+servicePassword: password

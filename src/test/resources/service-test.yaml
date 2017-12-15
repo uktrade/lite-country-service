@@ -29,5 +29,8 @@ database:
   evictionInterval: 10s
   minIdleTime: 1 minute
 
-adminLogin: user
-adminPassword: password
+adminLogin: admin
+adminPassword: pass
+
+serviceLogin: service
+servicePassword: password

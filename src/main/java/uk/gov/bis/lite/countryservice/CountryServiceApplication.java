@@ -4,12 +4,13 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
-import io.dropwizard.auth.PrincipalImpl;
+import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.flywaydb.core.Flyway;
+import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 import org.quartz.Scheduler;
 import org.quartz.impl.StdSchedulerFactory;
 import ru.vyarus.dropwizard.guice.GuiceBundle;
@@ -18,6 +19,8 @@ import ru.vyarus.dropwizard.guice.module.installer.feature.jersey.ResourceInstal
 import uk.gov.bis.lite.common.jersey.filter.ContainerCorrelationIdFilter;
 import uk.gov.bis.lite.common.metrics.readiness.ReadinessServlet;
 import uk.gov.bis.lite.countryservice.auth.SimpleAuthenticator;
+import uk.gov.bis.lite.countryservice.auth.SimpleAuthorizer;
+import uk.gov.bis.lite.countryservice.auth.User;
 import uk.gov.bis.lite.countryservice.cache.CountryCache;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import uk.gov.bis.lite.countryservice.config.GuiceModule;
@@ -62,11 +65,18 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
   @Override
   public void run(CountryApplicationConfiguration configuration, Environment environment) throws Exception {
 
-    environment.jersey().register(new AuthDynamicFeature(
-        new BasicCredentialAuthFilter.Builder<PrincipalImpl>()
-            .setAuthenticator(new SimpleAuthenticator(configuration.getAdminLogin(), configuration.getAdminPassword()))
-            .setRealm("Country Service Admin Authentication")
-            .buildAuthFilter()));
+    //Authorization and authentication handlers
+    SimpleAuthenticator simpleAuthenticator = new SimpleAuthenticator(configuration.getAdminLogin(),
+        configuration.getAdminPassword(),
+        configuration.getServiceLogin(),
+        configuration.getServicePassword());
+    environment.jersey().register(new AuthDynamicFeature(new BasicCredentialAuthFilter.Builder<User>()
+        .setAuthenticator(simpleAuthenticator)
+        .setAuthorizer(new SimpleAuthorizer())
+        .setRealm("Country Service Authentication")
+        .buildAuthFilter()));
+    environment.jersey().register(RolesAllowedDynamicFeature.class);
+    environment.jersey().register(new AuthValueFactoryProvider.Binder<>(User.class));
 
     Injector injector = guiceBundle.getInjector();
 
