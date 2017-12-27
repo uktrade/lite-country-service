@@ -6,6 +6,7 @@ import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Test;
 import uk.gov.bis.lite.countryservice.api.CountryView;
+import uk.gov.bis.lite.countryservice.util.AuthUtil;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class CountryIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(URL + "/set/export-control")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(response.getStatus()).isEqualTo(200);
@@ -58,6 +60,7 @@ public class CountryIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(URL + "/set/MADE-UP")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(response.getStatus()).isEqualTo(404);
@@ -72,6 +75,7 @@ public class CountryIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(URL + "/group/eu")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(response.getStatus()).isEqualTo(200);
@@ -108,6 +112,7 @@ public class CountryIntegrationTest extends BaseIntegrationTest {
     Response response = JerseyClientBuilder.createClient()
         .target(URL + "/group/MADE-UP")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(response.getStatus()).isEqualTo(404);

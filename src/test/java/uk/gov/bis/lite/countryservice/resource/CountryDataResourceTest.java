@@ -16,6 +16,7 @@ import uk.gov.bis.lite.countryservice.api.CountryData;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.countryservice.service.CountryDataValidationService;
 import uk.gov.bis.lite.countryservice.service.CountryService;
+import uk.gov.bis.lite.countryservice.util.AuthUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +37,7 @@ public class CountryDataResourceTest {
   private final CountryDataValidationService countryDataValidationService = mock(CountryDataValidationService.class);
 
   @Rule
-  public final ResourceTestRule resources = ResourceTestRule.builder()
+  public final ResourceTestRule resources = AuthUtil.authBuilder()
       .addResource(new CountryDataResource(countryService, countryDataValidationService))
       .build();
 
@@ -48,6 +49,7 @@ public class CountryDataResourceTest {
     Response response = resources.client()
         .target(URL + "/1")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(response.getStatus()).isEqualTo(200);
@@ -64,6 +66,7 @@ public class CountryDataResourceTest {
     Response response = resources.client()
         .target(URL + "/1")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(response.getStatus()).isEqualTo(404);
@@ -81,6 +84,7 @@ public class CountryDataResourceTest {
     Response response = resources.client()
         .target(URL + "/1")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(germany));
 
     assertThat(response.getStatus()).isEqualTo(404);
@@ -97,6 +101,7 @@ public class CountryDataResourceTest {
     Response response = resources.client()
         .target(URL + "/1")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(germany));
 
     assertThat(response.getStatus()).isEqualTo(200);
@@ -110,6 +115,7 @@ public class CountryDataResourceTest {
     Response response = resources.client()
         .target(URL + "/1")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .delete();
 
     assertThat(response.getStatus()).isEqualTo(202);
@@ -127,6 +133,7 @@ public class CountryDataResourceTest {
     Response response = resources.client()
         .target(URL)
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(response.getStatus()).isEqualTo(200);
@@ -148,6 +155,7 @@ public class CountryDataResourceTest {
     Response response = resources.client()
         .target(URL)
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(countryDataList));
 
     assertThat(response.getStatus()).isEqualTo(404);
@@ -169,6 +177,7 @@ public class CountryDataResourceTest {
     Response response = resources.client()
         .target(URL)
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(countryDataList));
 
     assertThat(response.getStatus()).isEqualTo(400);
@@ -185,6 +194,7 @@ public class CountryDataResourceTest {
     Response response = resources.client()
         .target(URL)
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .put(Entity.json(countryDataList));
 
     assertThat(response.getStatus()).isEqualTo(200);
@@ -198,6 +208,7 @@ public class CountryDataResourceTest {
     Response response = resources.client()
         .target(URL)
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.ADMIN_USER)
         .delete();
 
     assertThat(response.getStatus()).isEqualTo(202);

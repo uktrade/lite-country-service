@@ -3,8 +3,11 @@ package uk.gov.bis.lite.countryservice.resource;
 import com.codahale.metrics.annotation.Timed;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
+import io.dropwizard.auth.Auth;
 import org.hibernate.validator.constraints.NotEmpty;
 import uk.gov.bis.lite.countryservice.api.CountryView;
+import uk.gov.bis.lite.countryservice.auth.Roles;
+import uk.gov.bis.lite.countryservice.auth.User;
 import uk.gov.bis.lite.countryservice.exception.CountryListNotFoundException;
 import uk.gov.bis.lite.countryservice.service.CountryService;
 
@@ -12,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -34,10 +38,12 @@ public class CountryResource {
     this.cacheExpirySeconds = cacheExpirySeconds;
   }
 
+  @RolesAllowed(Roles.SERVICE)
   @GET
   @Path("set/{countrySetName}")
   @Timed // measures the duration of requests to a resource
-  public Response getCountryList(@PathParam("countrySetName") @NotEmpty String countrySetName) {
+  public Response getCountryList(@Auth User user,
+                                 @PathParam("countrySetName") @NotEmpty String countrySetName) {
     Optional<List<CountryView>> countryViews = countryService.getCountrySet(countrySetName);
     if (countryViews.isPresent()) {
       return buildResponse(countryViews.get());
@@ -46,10 +52,12 @@ public class CountryResource {
     }
   }
 
+  @RolesAllowed(Roles.SERVICE)
   @GET
   @Path("group/{groupName}")
   @Timed // measures the duration of requests to a resource
-  public Response getCountryGroups(@PathParam("groupName") @NotEmpty String groupName) {
+  public Response getCountryGroups(@Auth User user,
+                                   @PathParam("groupName") @NotEmpty String groupName) {
     Optional<List<CountryView>> countryViews = countryService.getCountryGroup(groupName);
     if (countryViews.isPresent()) {
       return buildResponse(countryViews.get());

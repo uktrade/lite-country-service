@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import uk.gov.bis.lite.countryservice.api.CountryView;
 import uk.gov.bis.lite.countryservice.service.CountryService;
+import uk.gov.bis.lite.countryservice.util.AuthUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +26,7 @@ public class CountryResourceTest {
   private final CountryService countryService = mock(CountryService.class);
 
   @Rule
-  public final ResourceTestRule resources = ResourceTestRule.builder()
+  public final ResourceTestRule resources = AuthUtil.authBuilder()
       .addResource(new CountryResource(countryService, 1000))
       .build();
 
@@ -40,6 +41,7 @@ public class CountryResourceTest {
     Response result = resources.client()
         .target("/countries/set/export-control")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(result.getStatus()).isEqualTo(200);
@@ -60,6 +62,7 @@ public class CountryResourceTest {
     Response result = resources.client()
         .target("/countries/set/export-control")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(result.getStatus()).isEqualTo(200);
@@ -77,6 +80,7 @@ public class CountryResourceTest {
     Response result = resources.client()
         .target("/countries/set/blah")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(result.getStatus()).isEqualTo(404);
@@ -97,6 +101,7 @@ public class CountryResourceTest {
     Response result = resources.client()
         .target("/countries/group/eu")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(result.getStatus()).isEqualTo(200);
@@ -114,6 +119,7 @@ public class CountryResourceTest {
     Response result = resources.client()
         .target("/countries/group/blah")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(result.getStatus()).isEqualTo(404);
@@ -134,6 +140,7 @@ public class CountryResourceTest {
     Response result = resources.client()
         .target("/countries/group/eu")
         .request()
+        .header(AuthUtil.HEADER, AuthUtil.SERVICE_USER)
         .get();
 
     assertThat(result.getStatus()).isEqualTo(200);

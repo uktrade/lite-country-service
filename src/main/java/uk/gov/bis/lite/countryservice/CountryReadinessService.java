@@ -37,7 +37,7 @@ public class CountryReadinessService implements ReadinessService {
     return getReadiness().ready;
   }
 
-  public CountryReadiness getReadiness() {
+  private CountryReadiness getReadiness() {
     SpireHealthStatus cacheHealthStatus = countryCache.getHealthStatus();
     boolean ready = cacheHealthStatus.isHealthy() || countryCache.isPopulated();
     if (cacheHealthStatus.isHealthy()) {

@@ -7,10 +7,15 @@ import ru.vyarus.dropwizard.guice.module.installer.feature.health.NamedHealthChe
 import uk.gov.bis.lite.countryservice.service.CountryService;
 
 public class SpireHealthCheck extends NamedHealthCheck {
-  @Inject
-  private CountryService countryService;
 
   private final Logger LOGGER = LoggerFactory.getLogger(SpireHealthCheck.class);
+
+  private final CountryService countryService;
+
+  @Inject
+  public SpireHealthCheck(CountryService countryService) {
+    this.countryService = countryService;
+  }
 
   @Override
   protected Result check() throws Exception {
