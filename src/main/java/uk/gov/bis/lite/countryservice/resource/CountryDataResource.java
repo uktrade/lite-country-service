@@ -1,10 +1,10 @@
 package uk.gov.bis.lite.countryservice.resource;
 
 import io.dropwizard.auth.Auth;
+import uk.gov.bis.lite.common.auth.basic.Roles;
+import uk.gov.bis.lite.common.auth.basic.User;
 import uk.gov.bis.lite.countryservice.api.CountryData;
 import uk.gov.bis.lite.countryservice.api.CountryView;
-import uk.gov.bis.lite.countryservice.auth.Roles;
-import uk.gov.bis.lite.countryservice.auth.User;
 import uk.gov.bis.lite.countryservice.exception.BadRequestException;
 import uk.gov.bis.lite.countryservice.exception.CountryRefNotFoundException;
 import uk.gov.bis.lite.countryservice.service.CountryDataValidationService;

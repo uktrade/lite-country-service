@@ -5,9 +5,9 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import io.dropwizard.auth.Auth;
 import org.hibernate.validator.constraints.NotEmpty;
+import uk.gov.bis.lite.common.auth.basic.Roles;
+import uk.gov.bis.lite.common.auth.basic.User;
 import uk.gov.bis.lite.countryservice.api.CountryView;
-import uk.gov.bis.lite.countryservice.auth.Roles;
-import uk.gov.bis.lite.countryservice.auth.User;
 import uk.gov.bis.lite.countryservice.exception.CountryListNotFoundException;
 import uk.gov.bis.lite.countryservice.service.CountryService;
 
