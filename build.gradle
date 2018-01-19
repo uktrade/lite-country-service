@@ -20,14 +20,7 @@ idea {
 
 group 'uk.gov.bis.lite'
 
-if (project.hasProperty('projVersion')) {
-  project.version = project.projVersion
-} else {
-  project.version = "1.0-SNAPSHOT"
-//  SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd.HHmmss")
-//  sdf.setTimeZone(new SimpleTimeZone(SimpleTimeZone.UTC_TIME, "UTC"))
-//  project.version = sdf.format(new Date()) + "-SNAPSHOT"
-}
+project.version = project.hasProperty('projVersion') ? project.projVersion : '1.0-SNAPSHOT'
 
 mainClassName = "uk.gov.bis.lite.countryservice.CountryServiceApplication"
 
@@ -38,11 +31,11 @@ repositories {
   jcenter()
   maven {
     name "snapshots"
-    url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-snapshots/"
+    url "https://nexus.ci.uktrade.io/repository/maven-snapshots/"
   }
   maven {
     name "releases"
-    url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
+    url "https://nexus.ci.uktrade.io/repository/maven-releases/"
   }
 }
 
@@ -101,19 +94,34 @@ build {
 
 run { args 'server', 'config.yaml' }
 
+def nexusUsername = project.hasProperty('nexusUsername') ? project.nexusUsername : ''
+def nexusPassword = project.hasProperty('nexusPassword') ? project.nexusPassword : ''
+
 publishing {
   repositories {
     maven {
       name "snapshots"
-      url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-snapshots/"
+      url "https://nexus.ci.uktrade.io/repository/maven-snapshots/"
+      credentials {
+        username nexusUsername
+        password nexusPassword
+      }
     }
     maven {
       name "releases"
-      url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/maven-releases/"
+      url "https://nexus.ci.uktrade.io/repository/maven-releases/"
+      credentials {
+        username nexusUsername
+        password nexusPassword
+      }
     }
     maven {
       name "lite-builds"
-      url "http://nexus.mgmt.licensing.service.trade.gov.uk.test/repository/lite-builds/"
+      url "https://nexus.ci.uktrade.io/repository/lite-builds/"
+      credentials {
+        username nexusUsername
+        password nexusPassword
+      }
     }
   }
 }
@@ -139,7 +147,7 @@ publishing {
       }
     }
     service(MavenPublication) {
-      artifactId 'country-service'
+      artifactId 'lite-country-service'
       from components.shadow
     }
   }

@@ -17,7 +17,7 @@ import uk.gov.bis.lite.countryservice.service.TestCountryServiceApplication;
 
 @RunWith(PactRunner.class)
 @Provider("lite-country-service")
-@PactBroker(host = "pact-broker.mgmt.licensing.service.trade.gov.uk.test", port = "80")
+@PactBroker(host = "pact-broker.ci.uktrade.io", port = "80")
 public class PactProvider {
   @ClassRule
   public static final DropwizardAppRule<CountryApplicationConfiguration> RULE =
