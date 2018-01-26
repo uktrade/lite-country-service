@@ -2,7 +2,7 @@ plugins {
   id 'application'
   id 'java'
   id 'jacoco'
-  id 'com.github.johnrengelman.shadow' version '1.2.3'
+  id 'com.github.johnrengelman.shadow' version '2.0.2'
   id "au.com.dius.pact" version "3.3.10"
   id 'org.flywaydb.flyway' version '4.0.1'
 }
@@ -146,9 +146,8 @@ publishing {
         classifier "sources"
       }
     }
-    service(MavenPublication) {
-      artifactId 'lite-country-service'
-      from components.shadow
+    shadow(MavenPublication) { publication ->
+      project.shadow.component(publication)
     }
   }
 }
