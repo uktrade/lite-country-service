@@ -6,6 +6,8 @@ import io.dropwizard.Application;
 import io.dropwizard.auth.AuthDynamicFeature;
 import io.dropwizard.auth.AuthValueFactoryProvider;
 import io.dropwizard.auth.basic.BasicCredentialAuthFilter;
+import io.dropwizard.configuration.ResourceConfigurationSourceProvider;
+import io.dropwizard.configuration.SubstitutingSourceProvider;
 import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
@@ -21,6 +23,7 @@ import uk.gov.bis.lite.common.auth.basic.SimpleAuthorizer;
 import uk.gov.bis.lite.common.auth.basic.User;
 import uk.gov.bis.lite.common.jersey.filter.ContainerCorrelationIdFilter;
 import uk.gov.bis.lite.common.metrics.readiness.ReadinessServlet;
+import uk.gov.bis.lite.common.paas.db.CloudFoundryEnvironmentSubstitutor;
 import uk.gov.bis.lite.countryservice.cache.CountryCache;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import uk.gov.bis.lite.countryservice.config.GuiceModule;
@@ -52,6 +55,9 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
 
   @Override
   public void initialize(Bootstrap<CountryApplicationConfiguration> bootstrap) {
+    //Load config from a resource (i.e. file within the JAR), and substitute environment variables into it
+    bootstrap.setConfigurationSourceProvider(new SubstitutingSourceProvider(
+        new ResourceConfigurationSourceProvider(), new CloudFoundryEnvironmentSubstitutor()));
 
     guiceBundle = new GuiceBundle.Builder<CountryApplicationConfiguration>()
         .modules(module)
@@ -91,14 +97,17 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
 
     environment.lifecycle().manage(new CountryCacheScheduler(scheduler, configuration));
 
+    flywayMigrate(configuration);
+
+    environment.jersey().register(ContainerCorrelationIdFilter.class);
+  }
+
+  protected void flywayMigrate(CountryApplicationConfiguration configuration) {
     // Perform / validate flyway migration on startup
     DataSourceFactory dataSourceFactory = configuration.getDataSourceFactory();
     Flyway flyway = new Flyway();
     flyway.setDataSource(dataSourceFactory.getUrl(), dataSourceFactory.getUser(), dataSourceFactory.getPassword());
     flyway.migrate();
-
-    environment.jersey().register(ContainerCorrelationIdFilter.class);
-
   }
 
   public static void main(String[] args) throws Exception {

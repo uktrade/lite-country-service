@@ -18,7 +18,8 @@ public interface CountryDataJDBIDao {
   @SqlQuery("SELECT * FROM COUNTRY_DATA WHERE COUNTRY_REF = :countryRef")
   CountryData getCountryData(@Bind("countryRef") String countryRef);
 
-  @SqlUpdate("INSERT INTO COUNTRY_DATA (COUNTRY_REF, SYNONYMS) VALUES (:countryRef, :synonyms)")
+  @SqlUpdate("INSERT INTO COUNTRY_DATA (COUNTRY_REF, SYNONYMS) VALUES (:countryRef, :synonyms) " +
+      "ON CONFLICT (country_ref) DO UPDATE SET synonyms = EXCLUDED.synonyms")
   void insert(@Bind("countryRef") String countryRef, @Bind("synonyms") String synonyms);
 
   @SqlUpdate("DELETE FROM COUNTRY_DATA WHERE COUNTRY_REF = :countryRef")
