@@ -26,6 +26,11 @@ public class PactProvider {
   @TestTarget
   public final Target target = new HttpTarget(RULE.getLocalPort());
 
+  @State("country data exists")
+  public void countryDataExists() {
+    InjectorLookup.getInjector(RULE.getApplication()).get().getInstance(CountryServiceMock.class).setCountriesExist(true);
+  }
+
   @State("provided country group exists")
   public void countryGroupExists() {
     InjectorLookup.getInjector(RULE.getApplication()).get().getInstance(CountryServiceMock.class).setCountriesExist(true);
