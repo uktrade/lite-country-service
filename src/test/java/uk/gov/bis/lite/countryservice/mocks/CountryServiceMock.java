@@ -47,7 +47,7 @@ public class CountryServiceMock implements CountryService {
 
   @Override
   public List<CountryView> getCountryViews() {
-    return new ArrayList<>();
+    return countries;
   }
 
   @Override
