@@ -18,9 +18,9 @@ public class CountryCache {
 
   private final SpireService spireService;
 
-  private volatile Map<String, List<CountryEntry>> groupCache = new HashMap<>();
-  private volatile Map<String, List<CountryEntry>> setCache = new HashMap<>();
-  private volatile Map<String, CountryEntry> countryCache = new HashMap<>();
+  private volatile Map<String, List<CountryEntry>> groupCacheMap = new HashMap<>();
+  private volatile Map<String, List<CountryEntry>> setCacheMap = new HashMap<>();
+  private volatile Map<String, CountryEntry> countryCacheMap = new HashMap<>();
   private volatile long lastCached = System.currentTimeMillis();
   private volatile SpireHealthStatus healthStatus = SpireHealthStatus.unhealthy("Cache not initialised");
 
@@ -53,21 +53,21 @@ public class CountryCache {
     }
 
     lastCached = System.currentTimeMillis();
-    groupCache = spireGroupCache;
-    setCache = spireSetCache;
-    countryCache = spireCountryCache;
+    groupCacheMap = spireGroupCache;
+    setCacheMap = spireSetCache;
+    countryCacheMap = spireCountryCache;
   }
 
   public Optional<CountryEntry> getCountryEntry(String countryRef) {
     if (countryRef == null) {
       return Optional.empty();
     } else {
-      return Optional.ofNullable(countryCache.get(countryRef));
+      return Optional.ofNullable(countryCacheMap.get(countryRef));
     }
   }
 
   public Collection<CountryEntry> getCountryEntries() {
-    return countryCache.values();
+    return countryCacheMap.values();
   }
 
   public long getLastCached() {
@@ -75,11 +75,11 @@ public class CountryCache {
   }
 
   public Optional<List<CountryEntry>> getCountriesBySetName(String key) {
-    return Optional.ofNullable(setCache.get(key));
+    return Optional.ofNullable(setCacheMap.get(key));
   }
 
   public Optional<List<CountryEntry>> getCountriesByGroupName(String key) {
-    return Optional.ofNullable(groupCache.get(key));
+    return Optional.ofNullable(groupCacheMap.get(key));
   }
 
   public SpireHealthStatus getHealthStatus() {
@@ -91,7 +91,7 @@ public class CountryCache {
   }
 
   public boolean isPopulated() {
-    return !countryCache.isEmpty();
+    return !countryCacheMap.isEmpty();
   }
 
   public void doHealthCheck() {

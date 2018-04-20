@@ -12,10 +12,6 @@ public class TestCountryServiceApplication extends CountryServiceApplication {
     super(Modules.override(new GuiceModule()).with(new GuiceTestModule()));
   }
 
-  public <T> T getInstance(Class<T> type) {
-    return getGuiceBundle().getInjector().getInstance(type);
-  }
-
   @Override
   protected void flywayMigrate(CountryApplicationConfiguration configuration) {
     //NO DB to migrate

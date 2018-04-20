@@ -114,8 +114,4 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
     new CountryServiceApplication().run(args);
   }
 
-  public GuiceBundle<CountryApplicationConfiguration> getGuiceBundle() {
-    return guiceBundle;
-  }
-
 }
