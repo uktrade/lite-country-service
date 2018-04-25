@@ -6,7 +6,6 @@ import com.google.inject.Singleton;
 import io.dropwizard.jdbi.DBIFactory;
 import io.dropwizard.setup.Environment;
 import org.skife.jdbi.v2.DBI;
-import ru.vyarus.dropwizard.guice.module.support.ConfigurationAwareModule;
 import uk.gov.bis.lite.common.metrics.readiness.ReadinessService;
 import uk.gov.bis.lite.common.spire.client.SpireClientConfig;
 import uk.gov.bis.lite.common.spire.client.SpireRequestConfig;
@@ -25,9 +24,7 @@ import uk.gov.bis.lite.countryservice.spire.SpireCountriesClient;
 import javax.inject.Named;
 import javax.xml.bind.JAXBException;
 
-public class GuiceModule extends AbstractModule implements ConfigurationAwareModule<CountryApplicationConfiguration> {
-
-  private CountryApplicationConfiguration configuration;
+public class GuiceModule extends AbstractModule {
 
   @Override
   protected void configure() {
@@ -36,11 +33,6 @@ public class GuiceModule extends AbstractModule implements ConfigurationAwareMod
     bind(CountryDataDao.class).to(CountryDataDaoImpl.class);
     bind(CountryDataValidationService.class).to(CountryDataValidationServiceImpl.class);
     bind(ReadinessService.class).to(CountryReadinessService.class);
-  }
-
-  @Override
-  public void setConfiguration(CountryApplicationConfiguration configuration) {
-    this.configuration = configuration;
   }
 
   @Provides

@@ -32,10 +32,10 @@ public class CountryCacheScheduler implements Managed {
         .withIdentity(jobKey)
         .build();
 
-    TriggerKey TRIGGER_KEY = TriggerKey.triggerKey("countryCacheJobTrigger");
+    TriggerKey triggerKey = TriggerKey.triggerKey("countryCacheJobTrigger");
 
     CronTrigger trigger = newTrigger()
-        .withIdentity(TRIGGER_KEY)
+        .withIdentity(triggerKey)
         .withSchedule(cronSchedule(config.getCountryCacheJobCron()))
         .build();
 

@@ -50,7 +50,7 @@ public class BaseIntegrationTest {
   public static void pgSetup() {
     postgres = new EmbeddedPostgres(V9_5);
     try {
-      String url = postgres.start("localhost", 5432, "dbName", "postgres", "password");
+      postgres.start("localhost", 5432, "dbName", "postgres", "password");
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

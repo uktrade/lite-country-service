@@ -8,7 +8,7 @@ import uk.gov.bis.lite.countryservice.service.CountryService;
 
 public class SpireHealthCheck extends NamedHealthCheck {
 
-  private final Logger LOGGER = LoggerFactory.getLogger(SpireHealthCheck.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SpireHealthCheck.class);
 
   private final CountryService countryService;
 

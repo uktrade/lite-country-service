@@ -37,7 +37,7 @@ public class CountryServiceImpl implements CountryService {
   public Optional<List<CountryView>> getCountrySet(String countrySetName) {
     Optional<List<CountryEntry>> countryEntries = countryCache.getCountriesBySetName(countrySetName);
     if (!countryEntries.isPresent()) {
-      LOGGER.error("Country set not found in cache - " + countrySetName);
+      LOGGER.error("Country set not found in cache - {}", countrySetName);
       return Optional.empty();
     } else {
       List<CountryView> countryViews = createCountryViews(countryEntries.get());
@@ -49,7 +49,7 @@ public class CountryServiceImpl implements CountryService {
   public Optional<List<CountryView>> getCountryGroup(String groupName) {
     Optional<List<CountryEntry>> countryEntries = countryCache.getCountriesByGroupName(groupName);
     if (!countryEntries.isPresent()) {
-      LOGGER.error("Country group not found in cache - " + groupName);
+      LOGGER.error("Country group not found in cache - {}", groupName);
       return Optional.empty();
     } else {
       List<CountryView> countryViews = createCountryViews(countryEntries.get());
