@@ -6,10 +6,12 @@ spireClientPassword: spire_password
 spireClientUrl: http://service-mocking.svc.dev.licensing.service.trade.gov.uk.test/spire/fox/ispire/
 
 server:
-  type: default
-  applicationConnectors:
-    - type: http
-      port: 8080
+  type: simple
+  applicationContextPath: /
+  adminContextPath: /admin
+  connector:
+    type: http
+    port: 8080
 
 logging:
   level: INFO
@@ -38,3 +40,6 @@ adminPassword: pass
 
 serviceLogin: service
 servicePassword: password
+
+login: user
+password: pass
