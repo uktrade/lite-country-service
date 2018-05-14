@@ -6,10 +6,12 @@ spireClientPassword: PUT_SPIRE_PASSWORD_HERE
 spireClientUrl: http://localhost:9000/spire/fox/ispire/
 
 server:
-  type: default
-  applicationConnectors:
-    - type: http
-      port: 8090
+  type: simple
+  applicationContextPath: /
+  adminContextPath: /admin
+  connector:
+    type: http
+    port: 8090
 
 logging:
   level: INFO
@@ -36,3 +38,6 @@ adminPassword: pass
 
 serviceLogin: service
 servicePassword: password
+
+login: user
+password: pass

@@ -87,8 +87,9 @@ public class BaseIntegrationTest {
 
     //Await country cache load - if tests start before the cache is populated they will fail
     await().with().pollInterval(1, SECONDS).atMost(20, SECONDS).until(() -> JerseyClientBuilder.createClient()
-        .target("http://localhost:" + dwAppRule.getAdminPort() + "/ready")
+        .target("http://localhost:" + dwAppRule.getAdminPort() + "/admin/ready")
         .request()
+        .header("Authorization", AuthUtil.BASIC_AUTH_USER)
         .get()
         .getStatus() == 200);
 

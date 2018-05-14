@@ -21,6 +21,8 @@ public class AuthUtil {
 
   public static final String SERVICE_USER = auth("service:password");
 
+  public static final String BASIC_AUTH_USER = auth("user:pass");
+
   private static final String ADMIN_USER_WRONG_PASSWORD = auth("admin:wrong-pw");
 
   private static final String SERVICE_USER_WRONG_PASSWORD = auth("service:wrong-pw");
