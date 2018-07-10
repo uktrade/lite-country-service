@@ -104,7 +104,8 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
     environment.jersey().register(ContainerCorrelationIdFilter.class);
 
     environment.admin().addServlet("admin", new AdminServlet()).addMapping("/admin");
-    environment.admin().setSecurityHandler(new AdminConstraintSecurityHandler(configuration.getLogin(), configuration.getPassword()));
+    //environment.admin().setSecurityHandler(new AdminConstraintSecurityHandler(configuration.getLogin(), configuration.getPassword()));
+    environment.admin().setSecurityHandler(new AdminConstraintSecurityHandler(configuration.getServiceLogin(), configuration.getServicePassword()));
   }
 
   protected void flywayMigrate(CountryApplicationConfiguration configuration) {
