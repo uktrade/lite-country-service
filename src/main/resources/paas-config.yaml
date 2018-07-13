@@ -43,6 +43,3 @@ adminPassword: "${ADMIN_PASSWORD}"
 
 serviceLogin: "${SERVICE_LOGIN}"
 servicePassword: "${SERVICE_PASSWORD}"
-
-login: "${BASIC_AUTH_USER}"
-password: "${BASIC_AUTH_PASSWORD}"
