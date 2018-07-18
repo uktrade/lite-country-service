@@ -30,6 +30,7 @@ import uk.gov.bis.lite.countryservice.cache.CountryCache;
 import uk.gov.bis.lite.countryservice.config.CountryApplicationConfiguration;
 import uk.gov.bis.lite.countryservice.config.GuiceModule;
 import uk.gov.bis.lite.countryservice.healthcheck.SpireHealthCheck;
+import uk.gov.bis.lite.countryservice.resource.AdminResource;
 import uk.gov.bis.lite.countryservice.resource.CountryDataResource;
 import uk.gov.bis.lite.countryservice.resource.CountryResource;
 import uk.gov.bis.lite.countryservice.scheduler.CountryCacheScheduler;
@@ -64,7 +65,7 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
     guiceBundle = new GuiceBundle.Builder<CountryApplicationConfiguration>()
         .modules(module)
         .installers(ResourceInstaller.class, HealthCheckInstaller.class)
-        .extensions(CountryResource.class, CountryDataResource.class, SpireHealthCheck.class)
+        .extensions(CountryResource.class, CountryDataResource.class, SpireHealthCheck.class, AdminResource.class)
         .build();
 
     bootstrap.addBundle(guiceBundle);
@@ -73,7 +74,7 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
   @Override
   public void run(CountryApplicationConfiguration configuration, Environment environment) throws Exception {
 
-    //Authorization and authentication handlers
+    // Authorization and authentication handlers
     SimpleAuthenticator simpleAuthenticator = new SimpleAuthenticator(configuration.getAdminLogin(),
         configuration.getAdminPassword(),
         configuration.getServiceLogin(),
@@ -104,7 +105,8 @@ public class CountryServiceApplication extends Application<CountryApplicationCon
     environment.jersey().register(ContainerCorrelationIdFilter.class);
 
     environment.admin().addServlet("admin", new AdminServlet()).addMapping("/admin");
-    environment.admin().setSecurityHandler(new AdminConstraintSecurityHandler(configuration.getLogin(), configuration.getPassword()));
+    //environment.admin().setSecurityHandler(new AdminConstraintSecurityHandler(configuration.getLogin(), configuration.getPassword()));
+    environment.admin().setSecurityHandler(new AdminConstraintSecurityHandler(configuration.getServiceLogin(), configuration.getServicePassword()));
   }
 
   protected void flywayMigrate(CountryApplicationConfiguration configuration) {
