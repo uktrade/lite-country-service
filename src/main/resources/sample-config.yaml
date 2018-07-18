@@ -1,9 +1,9 @@
 cacheExpirySeconds: 86400
 countryCacheJobCron: 0 0 0 * * ? # run at midnight everyday
 
-spireClientUserName: ENTER_USERNAME_HERE
-spireClientPassword: ENTER_PASSWORD_HERE
-spireClientUrl: https://lite-service-mocking-dev.cloudapps.digital/spire/fox/ispire/
+spireClientUserName: "ENTER_USERNAME_HERE"
+spireClientPassword: "ENTER_PASSWORD_HERE"
+spireClientUrl: "https://lite-service-mocking-dev.cloudapps.digital/spire/fox/ispire/"
 
 server:
   type: simple
@@ -35,11 +35,11 @@ database:
   evictionInterval: 10s
   minIdleTime: 1 minute
 
-adminLogin: ENTER_USERNAME_HERE
-adminPassword: ENTER_PASSWORD_HERE
+adminLogin: "ENTER_USERNAME_HERE"
+adminPassword: "ENTER_PASSWORD_HERE"
 
-serviceLogin: ENTER_USERNAME_HERE
-servicePassword: ENTER_PASSWORD_HERE
+serviceLogin: "ENTER_USERNAME_HERE"
+servicePassword: "ENTER_PASSWORD_HERE"
 
-login: ENTER_USERNAME_HERE
-password: ENTER_PASSWORD_HERE
+login: "ENTER_USERNAME_HERE"
+password: "ENTER_PASSWORD_HERE"
