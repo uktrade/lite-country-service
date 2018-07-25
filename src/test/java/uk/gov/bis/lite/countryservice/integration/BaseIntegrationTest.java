@@ -89,7 +89,7 @@ public class BaseIntegrationTest {
     await().with().pollInterval(1, SECONDS).atMost(20, SECONDS).until(() -> JerseyClientBuilder.createClient()
         .target("http://localhost:" + dwAppRule.getAdminPort() + "/admin/ready")
         .request()
-        .header("Authorization", AuthUtil.BASIC_AUTH_USER)
+        .header("Authorization", AuthUtil.SERVICE_USER)
         .get()
         .getStatus() == 200);
 

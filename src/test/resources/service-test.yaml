@@ -38,6 +38,3 @@ adminPassword: pass
 
 serviceLogin: service
 servicePassword: password
-
-login: user
-password: pass
