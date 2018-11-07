@@ -24,7 +24,7 @@ project.version = project.hasProperty('projVersion') ? project.projVersion : '1.
 
 mainClassName = "uk.gov.bis.lite.countryservice.CountryServiceApplication"
 
-ext.dropwizardVersion = '1.2.2'
+ext.dropwizardVersion = '1.2.9'
 
 repositories {
   mavenCentral()
