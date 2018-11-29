@@ -11,7 +11,7 @@ Retrieves country data from SPIRE and presents it to LITE applications, effectiv
 
 ## Endpoint summary
 
-`/countries`
+### Countries
 
 Retrieves country set or group information, e.g.
 
@@ -22,16 +22,16 @@ Known sets and groups are enumerated in `CountrySet` and `CountryGroup` respecti
 
 A `CountryView` is currently very simple and consists only of a reference and country name.
 
-`/country-data`
+### Country Data
 
 Endpoints for additional data maintenance. Currently only allow for updating the string array `synonyms`.
 
-* GET `/country-data/<countryRef>` - view additional data for a single country
-* PUT `/country-data/<countryRef>` - update additional data for a single country
-* DELETE `/country-data/<countryRef>` - delete additional data for a single country
 * GET `/country-data` - bulk view all country data stored in the service
 * PUT `/country-data` - bulk update data for multiple countries at once
 * DELETE `/country-data` - bulk delete all additional country data
+* GET `/country-data/<countryRef>` - view additional data for a single country
+* PUT `/country-data/<countryRef>` - update additional data for a single country
+* DELETE `/country-data/<countryRef>` - delete additional data for a single country
 
 ## SPIRE integration
 
