@@ -5,7 +5,7 @@ Retrieves country data from SPIRE and presents it to LITE applications, effectiv
 ## Running locally
 
 * `git clone git@github.com:uktrade/lite-country-service.git`
-* `cd lite-country-service` 
+* `cd lite-country-service`
 * `cp src/main/resources/sample-config.yaml src/main/resources/config.yaml`
 * `./gradlew run`
 
@@ -35,5 +35,21 @@ Endpoints for additional data maintenance. Currently only allow for updating the
 
 ## SPIRE integration
 
-The `SpireCountriesClient` is used to retrieve the country list and group data from a SOAP endpoint. This is populated into 
+The `SpireCountriesClient` is used to retrieve the country list and group data from a SOAP endpoint. This is populated into
 the `CountryCache`, and refreshed by a daily job (`CountryCacheJob`).
+
+### GDS PaaS Deployment
+
+This repo contains a pre-packed deployment file, lite-country-service-xxxx.jar.  This can be used to deploy this service manually from the CF cli.  Using the following command:
+
+* cf push [app_name] -p lite-country-service-xxxx.jar
+
+For this application to work the following dependencies need to be met:
+
+* Bound PG DB (all services share the same backend db)
+* Bound REDIS
+* Env VARs will need to be set
+
+### Archive state
+
+This repo is now archived. If you need to deploy this application, you can find a copy of the DB and VARs in the DIT AWS account.
